@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- SEO e Meta Tags -->
+  <title>CustodoHabito New</title>
+  <meta name="description"
+    content="Repositorio independente publicado como custodohabito_new." />
+  <meta name="theme-color" content="#1a1d2e" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="CustodoHabito New" />
+  <meta property="og:description" content="Repositorio independente publicado como custodohabito_new." />
+  <meta property="og:type" content="website" />
+
+  <!-- Fontes do Google -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;1,300;1,400&family=Outfit:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet" />
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
+  <!-- CSS Principal -->
+  <link rel="stylesheet" href="/style.css" />
+</head>
+
+<body>
+
+  <!-- ============================================ -->
+  <!-- LAYOUT PRINCIPAL — 3 COLUNAS -->
+  <!-- ============================================ -->
+  <div id="app" class="app-layout">
+
+    <!-- ========== SIDEBAR ESQUERDA ========== -->
+    <aside id="sidebar" class="sidebar">
+      <!-- Logo e Título -->
+      <div class="sidebar-header">
+        <div class="logo">
+          <div class="logo-icon">
+            <i data-lucide="book-open-text"></i>
+          </div>
+          <div class="logo-text">
+            <h1>CustodoHabito New</h1>
+            <span class="logo-subtitle">Projeto Independente</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Botão Nova Conversa -->
+      <button id="btn-new-chat" class="btn-new-chat">
+        <i data-lucide="message-square-plus"></i>
+        <span>Nova Conversa</span>
+      </button>
+
+      <!-- Navegação de Funcionalidades -->
+      <nav class="sidebar-nav">
+        <button class="nav-item active" data-section="chat">
+          <i data-lucide="message-circle"></i>
+          <span>Assistente</span>
+        </button>
+        <button class="nav-item" data-section="bible">
+          <i data-lucide="book-marked"></i>
+          <span>Livros da Bíblia</span>
+        </button>
+        <button class="nav-item" data-section="study">
+          <i data-lucide="graduation-cap"></i>
+          <span>Estudo</span>
+        </button>
+      </nav>
+
+      <!-- Separador -->
+      <div class="sidebar-divider"></div>
+
+      <!-- Painel de Livros da Bíblia (inicialmente oculto) -->
+      <div id="bible-nav-panel" class="bible-nav-panel hidden">
+        <div class="bible-tabs">
+          <button class="bible-tab active" data-testament="AT">Antigo</button>
+          <button class="bible-tab" data-testament="NT">Novo</button>
+          <button class="bible-tab" data-testament="DC">Apócrifos</button>
+        </div>
+        <div id="bible-books-list" class="bible-books-list">
+          <!-- Preenchido dinamicamente por bible-nav.js -->
+        </div>
+      </div>
+
+      <!-- Atalhos Rápidos (visíveis na seção chat) -->
+      <div id="quick-actions" class="quick-actions">
+        <p class="quick-actions-title">Perguntas Sugeridas</p>
+        <button class="quick-action-btn" data-prompt="Me dê um versículo para hoje com uma reflexão prática.">
+          <i data-lucide="sun"></i>
+          <span>Versículo do Dia</span>
+        </button>
+        <button class="quick-action-btn" data-prompt="Explique o Salmo 23 de forma prática para minha vida.">
+          <i data-lucide="book-open"></i>
+          <span>Explicar Passagem</span>
+        </button>
+        <button class="quick-action-btn" data-prompt="Por que existem tantas versões diferentes da Bíblia?">
+          <i data-lucide="help-circle"></i>
+          <span>Tirar Dúvida</span>
+        </button>
+        <button class="quick-action-btn" data-prompt="Me dê um resumo panorâmico do livro de Gênesis.">
+          <i data-lucide="telescope"></i>
+          <span>Visão Panorâmica</span>
+        </button>
+      </div>
+
+      <div class="sidebar-footer">
+        <button id="btn-settings" class="sidebar-footer-btn" style="display: none;">
+          <i data-lucide="settings"></i>
+          <span>Configurações</span>
+        </button>
+        <p class="sidebar-version">Base: NVT — Nova Versão Transformadora</p>
+        <div class="sidebar-credits">
+          Repositorio independente para novo projeto
+        </div>
+      </div>
+    </aside>
+
+    <!-- ========== ÁREA PRINCIPAL ========== -->
+    <main id="main-content" class="main-content">
+      <!-- Header Compartilhado (Pode ter seu conteúdo dinamicamente alterado) -->
+      <header class="chat-header">
+        <button id="btn-toggle-sidebar" class="btn-icon mobile-only">
+          <i data-lucide="menu"></i>
+        </button>
+        <div class="chat-header-info">
+          <h2 id="chat-title">CustodoHabito New</h2>
+          <span id="chat-status" class="chat-status">
+            <span class="status-dot"></span>
+            Online — Pronto para ajudar
+          </span>
+        </div>
+        <button id="btn-toggle-panel" class="btn-icon">
+          <i data-lucide="panel-right"></i>
+        </button>
+      </header>
+
+      <!-- Container de Views -->
+      <div id="views-container" class="views-container" style="flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative;">
+        
+        <!-- VIEW 1: CHAT (Ativa por padrão) -->
+        <section id="view-chat" class="main-view active" style="flex: 1; display: flex; flex-direction: column; min-height: 0;">
+          <!-- Área das Mensagens -->
+          <div id="chat-messages" class="chat-messages">
+            <!-- Mensagem de boas-vindas -->
+            <div class="welcome-screen" id="welcome-screen">
+              <div class="welcome-icon">
+                <i data-lucide="book-open-text"></i>
+              </div>
+              <h2>Shalom! ✨</h2>
+              <p>Esta e a base inicial do <strong>CustodoHabito New</strong>, publicada como projeto independente.</p>
+              <p class="welcome-subtitle">Posso ajudar com estudo bíblico, explicar passagens, tirar dúvidas teológicas e
+                fornecer devocionais diários.</p>
+
+              <div class="welcome-cards">
+                <button class="welcome-card"
+                  data-prompt="O que significa a passagem onde Jesus fala que não veio abolir a lei?">
+                  <i data-lucide="scroll-text"></i>
+                  <span>Explicar uma passagem</span>
+                  <small>Ex: Mateus 5:17</small>
+                </button>
+                <button class="welcome-card" data-prompt="Me dê um versículo para hoje com uma reflexão prática.">
+                  <i data-lucide="sunrise"></i>
+                  <span>Versículo do dia</span>
+                  <small>Devocional diário</small>
+                </button>
+                <button class="welcome-card" data-prompt="Por que o Livro de Enoque não está na minha Bíblia?">
+                  <i data-lucide="help-circle"></i>
+                  <span>Tirar uma dúvida</span>
+                  <small>Apologética e curiosidades</small>
+                </button>
+                <button class="welcome-card" data-prompt="Me dê um resumo panorâmico do livro de Gênesis.">
+                  <i data-lucide="telescope"></i>
+                  <span>Estudar um livro</span>
+                  <small>Visão panorâmica</small>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Input de Mensagem -->
+          <div class="chat-input-area">
+            <div class="chat-input-container">
+              <textarea id="chat-input" class="chat-input" placeholder="Pergunte sobre a Bíblia..." rows="1"
+                aria-label="Campo de mensagem para o assistente bíblico"></textarea>
+              <button id="btn-send" class="btn-send" disabled aria-label="Enviar mensagem">
+                <i data-lucide="send-horizontal"></i>
+              </button>
+            </div>
+            <p class="chat-disclaimer">Projeto independente em fase inicial.</p>
+          </div>
+        </section>
+
+        <!-- VIEW 2: BIBLE READER -->
+        <section id="view-bible-reader" class="main-view hidden" style="flex: 1; display: none; flex-direction: column; min-height: 0;">
+          <div id="bible-reader-container" class="bible-reader-container" style="flex: 1; overflow-y: auto;">
+             <!-- Conteúdo injetado por bible-reader.js -->
+          </div>
+        </section>
+
+        <!-- VIEW 3: STUDY HUB -->
+        <section id="view-study-hub" class="main-view hidden" style="flex: 1; display: none; flex-direction: column; min-height: 0; padding: 20px; overflow-y: auto;">
+          <div id="study-hub-container" class="study-hub-container">
+             <!-- Conteúdo injetado por study-hub.js -->
+          </div>
+        </section>
+
+      </div>
+    </main>
+
+    <!-- ========== PAINEL LATERAL DIREITO ========== -->
+    <aside id="study-panel" class="study-panel">
+      <div class="panel-header">
+        <h3>Estudo</h3>
+        <button id="btn-close-panel" class="btn-icon">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+
+      <!-- Card Devocional -->
+      <div id="devotional-card" class="devotional-card">
+        <div class="devotional-badge">
+          <i data-lucide="sun"></i>
+          <span>Versículo do Dia</span>
+        </div>
+        <blockquote id="devotional-verse" class="devotional-verse">
+          <!-- Preenchido por devotional.js -->
+        </blockquote>
+        <p id="devotional-reference" class="devotional-reference"></p>
+        <p id="devotional-reflection" class="devotional-reflection"></p>
+        <button id="btn-study-devotional" class="btn-study-devotional">
+          <i data-lucide="message-circle"></i>
+          Estudar este versículo
+        </button>
+      </div>
+
+      <!-- Seção de Notas de Estudo -->
+      <div id="study-notes" class="study-notes">
+        <h4>
+          <i data-lucide="notepad-text"></i>
+          Notas de Estudo
+        </h4>
+        <div id="study-notes-content" class="study-notes-content">
+          <p class="empty-state">Faça perguntas no chat e notas contextuais aparecerão aqui.</p>
+        </div>
+      </div>
+
+      <!-- Glossário Rápido -->
+      <div id="glossary-section" class="glossary-section">
+        <h4>
+          <i data-lucide="book-a"></i>
+          Glossário Rápido
+        </h4>
+        <div id="glossary-content" class="glossary-content">
+          <!-- Preenchido por study-panel.js -->
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Modal de Configurações -->
+  <div id="settings-modal" class="modal hidden">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Configurações</h3>
+        <button id="btn-close-settings" class="btn-icon">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="setting-group">
+          <label for="api-key-input">Chave da API Groq (opcional)</label>
+          <p class="setting-description">Insira sua chave para respostas personalizadas via IA (Groq). Sem a chave, o
+            modo
+            demonstração será usado.</p>
+          <input type="password" id="api-key-input" class="setting-input" placeholder="Sua chave secreta..." />
+        </div>
+        <div class="setting-group">
+          <label>Modo Atual</label>
+          <div id="mode-indicator" class="mode-indicator">
+            <span class="mode-badge demo">Demonstração</span>
+          </div>
+        </div>
+        <button id="btn-save-settings" class="btn-primary">
+          <i data-lucide="save"></i>
+          Salvar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Script Principal -->
+  <script type="module" src="/src/main.js"></script>
+</body>
+
+</html>
