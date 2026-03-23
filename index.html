@@ -24,7 +24,8 @@
   />
 
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
-  <link rel="stylesheet" href="/style.css" />
+  <script type="module" crossorigin src="/custodohabito_new/assets/index-BIQWvWnI.js"></script>
+  <link rel="stylesheet" crossorigin href="/custodohabito_new/assets/index-D6Pw4vNY.css">
 </head>
 <body>
   <div id="app" class="app-layout">
@@ -32,7 +33,7 @@
       <div class="sidebar-header">
         <div class="logo">
           <div class="logo-icon">
-            <img src="/public/assets/logo_custodohabito.jpg" alt="Logo Custo do Hábito" class="brand-mark" />
+            <img src="./assets/logo_custodohabito.jpg" alt="Logo Custo do Hábito" class="brand-mark" />
           </div>
           <div class="logo-text">
             <h1>Custo do Hábito</h1>
@@ -65,14 +66,14 @@
         </button>
       </nav>
 
-      <div id="catalog-nav-panel" class="bible-nav-panel hidden">
-        <div class="bible-tabs">
-          <button class="bible-tab active" data-category="fundamentos">Fundamentos</button>
-          <button class="bible-tab" data-category="ferramentas">Ferramentas</button>
-          <button class="bible-tab" data-category="planejamento">Planejamento</button>
+      <div id="catalog-nav-panel" class="learning-nav-panel bible-nav-panel hidden">
+        <div class="learning-tabs bible-tabs">
+          <button class="learning-tab bible-tab active" data-category="fundamentos">Fundamentos</button>
+          <button class="learning-tab bible-tab" data-category="ferramentas">Ferramentas</button>
+          <button class="learning-tab bible-tab" data-category="planejamento">Planejamento</button>
         </div>
-        <div id="topic-list" class="bible-books-list">
-          <!-- Preenchido dinamicamente por bible-nav.js -->
+        <div id="topic-list" class="learning-topics-list bible-books-list">
+          <!-- Preenchido dinamicamente por learning-nav.js -->
         </div>
       </div>
 
@@ -190,8 +191,8 @@
         </section>
 
         <section id="view-topic-reader" class="main-view hidden" style="flex: 1; display: none; flex-direction: column; min-height: 0;">
-          <div id="topic-reader-container" class="bible-reader-container" style="flex: 1; overflow-y: auto;">
-            <!-- Conteúdo injetado por bible-reader.js -->
+          <div id="topic-reader-container" class="learning-reader-container bible-reader-container" style="flex: 1; overflow-y: auto;">
+            <!-- Conteudo injetado por learning-reader.js -->
           </div>
         </section>
 
@@ -211,17 +212,17 @@
         </button>
       </div>
 
-      <div id="devotional-card" class="devotional-card">
-        <div class="devotional-badge">
+      <div id="daily-insight-card" class="daily-insight-card devotional-card">
+        <div class="daily-insight-badge devotional-badge">
           <i data-lucide="sparkles"></i>
-          <span>Conceito do dia</span>
+          <span>Insight do dia</span>
         </div>
-        <blockquote id="devotional-verse" class="devotional-verse"></blockquote>
-        <p id="devotional-reference" class="devotional-reference"></p>
-        <p id="devotional-reflection" class="devotional-reflection"></p>
-        <button id="btn-study-devotional" class="btn-study-devotional">
+        <blockquote id="daily-insight-quote" class="daily-insight-quote devotional-verse"></blockquote>
+        <p id="daily-insight-reference" class="daily-insight-reference devotional-reference"></p>
+        <p id="daily-insight-reflection" class="daily-insight-reflection devotional-reflection"></p>
+        <button id="btn-open-daily-insight" class="btn-open-daily-insight btn-study-devotional">
           <i data-lucide="message-circle"></i>
-          Explorar este conceito
+          Explorar este insight
         </button>
       </div>
 
@@ -317,6 +318,6 @@
     </div>
   </div>
 
-  <script type="module" src="/src/main.js"></script>
 </body>
 </html>
+
