@@ -6,6 +6,7 @@
 
 import { AIService } from '../services/ai-service.js';
 import { parseMarkdown } from '../utils/markdown.js';
+import { resetChatConversation } from '../utils/chat-actions.js';
 
 /**
  * Inicializa o módulo de chat.
@@ -57,6 +58,10 @@ export function initChat() {
 
     // ---- Botão "Nova Conversa" ----
     btnNewChat.addEventListener('click', () => {
+        resetChatConversation();
+    });
+
+    window.addEventListener('chat:reset', () => {
         // Fechar a sidebar no mobile/tablet
         if (window.innerWidth <= 1024) {
             const sidebar = document.getElementById('sidebar');
@@ -85,15 +90,32 @@ export function initChat() {
         chatInput.focus();
     });
 
+    window.addEventListener('chat:prompt', (event) => {
+        const prompt = event.detail?.prompt?.trim();
+        const submit = event.detail?.submit !== false;
+
+        if (!prompt) return;
+
+        chatInput.value = prompt;
+        chatInput.dispatchEvent(new Event('input'));
+
+        if (submit && !isSending) {
+            sendMessage();
+            return;
+        }
+
+        chatInput.focus();
+    });
+
     // ---- Cards de boas-vindas (clique para enviar prompt sugerido) ----
     const welcomeCards = document.querySelectorAll('.welcome-card');
     welcomeCards.forEach(card => {
         card.addEventListener('click', () => {
             const prompt = card.dataset.prompt;
             if (prompt) {
-                chatInput.value = prompt;
-                btnSend.disabled = false;
-                sendMessage();
+                window.dispatchEvent(new CustomEvent('chat:prompt', {
+                    detail: { prompt, submit: true }
+                }));
             }
         });
     });
@@ -112,9 +134,9 @@ export function initChat() {
                     if (sidebarBackdrop) sidebarBackdrop.classList.remove('visible');
                 }
 
-                chatInput.value = prompt;
-                btnSend.disabled = false;
-                sendMessage();
+                window.dispatchEvent(new CustomEvent('chat:prompt', {
+                    detail: { prompt, submit: true }
+                }));
             }
         });
     });
@@ -181,8 +203,7 @@ export function initChat() {
         // Avatar
         const avatarDiv = document.createElement('div');
         avatarDiv.className = 'message-avatar';
-        // Ícone do avatar: livro para assistente, usuário para humano
-        const iconName = role === 'assistant' ? 'book-open-text' : 'user';
+        const iconName = role === 'assistant' ? 'piggy-bank' : 'user';
         avatarDiv.innerHTML = `<i data-lucide="${iconName}"></i>`;
 
         // Bolha de conteúdo
@@ -220,7 +241,7 @@ export function initChat() {
 
         typingDiv.innerHTML = `
       <div class="message-avatar">
-        <i data-lucide="book-open-text"></i>
+        <i data-lucide="piggy-bank"></i>
       </div>
       <div class="message-bubble">
         <div class="typing-indicator">

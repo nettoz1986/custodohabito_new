@@ -1,229 +1,208 @@
-/**
- * main.js
- * Ponto de entrada principal do WebApp Bíblico — Logos.
- * Inicializa todos os módulos e gerencia a navegação/layout global.
- */
-
-import '../style.css';
 import { initChat } from './modules/chat.js';
 import { initDevotional } from './modules/devotional.js';
 import { initBibleNav } from './modules/bible-nav.js';
 import { initBibleReader } from './modules/bible-reader.js';
+import { initDiagnostic } from './modules/diagnostic.js';
 import { initStudyPanel } from './modules/study-panel.js';
 import { initStudyHub } from './modules/study-hub.js';
+import { openChatView } from './utils/chat-actions.js';
 
-// ============================================
-// INICIALIZAÇÃO DA APLICAÇÃO
-// ============================================
 document.addEventListener('DOMContentLoaded', () => {
-    // Inicializar ícones Lucide
-    if (window.lucide) {
-        window.lucide.createIcons();
-    }
+  if (window.lucide) {
+    window.lucide.createIcons();
+  }
 
-    // ---- Inicializar módulos ----
-    const chatModule = initChat();       // Retorna { aiService }
-    initDevotional();                    // Versículo do dia
-    initBibleNav();                      // Navegação por livros
-    initBibleReader();                   // Leitor bíblico
-    initStudyPanel();                    // Painel de estudo
-    initStudyHub();                      // Hub de Estudos Central
+  const chatModule = initChat();
+  initDevotional();
+  initBibleNav();
+  initBibleReader();
+  initDiagnostic();
+  initStudyPanel();
+  initStudyHub();
 
-    // ============================================
-    // NAVEGAÇÃO DA SIDEBAR
-    // ============================================
-    const navItems = document.querySelectorAll('.nav-item');
-    const bibleNavPanel = document.getElementById('bible-nav-panel');
-    const quickActions = document.getElementById('quick-actions');
+  const app = document.getElementById('app');
+  const sidebar = document.getElementById('sidebar');
+  const navItems = document.querySelectorAll('.nav-item');
+  const catalogNavPanel = document.getElementById('catalog-nav-panel');
+  const quickActions = document.getElementById('quick-actions');
+  const viewChat = document.getElementById('view-chat');
+  const viewDiagnostic = document.getElementById('view-diagnostic');
+  const viewReader = document.getElementById('view-topic-reader');
+  const viewStudy = document.getElementById('view-study-hub');
+  const chatTitle = document.getElementById('chat-title');
+  const chatStatus = document.getElementById('chat-status');
+  const studyPanel = document.getElementById('study-panel');
 
-    navItems.forEach(item => {
-        item.addEventListener('click', () => {
-            // Atualizar estado ativo
-            navItems.forEach(i => i.classList.remove('active'));
-            item.classList.add('active');
+  const sidebarBackdrop = document.createElement('div');
+  sidebarBackdrop.className = 'sidebar-backdrop';
+  document.body.appendChild(sidebarBackdrop);
 
-            const section = item.dataset.section;
+  const closeSidebar = () => {
+    sidebar.classList.remove('visible');
+    sidebarBackdrop.classList.remove('visible');
+  };
 
-            // Atualizar visibilidade das main-views
-            const viewChat = document.getElementById('view-chat');
-            const viewBible = document.getElementById('view-bible-reader');
-            const viewStudy = document.getElementById('view-study-hub');
-            const chatTitle = document.getElementById('chat-title');
-            const chatStatus = document.getElementById('chat-status');
-
-            // Resetar views
-            if (viewChat) { viewChat.classList.remove('active'); viewChat.style.display = 'none'; }
-            if (viewBible) { viewBible.classList.remove('active'); viewBible.style.display = 'none'; }
-            if (viewStudy) { viewStudy.classList.remove('active'); viewStudy.style.display = 'none'; }
-
-            // Mostrar/esconder painéis com base na seção
-            switch (section) {
-                case 'chat':
-                    if (viewChat) { viewChat.classList.add('active'); viewChat.style.display = 'flex'; }
-                    if (chatTitle) chatTitle.textContent = 'Assistente Bíblico';
-                    if (chatStatus) chatStatus.innerHTML = '<span class="status-dot"></span> Online — Pronto para ajudar';
-
-                    // Mostrar atalhos rápidos, esconder livros
-                    bibleNavPanel.classList.add('hidden');
-                    quickActions.style.display = 'flex';
-                    if (window.innerWidth <= 1024) closeSidebar();
-                    break;
-                case 'bible':
-                    if (viewBible) { viewBible.classList.add('active'); viewBible.style.display = 'flex'; }
-                    // Não reescrever o título da bíblia se já houver um capítulo carregado
-                    if (chatTitle && chatTitle.textContent === 'Assistente Bíblico' || chatTitle.textContent === 'Hub de Estudos') {
-                        chatTitle.textContent = 'Leitura Bíblica';
-                        if (chatStatus) chatStatus.innerHTML = 'Selecione um capítulo na barra lateral';
-                    }
-
-                    // Mostrar lista de livros, esconder atalhos
-                    bibleNavPanel.classList.remove('hidden');
-                    quickActions.style.display = 'none';
-                    if (window.innerWidth <= 1024) closeSidebar(); // No mobile, se abriu 'Bíblia', talvez ele deva ver os livros antes de ler?
-                    // Retirado closeSidebar() para ele poder clicar nos livros.
-                    break;
-                case 'study':
-                    if (viewStudy) { viewStudy.classList.add('active'); viewStudy.style.display = 'flex'; }
-                    if (chatTitle) chatTitle.textContent = 'Hub de Estudos';
-                    if (chatStatus) chatStatus.innerHTML = 'Explore e mergulhe fundo na Palavra';
-
-                    // Abrir painel de estudo lateral (se for o caso)
-                    const studyPanel = document.getElementById('study-panel');
-                    studyPanel.classList.remove('hidden');
-                    studyPanel.classList.add('visible');
-
-                    document.getElementById('app').classList.remove('panel-closed');
-                    if (window.innerWidth <= 1024) {
-                        const panelBackdrop = document.querySelector('.panel-backdrop');
-                        if (panelBackdrop) panelBackdrop.classList.add('visible');
-                    }
-                    // Manter atalhos
-                    bibleNavPanel.classList.add('hidden');
-                    quickActions.style.display = 'flex';
-                    if (window.innerWidth <= 1024) closeSidebar();
-                    break;
-            }
-        });
+  const setView = (section) => {
+    const views = [viewChat, viewDiagnostic, viewReader, viewStudy];
+    views.forEach((view) => {
+      if (!view) return;
+      view.classList.remove('active');
+      view.style.display = 'none';
     });
 
-    // Função global para mobile/tablet fechar a sidebar
-    function closeSidebar() {
-        sidebar.classList.remove('visible');
-        if (sidebarBackdrop) sidebarBackdrop.classList.remove('visible');
-    }
-
-    // ============================================
-    // MOBILE — Toggle Sidebar
-    // ============================================
-    const btnToggleSidebar = document.getElementById('btn-toggle-sidebar');
-    const sidebar = document.getElementById('sidebar');
-
-    // Criar backdrop para mobile
-    const sidebarBackdrop = document.createElement('div');
-    sidebarBackdrop.className = 'sidebar-backdrop';
-    document.body.appendChild(sidebarBackdrop);
-
-    if (btnToggleSidebar) {
-        btnToggleSidebar.addEventListener('click', () => {
-            sidebar.classList.toggle('visible');
-            sidebarBackdrop.classList.toggle('visible');
-        });
-    }
-
-    // Fechar sidebar ao clicar no backdrop
-    sidebarBackdrop.addEventListener('click', closeSidebar);
-
-    // ============================================
-    // MODAL DE CONFIGURAÇÕES
-    // ============================================
-    const btnSettings = document.getElementById('btn-settings');
-    const settingsModal = document.getElementById('settings-modal');
-    const btnCloseSettings = document.getElementById('btn-close-settings');
-    const modalBackdrop = settingsModal?.querySelector('.modal-backdrop');
-    const apiKeyInput = document.getElementById('api-key-input');
-    const btnSaveSettings = document.getElementById('btn-save-settings');
-    const modeIndicator = document.getElementById('mode-indicator');
-
-    // Abrir modal
-    if (btnSettings) {
-        btnSettings.addEventListener('click', () => {
-            settingsModal.classList.remove('hidden');
-            // Preencher campo com a chave salva (se existir)
-            const savedKey = localStorage.getItem('groq_api_key') || '';
-            if (apiKeyInput) apiKeyInput.value = savedKey;
-            updateModeIndicator(savedKey);
-        });
-    }
-
-    // Fechar modal
-    const closeModal = () => settingsModal.classList.add('hidden');
-    if (btnCloseSettings) btnCloseSettings.addEventListener('click', closeModal);
-    if (modalBackdrop) modalBackdrop.addEventListener('click', closeModal);
-
-    // Salvar configurações
-    if (btnSaveSettings) {
-        btnSaveSettings.addEventListener('click', () => {
-            const key = apiKeyInput?.value?.trim() || '';
-            chatModule.aiService.setApiKey(key);
-            updateModeIndicator(key);
-            closeModal();
-        });
-    }
-
-    // Atualizar input em tempo real para indicar o modo
-    if (apiKeyInput) {
-        apiKeyInput.addEventListener('input', () => {
-            updateModeIndicator(apiKeyInput.value.trim());
-        });
-    }
-
-    /**
-     * Atualiza o indicador de modo (Demo/API) no modal.
-     * @param {string} key - Chave da API
-     */
-    function updateModeIndicator(key) {
-        if (!modeIndicator) return;
-        if (key && key.length > 10) {
-            modeIndicator.innerHTML = '<span class="mode-badge api">API Groq Ativa</span>';
-        } else {
-            modeIndicator.innerHTML = '<span class="mode-badge demo">Demonstração</span>';
-        }
-    }
-
-    // ============================================
-    // RESPONSIVIDADE — Ajustar layout ao redimensionar
-    // ============================================
-    window.addEventListener('resize', () => {
-        const studyPanel = document.getElementById('study-panel');
-        const panelBackdrop = document.querySelector('.panel-backdrop');
-
-        if (window.innerWidth <= 1024) {
-            // Mobile/Tablet — Painel lateral vira overlay
-            if (studyPanel && !studyPanel.classList.contains('visible')) {
-                studyPanel.classList.add('hidden');
-                document.getElementById('app').classList.add('panel-closed');
-            }
-        }
-
-        if (window.innerWidth > 1024) {
-            // Esconder backdrop overlay se virar monitor grande
-            if (panelBackdrop) panelBackdrop.classList.remove('visible');
-            // Fechar sidebar esquerda overlay state (desktop já mostra a sidebar perfeitamente alinhada)
-            closeSidebar();
-            // Mostrar painel de estudo permanentemente no desktop
-            if (studyPanel) {
-                studyPanel.classList.remove('hidden');
-                studyPanel.classList.add('visible');
-                document.getElementById('app').classList.remove('panel-closed');
-            }
-        }
+    navItems.forEach((item) => {
+      item.classList.toggle('active', item.dataset.section === section);
     });
 
-    // Verificar modo ao iniciar e atualizar indicador de status
-    const chatStatus = document.getElementById('chat-status');
-    if (chatStatus && chatModule.aiService.isApiMode()) {
-        chatStatus.innerHTML = '<span class="status-dot"></span> Online — API Groq ativa';
+    switch (section) {
+      case 'chat':
+        viewChat.classList.add('active');
+        viewChat.style.display = 'flex';
+        chatTitle.textContent = 'Agente financeiro';
+        chatStatus.innerHTML = '<span class="status-dot"></span> Online — pronto para educar, organizar e orientar';
+        catalogNavPanel.classList.add('hidden');
+        quickActions.style.display = 'flex';
+        break;
+      case 'diagnostic':
+        viewDiagnostic.classList.add('active');
+        viewDiagnostic.style.display = 'flex';
+        chatTitle.textContent = 'Diagnóstico de hábito';
+        chatStatus.innerHTML = '<span class="status-dot"></span> Descubra o personagem financeiro que mais se aproxima do seu padrão';
+        catalogNavPanel.classList.add('hidden');
+        quickActions.style.display = 'none';
+        break;
+      case 'learn':
+        viewReader.classList.add('active');
+        viewReader.style.display = 'flex';
+        chatTitle.textContent = 'Aprender com clareza';
+        chatStatus.innerHTML = '<span class="status-dot"></span> Leituras guiadas, conceitos essenciais e conexão direta com o agente';
+        catalogNavPanel.classList.remove('hidden');
+        quickActions.style.display = 'flex';
+        break;
+      case 'planning':
+        viewStudy.classList.add('active');
+        viewStudy.style.display = 'flex';
+        chatTitle.textContent = 'Planejamento financeiro';
+        chatStatus.innerHTML = '<span class="status-dot"></span> Trilhas, ferramentas e próximos passos';
+        catalogNavPanel.classList.add('hidden');
+        quickActions.style.display = 'flex';
+        studyPanel.classList.remove('hidden');
+        studyPanel.classList.add('visible');
+        app.classList.remove('panel-closed');
+        break;
+      default:
+        break;
     }
 
-    console.log('✨ Logos — Assistente Bíblico Digital inicializado com sucesso!');
+    if (window.innerWidth <= 1024) {
+      closeSidebar();
+    }
+  };
+
+  navItems.forEach((item) => {
+    item.addEventListener('click', () => {
+      setView(item.dataset.section);
+    });
+  });
+
+  window.addEventListener('app:navigate', (event) => {
+    const section = event.detail?.section;
+
+    if (section) {
+      setView(section);
+    }
+  });
+
+  const btnToggleSidebar = document.getElementById('btn-toggle-sidebar');
+  if (btnToggleSidebar) {
+    btnToggleSidebar.addEventListener('click', () => {
+      sidebar.classList.toggle('visible');
+      sidebarBackdrop.classList.toggle('visible');
+    });
+  }
+
+  sidebarBackdrop.addEventListener('click', closeSidebar);
+
+  const btnSettings = document.getElementById('btn-settings');
+  const settingsModal = document.getElementById('settings-modal');
+  const privacyModal = document.getElementById('privacy-modal');
+  const btnCloseSettings = document.getElementById('btn-close-settings');
+  const btnClosePrivacy = document.getElementById('btn-close-privacy');
+  const modalBackdrop = settingsModal?.querySelector('.modal-backdrop');
+  const privacyBackdrop = privacyModal?.querySelector('.modal-backdrop');
+  const openPrivacyLink = document.getElementById('open-privacy-link');
+  const apiKeyInput = document.getElementById('api-key-input');
+  const btnSaveSettings = document.getElementById('btn-save-settings');
+  const modeIndicator = document.getElementById('mode-indicator');
+
+  const updateModeIndicator = (key) => {
+    if (!modeIndicator) return;
+    modeIndicator.innerHTML = key && key.length > 10
+      ? '<span class="mode-badge api">API Groq ativa</span>'
+      : '<span class="mode-badge demo">Demonstração</span>';
+  };
+
+  const closeModal = () => settingsModal.classList.add('hidden');
+  const closePrivacyModal = () => privacyModal?.classList.add('hidden');
+
+  if (btnSettings) {
+    btnSettings.addEventListener('click', () => {
+      settingsModal.classList.remove('hidden');
+      const savedKey = localStorage.getItem('groq_api_key') || '';
+      if (apiKeyInput) apiKeyInput.value = savedKey;
+      updateModeIndicator(savedKey);
+    });
+  }
+
+  if (btnCloseSettings) btnCloseSettings.addEventListener('click', closeModal);
+  if (modalBackdrop) modalBackdrop.addEventListener('click', closeModal);
+  if (btnClosePrivacy) btnClosePrivacy.addEventListener('click', closePrivacyModal);
+  if (privacyBackdrop) privacyBackdrop.addEventListener('click', closePrivacyModal);
+  if (openPrivacyLink) {
+    openPrivacyLink.addEventListener('click', (event) => {
+      event.preventDefault();
+      privacyModal?.classList.remove('hidden');
+    });
+  }
+
+  if (btnSaveSettings) {
+    btnSaveSettings.addEventListener('click', () => {
+      const key = apiKeyInput?.value?.trim() || '';
+      chatModule.aiService.setApiKey(key);
+      updateModeIndicator(key);
+      closeModal();
+    });
+  }
+
+  if (apiKeyInput) {
+    apiKeyInput.addEventListener('input', () => updateModeIndicator(apiKeyInput.value.trim()));
+  }
+
+  window.addEventListener('resize', () => {
+    const panelBackdrop = document.querySelector('.panel-backdrop');
+
+    if (window.innerWidth <= 1024) {
+      if (studyPanel && !studyPanel.classList.contains('visible')) {
+        studyPanel.classList.add('hidden');
+        app.classList.add('panel-closed');
+      }
+    }
+
+    if (window.innerWidth > 1024) {
+      if (panelBackdrop) panelBackdrop.classList.remove('visible');
+      closeSidebar();
+      if (studyPanel) {
+        studyPanel.classList.remove('hidden');
+        studyPanel.classList.add('visible');
+        app.classList.remove('panel-closed');
+      }
+    }
+  });
+
+  if (chatStatus && chatModule.aiService.isApiMode()) {
+    chatStatus.innerHTML = '<span class="status-dot"></span> Online — API Groq ativa';
+  }
+
+  openChatView();
+  console.log('Custo do Hábito inicializado com sucesso.');
 });

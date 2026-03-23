@@ -2,12 +2,12 @@
   "name": "custodohabito-new",
   "private": true,
   "version": "1.0.0",
-  "description": "Projeto independente derivado para publicacao no repositorio custodohabito_new.",
+  "description": "Plataforma de educacao financeira com agente, trilhas e ferramentas publicada em custodohabito_new.",
   "type": "module",
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
-    "build": "vite build",
+    "build": "vite build --configLoader runner",
     "preview": "node server.js",
     "deploy": "gh-pages -d dist"
   },
