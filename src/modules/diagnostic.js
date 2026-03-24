@@ -6,10 +6,18 @@ import {
   diagnosticQuestions,
   diagnosticReportVariations
 } from '../data/diagnostic-data.js';
+import { openUtilityView } from '../utils/chat-actions.js';
 
 const STORAGE_KEY = 'custodohabito_diagnostic_state_v3';
 const DIAGNOSTIC_API_BASE_URL = (import.meta.env?.VITE_DIAGNOSTIC_API_BASE_URL || '').trim();
 const SITE_BASE_URL = import.meta.env?.BASE_URL || '';
+const PROFILE_IMAGE_DIMENSIONS = {
+  bia: { width: 1024, height: 1536 },
+  heitor: { width: 1024, height: 1536 },
+  lia: { width: 1024, height: 1024 },
+  valen: { width: 1024, height: 1536 },
+  default: { width: 512, height: 512 }
+};
 
 export function initDiagnostic() {
   const container = document.getElementById('diagnostic-container');
@@ -53,6 +61,9 @@ export function initDiagnostic() {
             src="${resolveAssetPath('assets/logo_custodohabito.jpg')}"
             alt="Logo Custo do Habito"
             class="diagnostic-logo"
+            width="512"
+            height="512"
+            decoding="async"
           />
 
           <div class="diagnostic-hero-copy">
@@ -88,7 +99,14 @@ export function initDiagnostic() {
         <section class="diagnostic-profiles" aria-label="Perfis do diagnostico">
           ${Object.entries(diagnosticProfiles).map(([key, profile]) => `
             <article class="diagnostic-profile-card" data-profile-card="${key}">
-              <img src="${profileImageFor(key)}" alt="${escapeHtml(profile.name)}" />
+              <img
+                src="${profileImageFor(key)}"
+                alt="${escapeHtml(profile.name)}"
+                width="${profileImageMetaFor(key).width}"
+                height="${profileImageMetaFor(key).height}"
+                loading="lazy"
+                decoding="async"
+              />
               <h3>${escapeHtml(profile.name)}</h3>
               <p>${escapeHtml(profile.shortReading ?? profile.reading)}</p>
             </article>
@@ -211,6 +229,9 @@ export function initDiagnostic() {
             src="${profileImageFor(result.primary.key)}"
             alt="${escapeHtml(result.primary.name)}"
             class="diagnostic-result-image"
+            width="${profileImageMetaFor(result.primary.key).width}"
+            height="${profileImageMetaFor(result.primary.key).height}"
+            decoding="async"
           />
 
           <span class="badge">Leitura predominante</span>
@@ -1083,7 +1104,7 @@ export function initDiagnostic() {
 
   function openPrivacyModal(event) {
     event?.preventDefault();
-    document.getElementById('privacy-modal')?.classList.remove('hidden');
+    openUtilityView('privacy');
   }
 
   function createIcons() {
@@ -1102,6 +1123,10 @@ export function initDiagnostic() {
 
 function profileImageFor(profileKey) {
   return resolveAssetPath(diagnosticProfileImages[profileKey] || 'assets/logo_custodohabito.jpg');
+}
+
+function profileImageMetaFor(profileKey) {
+  return PROFILE_IMAGE_DIMENSIONS[profileKey] || PROFILE_IMAGE_DIMENSIONS.default;
 }
 
 function resolveAssetPath(assetPath) {

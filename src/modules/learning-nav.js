@@ -1,5 +1,5 @@
 import { getTopicsByCategory, topicCatalog } from '../data/finance-topics.js';
-import { openChatWithPrompt } from '../utils/chat-actions.js';
+import { openChatWithPrompt, openTopicView } from '../utils/chat-actions.js';
 
 export function initLearningNav() {
   const topicListEl = document.getElementById('topic-list');
@@ -30,10 +30,10 @@ export function initLearningNav() {
           <p style="margin-top: 6px; color: var(--text-secondary); line-height: 1.45;">${topic.summary}</p>
         </div>
         <div class="learning-topic-actions bible-book-actions">
-          <button class="book-action-btn read-btn" data-topic="${topic.id}" title="Abrir ${topic.title}">
+          <button class="book-action-btn read-btn" data-topic="${topic.id}" title="Abrir ${topic.title}" aria-label="Abrir tema ${topic.title}">
             <i data-lucide="book-open"></i>
           </button>
-          <button class="book-action-btn panorama-btn" data-prompt="Tema de estudo: ${topic.title}. Resumo: ${topic.summary} ${topic.actionPrompt}" title="Levar ${topic.title} para o agente">
+          <button class="book-action-btn panorama-btn" data-prompt="Tema de estudo: ${topic.title}. Resumo: ${topic.summary} ${topic.actionPrompt}" title="Levar ${topic.title} para o agente" aria-label="Levar tema ${topic.title} para o agente">
             <i data-lucide="message-circle-more"></i>
           </button>
         </div>
@@ -47,9 +47,7 @@ export function initLearningNav() {
   function bindEvents() {
     topicListEl.querySelectorAll('.read-btn').forEach((btn) => {
       btn.addEventListener('click', () => {
-        window.dispatchEvent(new CustomEvent('open-topic-reader', {
-          detail: { topicId: btn.dataset.topic }
-        }));
+        openTopicView(btn.dataset.topic);
       });
     });
 

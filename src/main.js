@@ -7,206 +7,454 @@ import { initStudyPanel } from './modules/study-panel.js';
 import { initStudyHub } from './modules/study-hub.js';
 import { openChatView } from './utils/chat-actions.js';
 
-document.addEventListener('DOMContentLoaded', () => {
-  const brandMark = document.querySelector('.brand-mark');
-  if (brandMark) {
-    const baseUrl = import.meta.env?.BASE_URL;
-    brandMark.src = baseUrl
-      ? `${baseUrl.replace(/\/?$/, '/')}assets/logo_custodohabito.jpg`
-      : '/public/assets/logo_custodohabito.jpg';
-  }
+const DESKTOP_MIN_WIDTH = 1024;
 
-  if (window.lucide) {
+document.addEventListener('DOMContentLoaded', () => {
+  hydrateBrandMarks();
+
+  if (window.lucide?.createIcons) {
     window.lucide.createIcons();
   }
 
   const chatModule = initChat();
   initDailyInsight();
   initLearningNav();
-  initLearningReader();
+  const learningReader = initLearningReader();
   initDiagnostic();
   initStudyPanel();
   initStudyHub();
 
-  const app = document.getElementById('app');
-  const sidebar = document.getElementById('sidebar');
-  const navItems = document.querySelectorAll('.nav-item');
-  const catalogNavPanel = document.getElementById('catalog-nav-panel');
-  const quickActions = document.getElementById('quick-actions');
-  const viewChat = document.getElementById('view-chat');
-  const viewDiagnostic = document.getElementById('view-diagnostic');
-  const viewReader = document.getElementById('view-topic-reader');
-  const viewStudy = document.getElementById('view-study-hub');
-  const chatTitle = document.getElementById('chat-title');
-  const chatStatus = document.getElementById('chat-status');
-  const studyPanel = document.getElementById('study-panel');
-
-  const sidebarBackdrop = document.createElement('div');
-  sidebarBackdrop.className = 'sidebar-backdrop';
-  document.body.appendChild(sidebarBackdrop);
-
-  const closeSidebar = () => {
-    sidebar.classList.remove('visible');
-    sidebarBackdrop.classList.remove('visible');
+  const refs = {
+    app: document.getElementById('app'),
+    body: document.body,
+    sidebar: document.getElementById('sidebar'),
+    overlayBackdrop: document.getElementById('overlay-backdrop'),
+    catalogNavPanel: document.getElementById('catalog-nav-panel'),
+    quickActions: document.getElementById('quick-actions'),
+    chatTitle: document.getElementById('chat-title'),
+    chatStatus: document.getElementById('chat-status'),
+    btnToggleSidebar: document.getElementById('btn-toggle-sidebar'),
+    btnTogglePanel: document.getElementById('btn-toggle-panel'),
+    btnClosePanel: document.getElementById('btn-close-panel'),
+    btnSettings: document.getElementById('btn-settings'),
+    openPrivacyLink: document.getElementById('open-privacy-link'),
+    studyPanel: document.getElementById('study-panel'),
+    utilityContainer: document.getElementById('utility-view-content'),
+    utilitySettingsTemplate: document.getElementById('template-utility-settings'),
+    utilityPrivacyTemplate: document.getElementById('template-utility-privacy'),
+    navItems: Array.from(document.querySelectorAll('.nav-item')),
+    views: {
+      chat: document.getElementById('view-chat'),
+      diagnostic: document.getElementById('view-diagnostic'),
+      learn: document.getElementById('view-topic-reader'),
+      planning: document.getElementById('view-study-hub'),
+      utility: document.getElementById('view-utility')
+    },
+    scrollTargets: {
+      chat: document.getElementById('chat-messages'),
+      diagnostic: document.getElementById('view-diagnostic'),
+      learn: document.getElementById('topic-reader-container'),
+      planning: document.getElementById('view-study-hub'),
+      utility: document.getElementById('view-utility')
+    }
   };
 
-  const setView = (section) => {
-    [viewChat, viewDiagnostic, viewReader, viewStudy].forEach((view) => {
-      if (!view) return;
-      view.classList.remove('active');
-      view.style.display = 'none';
+  const overlayState = {
+    sidebar: false,
+    panel: false
+  };
+
+  let currentState = normalizeState(parseHash());
+  let lastNonUtilityState = currentState.section === 'utility'
+    ? normalizeState({ section: 'chat' })
+    : currentState;
+
+  bindChromeEvents();
+  applyState(currentState, { replace: true });
+
+  if (chatModule.aiService.isApiMode()) {
+    refs.chatStatus.innerHTML = '<span class="status-dot"></span> Online - API Groq ativa';
+  }
+
+  if (!location.hash) {
+    openChatView({ replace: true });
+  }
+
+  console.log('Custo do Habito inicializado com sucesso.');
+
+  function bindChromeEvents() {
+    refs.navItems.forEach((item) => {
+      item.addEventListener('click', () => {
+        navigateTo({ section: item.dataset.section });
+      });
     });
 
-    navItems.forEach((item) => {
+    refs.btnToggleSidebar?.addEventListener('click', () => {
+      toggleOverlay('sidebar');
+    });
+
+    refs.btnTogglePanel?.addEventListener('click', () => {
+      toggleOverlay('panel');
+    });
+
+    refs.btnClosePanel?.addEventListener('click', () => {
+      closeOverlay('panel');
+    });
+
+    refs.overlayBackdrop?.addEventListener('click', () => {
+      closeAllOverlays();
+    });
+
+    refs.btnSettings?.addEventListener('click', () => {
+      navigateTo({ section: 'utility', utilityView: 'settings' });
+    });
+
+    refs.openPrivacyLink?.addEventListener('click', (event) => {
+      event.preventDefault();
+      navigateTo({ section: 'utility', utilityView: 'privacy' });
+    });
+
+    window.addEventListener('app:navigate', (event) => {
+      navigateTo(event.detail || {});
+    });
+
+    window.addEventListener('app:close-overlay', (event) => {
+      const target = event.detail?.target;
+      if (target) {
+        closeOverlay(target);
+        return;
+      }
+
+      closeAllOverlays();
+    });
+
+    window.addEventListener('popstate', (event) => {
+      navigateTo(event.state || parseHash(), { replace: true, fromPopState: true });
+    });
+
+    window.addEventListener('resize', () => {
+      closeAllOverlays();
+      syncOverlayUI();
+      syncShellState(currentState.section);
+    });
+  }
+
+  function navigateTo(nextInput, options = {}) {
+    const { replace = Boolean(nextInput?.replace), fromPopState = false } = options;
+    const nextState = normalizeState(nextInput, currentState);
+
+    if (currentState.section !== 'utility') {
+      lastNonUtilityState = currentState;
+    }
+
+    currentState = nextState;
+
+    if (currentState.section !== 'utility') {
+      lastNonUtilityState = currentState;
+    }
+
+    applyState(currentState, { replace, fromPopState });
+  }
+
+  function applyState(nextState, options = {}) {
+    const { replace = false, fromPopState = false } = options;
+    let activeTopic = null;
+
+    if (nextState.section === 'learn') {
+      activeTopic = learningReader.renderTopic(nextState.topicId || learningReader.getDefaultTopicId());
+    }
+
+    if (nextState.section === 'utility') {
+      renderUtilityView(nextState.utilityView);
+    }
+
+    activateMainView(nextState.section);
+    updateNavigation(nextState.section);
+    updateHeader(nextState, activeTopic);
+    syncShellState(nextState.section);
+
+    if (!isDesktopViewport()) {
+      closeAllOverlays();
+    } else {
+      syncOverlayUI();
+    }
+
+    scrollToTop(nextState.section);
+
+    if (!fromPopState) {
+      history[replace ? 'replaceState' : 'pushState'](nextState, '', buildHash(nextState));
+    }
+  }
+
+  function activateMainView(section) {
+    Object.entries(refs.views).forEach(([key, view]) => {
+      if (!view) return;
+      const isActive = key === section;
+      view.classList.toggle('active', isActive);
+      view.classList.toggle('hidden', !isActive);
+      view.setAttribute('aria-hidden', String(!isActive));
+    });
+  }
+
+  function updateNavigation(section) {
+    refs.navItems.forEach((item) => {
       item.classList.toggle('active', item.dataset.section === section);
     });
+  }
 
-    switch (section) {
-      case 'chat':
-        viewChat.classList.add('active');
-        viewChat.style.display = 'flex';
-        chatTitle.textContent = 'Agente financeiro';
-        chatStatus.innerHTML = '<span class="status-dot"></span> Online - pronto para educar, organizar e orientar';
-        catalogNavPanel.classList.add('hidden');
-        quickActions.style.display = 'flex';
-        break;
-      case 'diagnostic':
-        viewDiagnostic.classList.add('active');
-        viewDiagnostic.style.display = 'flex';
-        chatTitle.textContent = 'Diagnostico de habito';
-        chatStatus.innerHTML = '<span class="status-dot"></span> Descubra o personagem financeiro que mais se aproxima do seu padrao';
-        catalogNavPanel.classList.add('hidden');
-        quickActions.style.display = 'none';
-        break;
-      case 'learn':
-        viewReader.classList.add('active');
-        viewReader.style.display = 'flex';
-        chatTitle.textContent = 'Aprender com clareza';
-        chatStatus.innerHTML = '<span class="status-dot"></span> Leituras guiadas, conceitos essenciais e conexao direta com o agente';
-        catalogNavPanel.classList.remove('hidden');
-        quickActions.style.display = 'flex';
-        break;
-      case 'planning':
-        viewStudy.classList.add('active');
-        viewStudy.style.display = 'flex';
-        chatTitle.textContent = 'Planejamento financeiro';
-        chatStatus.innerHTML = '<span class="status-dot"></span> Trilhas, ferramentas e proximos passos';
-        catalogNavPanel.classList.add('hidden');
-        quickActions.style.display = 'flex';
-        studyPanel.classList.remove('hidden');
-        studyPanel.classList.add('visible');
-        app.classList.remove('panel-closed');
-        break;
-      default:
-        break;
+  function updateHeader(state, topic) {
+    if (state.section === 'utility') {
+      const utilityMeta = state.utilityView === 'privacy'
+        ? {
+            title: 'Politica de privacidade',
+            status: 'Entenda como os dados do diagnostico sao utilizados e protegidos'
+          }
+        : {
+            title: 'Configuracoes',
+            status: 'Ajuste a chave da API e acompanhe o modo de funcionamento do app'
+          };
+
+      refs.chatTitle.textContent = utilityMeta.title;
+      refs.chatStatus.innerHTML = `<span class="status-dot"></span> ${utilityMeta.status}`;
+      return;
     }
 
-    if (window.innerWidth <= 1024) {
-      closeSidebar();
+    if (state.section === 'learn' && topic) {
+      refs.chatTitle.textContent = topic.title;
+      refs.chatStatus.innerHTML = `<span class="status-dot"></span> ${topic.categoryLabel} - ${topic.level} - ${topic.time}`;
+      return;
     }
-  };
 
-  navItems.forEach((item) => {
-    item.addEventListener('click', () => {
-      setView(item.dataset.section);
-    });
-  });
+    const metaBySection = {
+      chat: {
+        title: 'Agente financeiro',
+        status: 'Online - pronto para educar, organizar e orientar'
+      },
+      diagnostic: {
+        title: 'Diagnostico de habito',
+        status: 'Descubra o personagem financeiro que mais se aproxima do seu padrao'
+      },
+      learn: {
+        title: 'Aprender com clareza',
+        status: 'Leituras guiadas, conceitos essenciais e conexao direta com o agente'
+      },
+      planning: {
+        title: 'Planejamento financeiro',
+        status: 'Trilhas, ferramentas e proximos passos'
+      }
+    };
 
-  window.addEventListener('app:navigate', (event) => {
-    const section = event.detail?.section;
-    if (section) setView(section);
-  });
-
-  const btnToggleSidebar = document.getElementById('btn-toggle-sidebar');
-  if (btnToggleSidebar) {
-    btnToggleSidebar.addEventListener('click', () => {
-      sidebar.classList.toggle('visible');
-      sidebarBackdrop.classList.toggle('visible');
-    });
+    const meta = metaBySection[state.section] || metaBySection.chat;
+    refs.chatTitle.textContent = meta.title;
+    refs.chatStatus.innerHTML = `<span class="status-dot"></span> ${meta.status}`;
   }
 
-  sidebarBackdrop.addEventListener('click', closeSidebar);
+  function renderUtilityView(type = 'settings') {
+    if (!refs.utilityContainer) return;
 
-  const btnSettings = document.getElementById('btn-settings');
-  const settingsModal = document.getElementById('settings-modal');
-  const privacyModal = document.getElementById('privacy-modal');
-  const btnCloseSettings = document.getElementById('btn-close-settings');
-  const btnClosePrivacy = document.getElementById('btn-close-privacy');
-  const modalBackdrop = settingsModal?.querySelector('.modal-backdrop');
-  const privacyBackdrop = privacyModal?.querySelector('.modal-backdrop');
-  const openPrivacyLink = document.getElementById('open-privacy-link');
-  const apiKeyInput = document.getElementById('api-key-input');
-  const btnSaveSettings = document.getElementById('btn-save-settings');
-  const modeIndicator = document.getElementById('mode-indicator');
+    const template = type === 'privacy'
+      ? refs.utilityPrivacyTemplate
+      : refs.utilitySettingsTemplate;
 
-  const updateModeIndicator = (key) => {
-    if (!modeIndicator) return;
-    modeIndicator.innerHTML = key && key.length > 10
-      ? '<span class="mode-badge api">API Groq ativa</span>'
-      : '<span class="mode-badge demo">Demonstracao</span>';
-  };
+    refs.utilityContainer.innerHTML = template?.innerHTML || '';
 
-  const closeModal = () => settingsModal.classList.add('hidden');
-  const closePrivacyModal = () => privacyModal?.classList.add('hidden');
-
-  if (btnSettings) {
-    btnSettings.addEventListener('click', () => {
-      settingsModal.classList.remove('hidden');
-      const savedKey = localStorage.getItem('groq_api_key') || '';
-      if (apiKeyInput) apiKeyInput.value = savedKey;
-      updateModeIndicator(savedKey);
+    refs.utilityContainer.querySelectorAll('[data-utility-back]').forEach((button) => {
+      button.addEventListener('click', () => {
+        navigateTo(lastNonUtilityState.section === 'utility' ? { section: 'chat' } : lastNonUtilityState);
+      });
     });
+
+    if (type === 'settings') {
+      bindSettingsView();
+    }
+
+    if (type === 'privacy') {
+      refs.utilityContainer.querySelectorAll('[data-open-settings]').forEach((button) => {
+        button.addEventListener('click', () => {
+          navigateTo({ section: 'utility', utilityView: 'settings' });
+        });
+      });
+    }
+
+    if (window.lucide?.createIcons) {
+      window.lucide.createIcons();
+    }
   }
 
-  if (btnCloseSettings) btnCloseSettings.addEventListener('click', closeModal);
-  if (modalBackdrop) modalBackdrop.addEventListener('click', closeModal);
-  if (btnClosePrivacy) btnClosePrivacy.addEventListener('click', closePrivacyModal);
-  if (privacyBackdrop) privacyBackdrop.addEventListener('click', closePrivacyModal);
-  if (openPrivacyLink) {
-    openPrivacyLink.addEventListener('click', (event) => {
-      event.preventDefault();
-      privacyModal?.classList.remove('hidden');
-    });
-  }
+  function bindSettingsView() {
+    const apiKeyInput = refs.utilityContainer.querySelector('#utility-api-key-input');
+    const saveButton = refs.utilityContainer.querySelector('#utility-save-settings');
+    const modeIndicator = refs.utilityContainer.querySelector('#utility-mode-indicator');
+    const privacyLink = refs.utilityContainer.querySelector('#utility-open-privacy');
 
-  if (btnSaveSettings) {
-    btnSaveSettings.addEventListener('click', () => {
+    const updateModeIndicator = (key) => {
+      if (!modeIndicator) return;
+      modeIndicator.innerHTML = key && key.length > 10
+        ? '<span class="mode-badge api">API Groq ativa</span>'
+        : '<span class="mode-badge demo">Demonstracao</span>';
+    };
+
+    const savedKey = localStorage.getItem('groq_api_key') || '';
+    if (apiKeyInput) {
+      apiKeyInput.value = savedKey;
+      apiKeyInput.addEventListener('input', () => updateModeIndicator(apiKeyInput.value.trim()));
+    }
+
+    updateModeIndicator(savedKey);
+
+    saveButton?.addEventListener('click', () => {
       const key = apiKeyInput?.value?.trim() || '';
       chatModule.aiService.setApiKey(key);
       updateModeIndicator(key);
-      closeModal();
+      refs.utilityContainer.querySelector('.utility-save-feedback')?.classList.add('visible');
+
+      window.setTimeout(() => {
+        refs.utilityContainer.querySelector('.utility-save-feedback')?.classList.remove('visible');
+      }, 1800);
+    });
+
+    privacyLink?.addEventListener('click', (event) => {
+      event.preventDefault();
+      navigateTo({ section: 'utility', utilityView: 'privacy' });
     });
   }
 
-  if (apiKeyInput) {
-    apiKeyInput.addEventListener('input', () => updateModeIndicator(apiKeyInput.value.trim()));
+  function toggleOverlay(target) {
+    if (isDesktopViewport()) return;
+
+    const isOpen = overlayState[target];
+    overlayState.sidebar = false;
+    overlayState.panel = false;
+    overlayState[target] = !isOpen;
+    syncOverlayUI();
   }
 
-  window.addEventListener('resize', () => {
-    const panelBackdrop = document.querySelector('.panel-backdrop');
-
-    if (window.innerWidth <= 1024) {
-      if (studyPanel && !studyPanel.classList.contains('visible')) {
-        studyPanel.classList.add('hidden');
-        app.classList.add('panel-closed');
-      }
-    }
-
-    if (window.innerWidth > 1024) {
-      if (panelBackdrop) panelBackdrop.classList.remove('visible');
-      closeSidebar();
-      if (studyPanel) {
-        studyPanel.classList.remove('hidden');
-        studyPanel.classList.add('visible');
-        app.classList.remove('panel-closed');
-      }
-    }
-  });
-
-  if (chatStatus && chatModule.aiService.isApiMode()) {
-    chatStatus.innerHTML = '<span class="status-dot"></span> Online - API Groq ativa';
+  function closeOverlay(target) {
+    if (!(target in overlayState)) return;
+    overlayState[target] = false;
+    syncOverlayUI();
   }
 
-  openChatView();
-  console.log('Custo do Habito inicializado com sucesso.');
+  function closeAllOverlays() {
+    overlayState.sidebar = false;
+    overlayState.panel = false;
+    syncOverlayUI();
+  }
+
+  function syncShellState(section) {
+    const isLearn = section === 'learn';
+    const showQuickActions = section === 'chat' || section === 'learn' || section === 'planning';
+    const forcePanelVisible = isDesktopViewport();
+
+    refs.catalogNavPanel?.classList.toggle('hidden', !isLearn);
+    refs.quickActions?.classList.toggle('hidden', !showQuickActions);
+
+    refs.app?.classList.toggle('panel-closed', !forcePanelVisible && !overlayState.panel);
+    refs.studyPanel?.classList.toggle('desktop-visible', forcePanelVisible);
+  }
+
+  function syncOverlayUI() {
+    const desktop = isDesktopViewport();
+    const anyOverlayOpen = !desktop && (overlayState.sidebar || overlayState.panel);
+
+    refs.sidebar?.classList.toggle('visible', !desktop && overlayState.sidebar);
+    refs.studyPanel?.classList.toggle('visible', desktop || overlayState.panel);
+    refs.studyPanel?.classList.toggle('hidden', !desktop && !overlayState.panel);
+    refs.overlayBackdrop?.classList.toggle('visible', anyOverlayOpen);
+    refs.body.classList.toggle('is-overlay-active', anyOverlayOpen);
+    refs.app?.classList.toggle('panel-closed', !desktop && !overlayState.panel);
+
+    refs.btnToggleSidebar?.setAttribute('aria-expanded', String(!desktop && overlayState.sidebar));
+    refs.btnTogglePanel?.setAttribute('aria-expanded', String(desktop || overlayState.panel));
+  }
+
+  function scrollToTop(section) {
+    const target = refs.scrollTargets[section];
+    if (!target) return;
+
+    requestAnimationFrame(() => {
+      target.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+      window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+    });
+  }
 });
+
+function hydrateBrandMarks() {
+  const baseUrl = import.meta.env?.BASE_URL;
+  const resolvedSrc = baseUrl
+    ? `${baseUrl.replace(/\/?$/, '/')}assets/logo_custodohabito.jpg`
+    : '/public/assets/logo_custodohabito.jpg';
+
+  document.querySelectorAll('.brand-mark').forEach((image) => {
+    image.src = resolvedSrc;
+  });
+}
+
+function normalizeState(input, previousState = {}) {
+  const resolved = typeof input === 'string' ? { section: input } : { ...(input || {}) };
+  const requestedSection = resolved.utilityView ? 'utility' : (resolved.section || previousState.section || 'chat');
+
+  if (requestedSection === 'utility') {
+    return {
+      section: 'utility',
+      topicId: null,
+      utilityView: resolved.utilityView === 'privacy' ? 'privacy' : 'settings'
+    };
+  }
+
+  if (requestedSection === 'learn') {
+    return {
+      section: 'learn',
+      topicId: resolved.topicId ?? null,
+      utilityView: null
+    };
+  }
+
+  return {
+    section: ['chat', 'diagnostic', 'planning'].includes(requestedSection) ? requestedSection : 'chat',
+    topicId: null,
+    utilityView: null
+  };
+}
+
+function buildHash(state) {
+  if (state.section === 'utility') {
+    return state.utilityView === 'privacy' ? '#privacy' : '#settings';
+  }
+
+  if (state.section === 'learn') {
+    return state.topicId ? `#learn/${state.topicId}` : '#learn';
+  }
+
+  return `#${state.section}`;
+}
+
+function parseHash() {
+  const rawHash = window.location.hash.replace(/^#/, '').trim();
+  if (!rawHash) return { section: 'chat' };
+
+  if (rawHash === 'settings') {
+    return { section: 'utility', utilityView: 'settings' };
+  }
+
+  if (rawHash === 'privacy') {
+    return { section: 'utility', utilityView: 'privacy' };
+  }
+
+  if (rawHash.startsWith('learn/')) {
+    return {
+      section: 'learn',
+      topicId: decodeURIComponent(rawHash.slice('learn/'.length))
+    };
+  }
+
+  if (['chat', 'diagnostic', 'learn', 'planning'].includes(rawHash)) {
+    return { section: rawHash };
+  }
+
+  return { section: 'chat' };
+}
+
+function isDesktopViewport() {
+  return window.innerWidth >= DESKTOP_MIN_WIDTH;
+}

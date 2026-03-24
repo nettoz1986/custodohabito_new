@@ -2,41 +2,25 @@ import { findTopicById, topicCatalog } from '../data/finance-topics.js';
 import { openChatView, openChatWithPrompt } from '../utils/chat-actions.js';
 
 export function initLearningReader() {
-  window.addEventListener('open-topic-reader', (event) => {
-    showReaderView(event.detail.topicId);
-  });
+  const container = document.getElementById('topic-reader-container');
+  const defaultTopicId = topicCatalog[0]?.topics?.[0]?.id ?? null;
 
-  const firstTopic = topicCatalog[0]?.topics?.[0]?.id;
-  if (firstTopic) {
-    showReaderView(firstTopic);
-  }
+  return {
+    getDefaultTopicId() {
+      return defaultTopicId;
+    },
+    renderTopic(topicId) {
+      if (!container) return null;
+      return renderTopic(container, topicId || defaultTopicId);
+    }
+  };
 }
 
-function showReaderView(topicId) {
+function renderTopic(container, topicId) {
   const topic = findTopicById(topicId);
-  if (!topic) return;
+  if (!topic) return null;
 
-  const container = document.getElementById('topic-reader-container');
-  const chatTitle = document.getElementById('chat-title');
-  const chatStatus = document.getElementById('chat-status');
-  const viewChat = document.getElementById('view-chat');
-  const viewReader = document.getElementById('view-topic-reader');
-  const viewStudy = document.getElementById('view-study-hub');
-
-  viewChat.classList.remove('active');
-  viewChat.style.display = 'none';
-  viewStudy.classList.remove('active');
-  viewStudy.style.display = 'none';
-  viewReader.classList.add('active');
-  viewReader.style.display = 'flex';
-
-  const learnBtn = document.querySelector('.nav-item[data-section="learn"]');
-  document.querySelectorAll('.nav-item').forEach((btn) => btn.classList.remove('active'));
-  if (learnBtn) learnBtn.classList.add('active');
-
-  if (chatTitle) chatTitle.textContent = topic.title;
-  if (chatStatus) chatStatus.innerHTML = `<span class="status-dot"></span> ${topic.categoryLabel} - ${topic.level} - ${topic.time}`;
-
+  container.dataset.topicId = topic.id;
   container.innerHTML = `
     <article class="learning-reader bible-reader" id="learning-reader">
       <div class="reader-hero">
@@ -60,11 +44,11 @@ function showReaderView(topicId) {
           </div>
         </div>
         <div class="reader-actions">
-          <button class="reader-study-btn" id="reader-ask-ai">
+          <button class="reader-study-btn" id="reader-ask-ai" type="button">
             <i data-lucide="sparkles"></i>
             Levar para o agente
           </button>
-          <button class="reader-back-btn" id="reader-back">
+          <button class="reader-back-btn" id="reader-back" type="button">
             <i data-lucide="arrow-left"></i>
             Voltar ao agente
           </button>
@@ -79,13 +63,13 @@ function showReaderView(topicId) {
         </div>
 
         <div class="reader-sections-grid">
-        ${topic.sections.map((section) => `
-          <section class="reader-section-card">
-            <span class="reader-section-chip">${topic.categoryLabel}</span>
-            <h3>${section.title}</h3>
-            <p>${section.body}</p>
-          </section>
-        `).join('')}
+          ${topic.sections.map((section) => `
+            <section class="reader-section-card">
+              <span class="reader-section-chip">${topic.categoryLabel}</span>
+              <h3>${section.title}</h3>
+              <p>${section.body}</p>
+            </section>
+          `).join('')}
         </div>
 
         <div class="reader-bridge-card">
@@ -94,7 +78,7 @@ function showReaderView(topicId) {
             <h3>Transforme essa leitura em conversa aplicada</h3>
             <p>Se esse tema toca sua realidade agora, leve o contexto para o agente e peca uma leitura pratica da sua situacao.</p>
           </div>
-          <button class="reader-study-btn" id="reader-ask-ai-bottom">
+          <button class="reader-study-btn" id="reader-ask-ai-bottom" type="button">
             <i data-lucide="message-circle-more"></i>
             Conversar sobre este tema
           </button>
@@ -117,5 +101,9 @@ function showReaderView(topicId) {
     openChatView();
   });
 
-  if (window.lucide) window.lucide.createIcons();
+  if (window.lucide?.createIcons) {
+    window.lucide.createIcons();
+  }
+
+  return topic;
 }

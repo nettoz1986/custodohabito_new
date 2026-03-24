@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>WebP Converter</title>
+</head>
+<body>
+  <pre id="out">{"status":"pending"}</pre>
+  <script>
+    const output = document.getElementById('out');
+    const params = new URLSearchParams(window.location.search);
+    const input = params.get('input');
+    const quality = Number(params.get('quality') || '0.82');
+    const maxWidth = Number(params.get('maxWidth') || '1600');
+
+    if (!input) {
+      output.textContent = JSON.stringify({ error: 'missing_input' });
+    } else {
+      const img = new Image();
+      img.decoding = 'async';
+      img.onload = () => {
+        const ratio = img.naturalWidth > maxWidth ? maxWidth / img.naturalWidth : 1;
+        const width = Math.max(1, Math.round(img.naturalWidth * ratio));
+        const height = Math.max(1, Math.round(img.naturalHeight * ratio));
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+
+        const context = canvas.getContext('2d');
+        context.drawImage(img, 0, 0, width, height);
+
+        output.textContent = JSON.stringify({
+          width,
+          height,
+          dataUrl: canvas.toDataURL('image/webp', quality)
+        });
+      };
+
+      img.onerror = () => {
+        output.textContent = JSON.stringify({ error: 'image_load_failed', input });
+      };
+
+      img.src = input;
+    }
+  </script>
+</body>
+</html>
