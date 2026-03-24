@@ -1,21 +1,29 @@
 import { initChat } from './modules/chat.js';
-import { initDevotional } from './modules/devotional.js';
-import { initBibleNav } from './modules/bible-nav.js';
-import { initBibleReader } from './modules/bible-reader.js';
+import { initDailyInsight } from './modules/daily-insight.js';
+import { initLearningNav } from './modules/learning-nav.js';
+import { initLearningReader } from './modules/learning-reader.js';
 import { initDiagnostic } from './modules/diagnostic.js';
 import { initStudyPanel } from './modules/study-panel.js';
 import { initStudyHub } from './modules/study-hub.js';
 import { openChatView } from './utils/chat-actions.js';
 
 document.addEventListener('DOMContentLoaded', () => {
+  const brandMark = document.querySelector('.brand-mark');
+  if (brandMark) {
+    const baseUrl = import.meta.env?.BASE_URL;
+    brandMark.src = baseUrl
+      ? `${baseUrl.replace(/\/?$/, '/')}assets/logo_custodohabito.jpg`
+      : '/public/assets/logo_custodohabito.jpg';
+  }
+
   if (window.lucide) {
     window.lucide.createIcons();
   }
 
   const chatModule = initChat();
-  initDevotional();
-  initBibleNav();
-  initBibleReader();
+  initDailyInsight();
+  initLearningNav();
+  initLearningReader();
   initDiagnostic();
   initStudyPanel();
   initStudyHub();
@@ -43,8 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const setView = (section) => {
-    const views = [viewChat, viewDiagnostic, viewReader, viewStudy];
-    views.forEach((view) => {
+    [viewChat, viewDiagnostic, viewReader, viewStudy].forEach((view) => {
       if (!view) return;
       view.classList.remove('active');
       view.style.display = 'none';
@@ -59,15 +66,15 @@ document.addEventListener('DOMContentLoaded', () => {
         viewChat.classList.add('active');
         viewChat.style.display = 'flex';
         chatTitle.textContent = 'Agente financeiro';
-        chatStatus.innerHTML = '<span class="status-dot"></span> Online — pronto para educar, organizar e orientar';
+        chatStatus.innerHTML = '<span class="status-dot"></span> Online - pronto para educar, organizar e orientar';
         catalogNavPanel.classList.add('hidden');
         quickActions.style.display = 'flex';
         break;
       case 'diagnostic':
         viewDiagnostic.classList.add('active');
         viewDiagnostic.style.display = 'flex';
-        chatTitle.textContent = 'Diagnóstico de hábito';
-        chatStatus.innerHTML = '<span class="status-dot"></span> Descubra o personagem financeiro que mais se aproxima do seu padrão';
+        chatTitle.textContent = 'Diagnostico de habito';
+        chatStatus.innerHTML = '<span class="status-dot"></span> Descubra o personagem financeiro que mais se aproxima do seu padrao';
         catalogNavPanel.classList.add('hidden');
         quickActions.style.display = 'none';
         break;
@@ -75,7 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
         viewReader.classList.add('active');
         viewReader.style.display = 'flex';
         chatTitle.textContent = 'Aprender com clareza';
-        chatStatus.innerHTML = '<span class="status-dot"></span> Leituras guiadas, conceitos essenciais e conexão direta com o agente';
+        chatStatus.innerHTML = '<span class="status-dot"></span> Leituras guiadas, conceitos essenciais e conexao direta com o agente';
         catalogNavPanel.classList.remove('hidden');
         quickActions.style.display = 'flex';
         break;
@@ -83,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
         viewStudy.classList.add('active');
         viewStudy.style.display = 'flex';
         chatTitle.textContent = 'Planejamento financeiro';
-        chatStatus.innerHTML = '<span class="status-dot"></span> Trilhas, ferramentas e próximos passos';
+        chatStatus.innerHTML = '<span class="status-dot"></span> Trilhas, ferramentas e proximos passos';
         catalogNavPanel.classList.add('hidden');
         quickActions.style.display = 'flex';
         studyPanel.classList.remove('hidden');
@@ -107,10 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   window.addEventListener('app:navigate', (event) => {
     const section = event.detail?.section;
-
-    if (section) {
-      setView(section);
-    }
+    if (section) setView(section);
   });
 
   const btnToggleSidebar = document.getElementById('btn-toggle-sidebar');
@@ -139,7 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!modeIndicator) return;
     modeIndicator.innerHTML = key && key.length > 10
       ? '<span class="mode-badge api">API Groq ativa</span>'
-      : '<span class="mode-badge demo">Demonstração</span>';
+      : '<span class="mode-badge demo">Demonstracao</span>';
   };
 
   const closeModal = () => settingsModal.classList.add('hidden');
@@ -200,9 +204,9 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   if (chatStatus && chatModule.aiService.isApiMode()) {
-    chatStatus.innerHTML = '<span class="status-dot"></span> Online — API Groq ativa';
+    chatStatus.innerHTML = '<span class="status-dot"></span> Online - API Groq ativa';
   }
 
   openChatView();
-  console.log('Custo do Hábito inicializado com sucesso.');
+  console.log('Custo do Habito inicializado com sucesso.');
 });

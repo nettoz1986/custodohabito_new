@@ -1,9 +1,9 @@
 import { getTopicsByCategory, topicCatalog } from '../data/finance-topics.js';
 import { openChatWithPrompt } from '../utils/chat-actions.js';
 
-export function initBibleNav() {
+export function initLearningNav() {
   const topicListEl = document.getElementById('topic-list');
-  const tabs = document.querySelectorAll('.bible-tab');
+  const tabs = document.querySelectorAll('.learning-tab');
 
   if (!topicListEl || !tabs.length) return;
 
@@ -23,17 +23,17 @@ export function initBibleNav() {
     const topics = getTopicsByCategory(categoryId);
 
     topicListEl.innerHTML = topics.map((topic) => `
-      <div class="bible-book-card">
-        <div class="bible-book-info">
+      <div class="learning-topic-card bible-book-card">
+        <div class="learning-topic-info bible-book-info">
           <span class="book-name">${topic.title}</span>
-          <small style="color: var(--text-secondary);">${topic.level} • ${topic.time}</small>
+          <small style="color: var(--text-secondary);">${topic.level} - ${topic.time}</small>
           <p style="margin-top: 6px; color: var(--text-secondary); line-height: 1.45;">${topic.summary}</p>
         </div>
-        <div class="bible-book-actions">
+        <div class="learning-topic-actions bible-book-actions">
           <button class="book-action-btn read-btn" data-topic="${topic.id}" title="Abrir ${topic.title}">
             <i data-lucide="book-open"></i>
           </button>
-          <button class="book-action-btn panorama-btn" data-prompt="${topic.actionPrompt}" title="Conversar sobre ${topic.title}">
+          <button class="book-action-btn panorama-btn" data-prompt="Tema de estudo: ${topic.title}. Resumo: ${topic.summary} ${topic.actionPrompt}" title="Levar ${topic.title} para o agente">
             <i data-lucide="message-circle-more"></i>
           </button>
         </div>

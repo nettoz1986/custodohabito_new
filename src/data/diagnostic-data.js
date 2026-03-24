@@ -362,10 +362,10 @@ export const diagnosticProfiles = {
 };
 
 export const diagnosticProfileImages = {
-  bia: '/public/assets/biaAgora.png',
-  heitor: '/public/assets/heitorReserva.png',
-  lia: '/public/assets/liaEquilibrio.png',
-  valen: '/public/assets/valenLuxo.png'
+  bia: 'assets/biaAgora.png',
+  heitor: 'assets/heitorReserva.png',
+  lia: 'assets/liaEquilibrio.png',
+  valen: 'assets/valenLuxo.png'
 };
 
 export const diagnosticMeta = {
@@ -530,21 +530,21 @@ export const diagnosticReportVariations = {
   lia: {
     context: [
       (data) => `Como ${data.profissao} com renda ${data.rendaLabel}, seu resultado mostra uma tentativa real de caber na vida que voce tem hoje sem transformar tudo em impulso. O valor do seu perfil esta na calibragem: voce tende a ajustar mais do que reagir.`,
-      (data) => `Seu padrao sugere algo valioso: com a rotina de ${data.profissao} e renda ${data.rendaLabel}, voce nao parece operar nem no extremo da contencao nem no do descontrole. Isso costuma gerar mais sustentabilidade do que performance aparente.`,
-      (data) => `A combinacao entre sua realidade profissional como ${data.profissao} e renda ${data.rendaLabel} aponta para um perfil que tenta sustentar a vida com criterio. O desafio nao esta em "apertar mais", mas em proteger melhor o que hoje parece apenas administravel.`
+      (data) => `Seu padrão sugere algo valioso: com a rotina de ${data.profissao} e renda ${data.rendaLabel}, voce não parece operar nem no extremo da contencao nem no do descontrole. Isso costuma gerar mais sustentabilidade do que performance aparente.`,
+      (data) => `A combinacao entre sua realidade profissional como ${data.profissao} e renda ${data.rendaLabel} aponta para um perfil que tenta sustentar a vida com criterio. O desafio não esta em "apertar mais", mas em proteger melhor o que hoje parece apenas administravel.`
     ],
     strength: [
-      (data) => `Sua maior forca e a adaptacao com senso de realidade. Mesmo com ${data.comprometidoLabel} da renda em gastos fixos, voce tende a buscar ajuste antes de exagero.`,
+      (data) => `Sua maior força e a adaptacao com senso de realidade. Mesmo com ${data.comprometidoLabel} da renda em gastos fixos, voce tende a buscar ajuste antes de exagero.`,
       (data) => `O que mais joga a seu favor e a capacidade de ler contexto. Para alguem na rotina de ${data.profissao}, isso costuma evitar decisoes impulsivas e tambem evita rigidez desnecessaria.`,
       (data) => `Seu perfil costuma manter o pe no chao sem sufocar totalmente a vida. Essa leitura mais equilibrada vale muito quando o mes exige escolhas menos emocionais e mais sustentaveis.`
     ],
     alert: [
-      (data) => `Seu ponto de atencao nao e o descontrole evidente. Com ${data.comprometidoLabel} comprometidos e seguranca futura apoiada em ${data.previdenciaLabel}, o risco esta em normalizar pequenos custos que "mais ou menos cabem" ate virarem estrutura fixa.`,
-      (data) => `O equilibrio pode mascarar acomodacao silenciosa. Quando a vida vai sendo ajustada sem revisao, o que parecia flexibilidade pode virar um padrao caro dificil de perceber.`,
-      (data) => `O cuidado aqui e nao confundir viabilidade com margem saudavel. Dependendo de quanto do seu mes ja esta travado, um sistema so "ok" pode ficar fragil rapido diante de imprevistos.`
+      (data) => `Seu ponto de atencao não e o descontrole evidente. Com ${data.comprometidoLabel} comprometidos e seguranca futura apoiada em ${data.previdenciaLabel}, o risco esta em normalizar pequenos custos que "mais ou menos cabem" ate virarem estrutura fixa.`,
+      (data) => `O equilibrio pode mascarar acomodacao silenciosa. Quando a vida vai sendo ajustada sem revisao, o que parecia flexibilidade pode virar um padrão caro dificil de perceber.`,
+      (data) => `O cuidado aqui e não confundir viabilidade com margem saudavel. Dependendo de quanto do seu mes ja esta travado, um sistema so "ok" pode ficar fragil rapido diante de imprevistos.`
     ],
     action: [
-      (data) => `A acao pratica desta semana e revisar um bloco do seu mes que hoje parece neutro: assinaturas, conveniencias ou pequenos confortos. O objetivo nao e cortar por cortar, e descobrir onde a flexibilidade ja virou custo recorrente.`,
+      (data) => `A acao pratica desta semana e revisar um bloco do seu mes que hoje parece neutro: assinaturas, conveniencias ou pequenos confortos. O objetivo não é cortar por cortar, e descobrir onde a flexibilidade ja virou custo recorrente.`,
       () => 'Escolha uma decisao do seu cotidiano que voce costuma tratar no automatico e passe a olhar custo total, recorrencia e impacto no mes seguinte. Esse pequeno ajuste costuma gerar mais clareza do que tentar controlar tudo.',
       (data) => `Se voce depende principalmente de ${data.previdenciaLabel} para seguranca futura, vale abrir uma revisao simples do que hoje esta sendo protegido e do que esta apenas sendo adiado.`
     ]
@@ -553,65 +553,65 @@ export const diagnosticReportVariations = {
     context: [
       (data) => `Como ${data.profissao} com renda ${data.rendaLabel}, seu resultado mostra uma logica fortemente orientada por seguranca. Voce tende a proteger a estrutura antes de liberar conforto, e isso cria base real.`,
       (data) => `Seu perfil sugere que preservar margem e evitar vulnerabilidade pesam bastante na sua rotina. Para alguem em ${data.profissao}, isso pode ser uma vantagem importante de estabilidade e previsibilidade.`,
-      (data) => `Hoje, sua leitura aponta para um padrao que valoriza controle, reserva e protecao. Isso costuma reduzir sustos, mas tambem pede cuidado para nao transformar prudencia em compressao de vida.`
+      (data) => `Hoje, sua leitura aponta para um padrão que valoriza controle, reserva e protecao. Isso costuma reduzir sustos, mas tambem pede cuidado para não transformar prudencia em compressao de vida.`
     ],
     strength: [
-      () => 'Sua principal forca esta na construcao de base. Voce tende a pensar mais em sustentacao do que em alivio imediato, e isso protege muito a vida financeira no longo prazo.',
+      () => 'Sua principal força esta na construcao de base. Voce tende a pensar mais em sustentacao do que em alivio imediato, e isso protege muito a vida financeira no longo prazo.',
       (data) => `Mesmo com a pressao normal da rotina, voce parece operar com bastante consciencia de risco. Isso ajuda especialmente quando o custo fixo ja ocupa ${data.comprometidoLabel} da renda.`,
       () => 'O valor do seu perfil esta em evitar improviso caro. Quando algo aperta, voce tende a buscar seguranca antes de ampliar o problema.'
     ],
     alert: [
-      (data) => `O risco aqui nao e gastar demais. E viver em modo de contencao por tempo demais. Se a sua seguranca futura hoje se apoia em ${data.previdenciaLabel}, vale diferenciar protecao real de rigidez emocional.`,
+      (data) => `O risco aqui não e gastar demais. E viver em modo de contencao por tempo demais. Se a sua seguranca futura hoje se apoia em ${data.previdenciaLabel}, vale diferenciar protecao real de rigidez emocional.`,
       () => 'Quando proteger vira criterio para tudo, qualidade de vida e usufruto podem ser comprimidos sem necessidade. Nem todo gasto reduz seguranca; alguns sustentam equilibrio.',
-      (data) => `Mesmo com ${data.comprometidoLabel} em fixos, o cuidado principal e nao tratar todo desconforto como ameaca. Esse padrao pode dificultar escolhas legitimas de conforto, descanso ou manutencao do bem-estar.`
+      (data) => `Mesmo com ${data.comprometidoLabel} em fixos, o cuidado principal e não tratar todo desconforto como ameaca. Esse padrão pode dificultar escolhas legitimas de conforto, descanso ou manutencao do bem-estar.`
     ],
     action: [
-      () => 'A acao mais util agora e separar um pequeno espaco consciente para uso e nao para acumulacao. O objetivo nao e gastar mais: e provar para o seu sistema que seguranca nao precisa excluir vida.',
-      (data) => `Revise uma decisao que voce costuma adiar por nao ser "essencial". Se ela melhora rotina, saude ou energia de forma concreta, talvez o custo real esteja em postergar demais.`,
+      () => 'A acao mais util agora e separar um pequeno espaco consciente para uso e não para acumulacao. O objetivo não e gastar mais: e provar para o seu sistema que seguranca não precisa excluir vida.',
+      (data) => `Revise uma decisao que voce costuma adiar por não ser "essencial". Se ela melhora rotina, saude ou energia de forma concreta, talvez o custo real esteja em postergar demais.`,
       () => 'Defina um criterio claro para distinguir reserva de protecao e dinheiro parado por medo. Essa separacao costuma reduzir muita rigidez silenciosa.'
     ]
   },
   bia: {
     context: [
-      (data) => `Como ${data.profissao} com renda ${data.rendaLabel}, seu resultado sugere uma vida em que o presente pesa bastante. Isso nao significa falta de responsabilidade; muitas vezes significa rotina pressionada, desgaste e pouco espaco de manobra.`,
+      (data) => `Como ${data.profissao} com renda ${data.rendaLabel}, seu resultado sugere uma vida em que o presente pesa bastante. Isso não significa falta de responsabilidade; muitas vezes significa rotina pressionada, desgaste e pouco espaco de manobra.`,
       (data) => `Sua leitura mostra que alivio, urgencia e necessidade de respiro entram forte na sua relacao com o dinheiro. Quando ${data.comprometidoLabel} da renda ja vai para fixos, esse peso do agora costuma crescer ainda mais.`,
-      (data) => `Hoje, seu padrao parece menos sobre "querer tudo" e mais sobre lidar com o custo emocional de sustentar a vida. O problema aparece quando essa pressao vira um piloto automatico recorrente.`
+      (data) => `Hoje, seu padrão parece menos sobre "querer tudo" e mais sobre lidar com o custo emocional de sustentar a vida. O problema aparece quando essa pressao vira um piloto automatico recorrente.`
     ],
     strength: [
-      () => 'Sua principal forca esta em nao perder totalmente a capacidade de viver. Mesmo em contextos apertados, voce tende a buscar prazer, alivio e algum senso de humanidade na rotina.',
-      (data) => `Para alguem em ${data.profissao}, isso pode ser uma forca importante: voce nao responde a vida apenas com dureza. O cuidado e criar estrutura para que esse alivio nao cobre caro depois.`,
-      () => 'Seu perfil nao e frio nem anestesiado. Isso pode ser valioso, desde que o cuidado com o presente venha acompanhado de pequenas protecoes para o futuro.'
+      () => 'Sua principal força esta em não perder totalmente a capacidade de viver. Mesmo em contextos apertados, voce tende a buscar prazer, alivio e algum senso de humanidade na rotina.',
+      (data) => `Para alguem em ${data.profissao}, isso pode ser uma força importante: voce não responde a vida apenas com dureza. O cuidado e criar estrutura para que esse alivio não cobre caro depois.`,
+      () => 'Seu perfil não e frio nem anestesiado. Isso pode ser valioso, desde que o cuidado com o presente venha acompanhado de pequenas protecoes para o futuro.'
     ],
     alert: [
       (data) => `O risco principal aqui e a falta de amortecedor. Com ${data.comprometidoLabel} da renda comprometida e seguranca futura apoiada em ${data.previdenciaLabel}, qualquer desvio pode apertar demais o mes seguinte.`,
       () => 'Quando alivio emocional e decisao financeira se misturam com frequencia, o custo raramente aparece de uma vez. Ele vai morar no mes aos poucos.',
-      (data) => `Seu ponto de atencao nao e moral. E estrutural: sem margem minima, o presente passa a decidir demais, e isso dificulta sair do mesmo lugar.`
+      (data) => `Seu ponto de atencao não e moral. E estrutural: sem margem minima, o presente passa a decidir demais, e isso dificulta sair do mesmo lugar.`
     ],
     action: [
-      () => 'A acao pratica mais util agora e criar uma pequena camada de friccao entre vontade e compra. Nao para te punir, mas para devolver alguns segundos de clareza a decisoes automaticas.',
-      () => 'Escolha uma categoria em que voce mais busca alivio e adicione uma regra simples: esperar, reduzir o valor ou trocar frequencia por previsibilidade. O foco e sustentabilidade, nao privacao.',
+      () => 'A acao pratica mais util agora e criar uma pequena camada de friccao entre vontade e compra. não para te punir, mas para devolver alguns segundos de clareza a decisoes automaticas.',
+      () => 'Escolha uma categoria em que voce mais busca alivio e adicione uma regra simples: esperar, reduzir o valor ou trocar frequencia por previsibilidade. O foco e sustentabilidade, não privacao.',
       (data) => `Se sua seguranca futura hoje depende de ${data.previdenciaLabel}, vale construir tambem uma microbase de liquidez acessivel. Mesmo pequena, ela muda a sensacao de vulnerabilidade.`
     ]
   },
   valen: {
     context: [
-      (data) => `Como ${data.profissao} com renda ${data.rendaLabel}, seu resultado sugere uma logica em que qualidade, imagem e expansao de padrao aparecem com bastante forca. Isso pode ser uma potencia quando existe base estrutural para sustentar esse ritmo.`,
-      (data) => `Seu perfil mostra que voce nao quer apenas sobreviver financeiramente; quer coerencia com o tipo de vida que faz sentido para voce. O ponto central e garantir que essa expansao nao corra mais rapido do que a estrutura.`,
-      (data) => `Hoje, sua leitura indica um padrao orientado por crescimento de conforto, valor percebido e manutencao de um certo nivel de vida. O risco nao esta no desejo em si, mas no custo de sustentacao que ele pede.`
+      (data) => `Como ${data.profissao} com renda ${data.rendaLabel}, seu resultado sugere uma logica em que qualidade, imagem e expansao de padrão aparecem com bastante força. Isso pode ser uma potencia quando existe base estrutural para sustentar esse ritmo.`,
+      (data) => `Seu perfil mostra que voce não quer apenas sobreviver financeiramente; quer coerencia com o tipo de vida que faz sentido para voce. O ponto central e garantir que essa expansao não corra mais rapido do que a estrutura.`,
+      (data) => `Hoje, sua leitura indica um padrão orientado por crescimento de conforto, valor percebido e manutencao de um certo nivel de vida. O risco não esta no desejo em si, mas no custo de sustentacao que ele pede.`
     ],
     strength: [
-      () => 'Sua principal forca esta na ambicao de qualidade. Voce costuma enxergar valor alem do basico e entende que algumas escolhas realmente mudam experiencia, posicionamento e conforto.',
-      (data) => `Para alguem em ${data.profissao}, essa leitura pode ser uma vantagem real. Nem toda expansao e excesso; algumas elevacoes de padrao geram retorno funcional, social ou profissional.`,
+      () => 'Sua principal força esta na ambicao de qualidade. Voce costuma enxergar valor alem do basico e entende que algumas escolhas realmente mudam experiencia, posicionamento e conforto.',
+      (data) => `Para alguem em ${data.profissao}, essa leitura pode ser uma vantagem real. Nem toda expansao e excesso; algumas elevacoes de padrão geram retorno funcional, social ou profissional.`,
       () => 'Seu perfil tende a perceber mais claramente que dinheiro tambem organiza identidade, imagem e ambiente. Isso pode ser bem usado quando existe criterio.'
     ],
     alert: [
-      (data) => `O risco principal e transformar renda em obrigacao de padrao. Quando ${data.comprometidoLabel} da renda ja esta preso em fixos, a margem para sustentar expansao pode ficar menor do que parece.`,
-      (data) => `Se sua protecao futura ainda depende muito de ${data.previdenciaLabel}, vale revisar se o crescimento do padrao esta vindo acompanhado de crescimento real de base.`,
-      () => 'A fragilidade aqui costuma ser silenciosa: o custo nao esta numa compra isolada, mas na manutencao recorrente do nivel que vai se tornando "normal".'
+      (data) => `O risco principal e transformar renda em obrigacao de padrão. Quando ${data.comprometidoLabel} da renda ja esta preso em fixos, a margem para sustentar expansao pode ficar menor do que parece.`,
+      (data) => `Se sua protecao futura ainda depende muito de ${data.previdenciaLabel}, vale revisar se o crescimento do padrão esta vindo acompanhado de crescimento real de base.`,
+      () => 'A fragilidade aqui costuma ser silenciosa: o custo não esta numa compra isolada, mas na manutencao recorrente do nivel que vai se tornando "normal".'
     ],
     action: [
       () => 'A acao mais util agora e separar expansao que gera valor de expansao que apenas aumenta manutencao. Esse filtro sozinho ja melhora muito a qualidade das decisoes.',
-      (data) => `Revise dois custos do seu padrao atual e pergunte: eles sustentam funcao real para a sua rotina de ${data.profissao} ou so mantem inercia?`,
+      (data) => `Revise dois custos do seu padrão atual e pergunte: eles sustentam funcao real para a sua rotina de ${data.profissao} ou so mantem inercia?`,
       () => 'Defina um ritmo consciente para subir o nivel de vida. Crescer com margem costuma ser muito mais poderoso do que crescer rapido e ficar sem flexibilidade.'
     ]
   }

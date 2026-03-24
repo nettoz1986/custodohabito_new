@@ -28,6 +28,17 @@ export function initChat() {
     // Flag para evitar envio duplo de mensagens
     let isSending = false;
 
+    const createPerceivedDelay = (message) => {
+        const normalizedLength = Math.min(message.trim().length, 180);
+        const baseDelay = 650;
+        const variableDelay = Math.floor(Math.random() * 450);
+        const lengthDelay = Math.floor(normalizedLength * 1.2);
+
+        return new Promise((resolve) => {
+            window.setTimeout(resolve, baseDelay + variableDelay + lengthDelay);
+        });
+    };
+
     // ---- Ajuste automático da altura do textarea ----
     chatInput.addEventListener('input', () => {
         // Resetar altura para calcular corretamente
@@ -111,6 +122,14 @@ export function initChat() {
     const welcomeCards = document.querySelectorAll('.welcome-card');
     welcomeCards.forEach(card => {
         card.addEventListener('click', () => {
+            const targetSection = card.dataset.section;
+            if (targetSection) {
+                window.dispatchEvent(new CustomEvent('app:navigate', {
+                    detail: { section: targetSection }
+                }));
+                return;
+            }
+
             const prompt = card.dataset.prompt;
             if (prompt) {
                 window.dispatchEvent(new CustomEvent('chat:prompt', {
@@ -149,6 +168,8 @@ export function initChat() {
         if (!text || isSending) return;
 
         isSending = true;
+        btnSend.classList.add('is-processing');
+        btnSend.setAttribute('aria-busy', 'true');
 
         // Esconder boas-vindas na primeira mensagem
         if (!chatStarted && welcomeScreen) {
@@ -169,7 +190,10 @@ export function initChat() {
 
         try {
             // Chamar serviço de IA
-            const response = await aiService.sendMessage(text);
+            const [response] = await Promise.all([
+                aiService.sendMessage(text),
+                createPerceivedDelay(text)
+            ]);
 
             // Remover indicador de carregamento
             typingEl.remove();
@@ -188,6 +212,8 @@ export function initChat() {
         }
 
         isSending = false;
+        btnSend.classList.remove('is-processing');
+        btnSend.removeAttribute('aria-busy');
         chatInput.focus();
     }
 
@@ -245,6 +271,7 @@ export function initChat() {
       </div>
       <div class="message-bubble">
         <div class="typing-indicator">
+          <span class="typing-label">Organizando a resposta</span>
           <span class="typing-dot"></span>
           <span class="typing-dot"></span>
           <span class="typing-dot"></span>

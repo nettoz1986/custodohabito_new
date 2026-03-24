@@ -9,6 +9,7 @@ import {
 
 const STORAGE_KEY = 'custodohabito_diagnostic_state_v3';
 const DIAGNOSTIC_API_BASE_URL = (import.meta.env?.VITE_DIAGNOSTIC_API_BASE_URL || '').trim();
+const SITE_BASE_URL = import.meta.env?.BASE_URL || '';
 
 export function initDiagnostic() {
   const container = document.getElementById('diagnostic-container');
@@ -49,7 +50,7 @@ export function initDiagnostic() {
       <section class="diagnostic-shell" aria-labelledby="diagnostic-title">
         <header class="diagnostic-hero">
           <img
-            src="/public/assets/logo_custodohabito.jpg"
+            src="${resolveAssetPath('assets/logo_custodohabito.jpg')}"
             alt="Logo Custo do Habito"
             class="diagnostic-logo"
           />
@@ -69,7 +70,7 @@ export function initDiagnostic() {
           <div class="diagnostic-note-card">
             <h3>Como funciona</h3>
             <p>
-              Voce vai responder perguntas curtas sobre decisoes do cotidiano.
+              Você vai responder perguntas curtas sobre decisões do cotidiano.
               No final, o sistema identifica seu perfil predominante, perfis de apoio
               e os principais vetores que estao influenciando sua rotina financeira.
             </p>
@@ -78,8 +79,8 @@ export function initDiagnostic() {
           <div class="diagnostic-note-card">
             <h3>Importante</h3>
             <p>
-              O objetivo nao e te rotular. E te ajudar a enxergar o custo do padrao
-              que esta operando hoje, inclusive quando ele parece invisivel.
+              O objetivo nao é te rotular. É te ajudar a enxergar o custo do padrão
+              que está operando hoje, inclusive quando ele parece invisivel.
             </p>
           </div>
         </section>
@@ -105,6 +106,8 @@ export function initDiagnostic() {
             </button>
           ` : ''}
         </div>
+
+        <p class="diagnostic-disclaimer">Este diagnostico possui fins educacionais e de autoconhecimento.</p>
       </section>
     `;
 
@@ -231,7 +234,7 @@ export function initDiagnostic() {
           </div>
 
           <div class="report-section strength">
-            <div class="report-section-label">Sua principal forca</div>
+            <div class="report-section-label">Sua principal força</div>
             <p>${escapeHtml(result.primary.strength)}</p>
           </div>
 
@@ -247,7 +250,7 @@ export function initDiagnostic() {
 
           ${result.patternSummary ? `
             <div class="diagnostic-summary-card">
-              <div class="report-section-label">Leitura do padrao</div>
+              <div class="report-section-label">Leitura do padrão</div>
               <p>${escapeHtml(result.patternSummary)}</p>
             </div>
           ` : ''}
@@ -455,7 +458,7 @@ export function initDiagnostic() {
           </div>
 
           <div class="report-section strength">
-            <div class="report-section-label">Sua principal forca</div>
+            <div class="report-section-label">Sua principal força</div>
             <p>${escapeHtml(reportData.strength)}</p>
           </div>
 
@@ -702,7 +705,7 @@ export function initDiagnostic() {
   function buildBlendReading(primary, secondary) {
     if (!secondary) {
       return primary.blendSoloReading
-        ?? `Seu resultado mostra predominancia de ${primary.name}, sem uma segunda forca tao proxima no momento.`;
+        ?? `Seu resultado mostra predominancia de ${primary.name}, sem uma segunda força tao proxima no momento.`;
     }
 
     const blendMap = diagnosticMeta?.blendReadings ?? {};
@@ -711,7 +714,7 @@ export function initDiagnostic() {
 
     return blendMap[keyA]
       ?? blendMap[keyB]
-      ?? `Seu padrao atual mistura tracos de ${primary.name} com ${secondary.name}. Isso sugere uma forca principal convivendo com uma segunda tendencia importante nas suas escolhas.`;
+      ?? `Seu padrao atual mistura tracos de ${primary.name} com ${secondary.name}. Isso sugere uma força principal convivendo com uma segunda tendencia importante nas suas escolhas.`;
   }
 
   function buildPatternSummary(primary, secondary, axes) {
@@ -724,7 +727,7 @@ export function initDiagnostic() {
       return `Hoje, seu padrao aparece mais concentrado em ${primary.name}. ${strongAxes.length ? `Os vetores que mais apareceram foram ${joinHuman(strongAxes)}.` : ''}`;
     }
 
-    return `Seu padrao atual nao esta operando em linha unica. A base predominante e ${primary.name}, mas existe influencia relevante de ${secondary.name}. ${strongAxes.length ? `Os vetores mais visiveis foram ${joinHuman(strongAxes)}.` : ''}`;
+    return `Seu padrao atual nao esta operando em linha unica. A base predominante e ${primary.name}, mas existe influencia relevante de ${secondary.name}. ${strongAxes.length ? `Os vetores mais visíveis foram ${joinHuman(strongAxes)}.` : ''}`;
   }
 
   function buildGuidance(primary, secondary, axes) {
@@ -1098,7 +1101,19 @@ export function initDiagnostic() {
 }
 
 function profileImageFor(profileKey) {
-  return diagnosticProfileImages[profileKey] || '/public/assets/logo_custodohabito.jpg';
+  return resolveAssetPath(diagnosticProfileImages[profileKey] || 'assets/logo_custodohabito.jpg');
+}
+
+function resolveAssetPath(assetPath) {
+  const normalizedPath = String(assetPath || '')
+    .replace(/^\/+/, '')
+    .replace(/^public\//, '');
+
+  if (SITE_BASE_URL) {
+    return `${SITE_BASE_URL.replace(/\/?$/, '/')}${normalizedPath}`;
+  }
+
+  return `/public/${normalizedPath}`;
 }
 
 function safeInlineText(value) {

@@ -14,12 +14,12 @@ export function initStudyHub() {
           <i data-lucide="target"></i>
         </div>
         <h2>Planejamento financeiro guiado</h2>
-        <p>Escolha uma trilha, ferramenta ou nível de profundidade para transformar aprendizado em prática.</p>
+        <p>Escolha uma trilha, ferramenta ou nivel de profundidade para transformar aprendizado em pratica.</p>
       </div>
 
       <div class="study-cards-grid">
         ${learningTracks.map((track) => `
-          <button class="study-card" data-prompt="${track.prompt}">
+          <button class="study-card" data-prompt="Trilha: ${track.title}. Duracao: ${track.duration}. Contexto: ${track.description} ${track.prompt}">
             <div class="study-card-icon"><i data-lucide="map"></i></div>
             <div class="study-card-info">
               <h3>${track.title}</h3>
@@ -30,7 +30,7 @@ export function initStudyHub() {
         `).join('')}
 
         ${financeTools.map((tool) => `
-          <button class="study-card" data-prompt="Quero usar a ferramenta '${tool.title}'. ${tool.description}">
+          <button class="study-card" data-prompt="Ferramenta: ${tool.title}. Contexto: ${tool.description} Me ajude de forma aplicada, com perguntas curtas e proximo passo objetivo.">
             <div class="study-card-icon"><i data-lucide="calculator"></i></div>
             <div class="study-card-info">
               <h3>${tool.title}</h3>
@@ -47,7 +47,7 @@ export function initStudyHub() {
       </div>
       <div class="study-cards-grid">
         ${userProfiles.map((profile) => `
-          <button class="study-card" data-prompt="Explique educação financeira no nível ${profile.title.toLowerCase()} e monte próximos passos práticos.">
+          <button class="study-card" data-prompt="Perfil de profundidade: ${profile.title}. Contexto: ${profile.description} Explique educacao financeira nesse nivel e monte proximos passos praticos.">
             <div class="study-card-icon"><i data-lucide="layers-3"></i></div>
             <div class="study-card-info">
               <h3>${profile.title}</h3>
