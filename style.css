@@ -3788,6 +3788,37 @@ body.is-overlay-active {
   grid-template-columns: 1fr;
 }
 
+.diagnostic-profiles {
+  justify-items: center;
+}
+
+.diagnostic-profile-card {
+  display: grid;
+  grid-template-columns: 108px minmax(0, 1fr);
+  width: min(100%, 460px);
+}
+
+.diagnostic-profile-card img {
+  width: 108px;
+  height: 100%;
+  min-height: 150px;
+  aspect-ratio: auto;
+}
+
+.diagnostic-profile-card h3 {
+  padding: 16px 16px 6px;
+  font-size: 1rem;
+}
+
+.diagnostic-profile-card p {
+  padding: 0 16px 16px;
+  font-size: 0.86rem;
+}
+
+.diagnostic-result-image {
+  width: min(220px, 58vw);
+}
+
 .diagnostic-actions,
 .diagnostic-question-header,
 .diagnostic-footer-actions {
@@ -3932,6 +3963,22 @@ textarea:focus-visible {
   .diagnostic-score-strip,
   .study-cards-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .diagnostic-profile-card {
+    display: block;
+    width: 100%;
+  }
+
+  .diagnostic-profile-card img {
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    aspect-ratio: 4 / 5;
+  }
+
+  .diagnostic-result-image {
+    width: min(300px, 100%);
   }
 
   .reader-sections-grid {
