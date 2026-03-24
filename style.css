@@ -3794,15 +3794,19 @@ body.is-overlay-active {
 
 .diagnostic-profile-card {
   display: grid;
-  grid-template-columns: 108px minmax(0, 1fr);
+  grid-template-columns: 92px minmax(0, 1fr);
   width: min(100%, 460px);
 }
 
 .diagnostic-profile-card img {
-  width: 108px;
-  height: 100%;
-  min-height: 150px;
+  width: 92px;
+  height: 124px;
+  min-height: 124px;
+  padding: 8px;
   aspect-ratio: auto;
+  object-fit: contain;
+  object-position: center;
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .diagnostic-profile-card h3 {
@@ -3816,7 +3820,10 @@ body.is-overlay-active {
 }
 
 .diagnostic-result-image {
-  width: min(220px, 58vw);
+  width: min(184px, 47vw);
+  max-height: 232px;
+  object-fit: contain;
+  object-position: center;
 }
 
 .diagnostic-actions,
@@ -3974,11 +3981,15 @@ textarea:focus-visible {
     width: 100%;
     height: auto;
     min-height: 0;
+    padding: 0;
     aspect-ratio: 4 / 5;
+    object-fit: cover;
+    background: transparent;
   }
 
   .diagnostic-result-image {
     width: min(300px, 100%);
+    max-height: none;
   }
 
   .reader-sections-grid {
