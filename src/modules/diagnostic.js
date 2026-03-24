@@ -463,17 +463,17 @@ export function initDiagnostic() {
           </div>
 
           <div class="report-section warning">
-            <div class="report-section-label">Ponto de atencao</div>
+            <div class="report-section-label">Ponto de atenção</div>
             <p>${escapeHtml(reportData.alert)}</p>
           </div>
 
           <div class="report-section action">
-            <div class="report-section-label">Acao pratica</div>
+            <div class="report-section-label">Ação prática</div>
             <p>${escapeHtml(reportData.action)}</p>
           </div>
 
           <div class="diagnostic-summary-card diagnostic-summary-card-report">
-            <div class="report-section-label">Leitura acessivel do padrao</div>
+            <div class="report-section-label">Leitura acessivel do padrão</div>
             <p>${escapeHtml(reportData.patternSummary)}</p>
           </div>
 
