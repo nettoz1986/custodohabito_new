@@ -1138,7 +1138,7 @@ function resolveAssetPath(assetPath) {
     return `${SITE_BASE_URL.replace(/\/?$/, '/')}${normalizedPath}`;
   }
 
-  return `/public/${normalizedPath}`;
+  return new URL(`../../public/${normalizedPath}`, import.meta.url).href;
 }
 
 function safeInlineText(value) {

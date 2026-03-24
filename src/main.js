@@ -380,14 +380,22 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function hydrateBrandMarks() {
-  const baseUrl = import.meta.env?.BASE_URL;
-  const resolvedSrc = baseUrl
-    ? `${baseUrl.replace(/\/?$/, '/')}assets/logo_custodohabito.jpg`
-    : '/public/assets/logo_custodohabito.jpg';
+  const resolvedSrc = resolvePublicAssetPath('assets/logo_custodohabito.jpg');
 
   document.querySelectorAll('.brand-mark').forEach((image) => {
     image.src = resolvedSrc;
   });
+}
+
+function resolvePublicAssetPath(assetPath) {
+  const normalizedPath = String(assetPath || '').replace(/^\/+/, '');
+  const baseUrl = import.meta.env?.BASE_URL;
+
+  if (baseUrl) {
+    return `${baseUrl.replace(/\/?$/, '/')}${normalizedPath}`;
+  }
+
+  return new URL(`../public/${normalizedPath}`, import.meta.url).href;
 }
 
 function normalizeState(input, previousState = {}) {
