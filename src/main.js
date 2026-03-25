@@ -231,16 +231,16 @@ document.addEventListener('DOMContentLoaded', () => {
         status: 'Online - pronto para educar, organizar e orientar'
       },
       diagnostic: {
-        title: 'Diagnostico de habito',
-        status: 'Descubra o personagem financeiro que mais se aproxima do seu padrao'
+        title: 'Diagnóstico de hábito',
+        status: 'Descubra o personagem financeiro que mais se aproxima do seu padrão'
       },
       learn: {
         title: 'Aprender com clareza',
-        status: 'Leituras guiadas, conceitos essenciais e conexao direta com o agente'
+        status: 'Leituras guiadas, conceitos essenciais e conexão direta com o agente'
       },
       planning: {
         title: 'Planejamento financeiro',
-        status: 'Trilhas, ferramentas e proximos passos'
+        status: 'Trilhas, ferramentas e próximos passos'
       }
     };
 

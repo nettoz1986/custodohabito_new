@@ -602,8 +602,8 @@ body {
 }
 
 .welcome-icon {
-  width: 108px;
-  height: 108px;
+  width: 216px;
+  height: 216px;
   padding: 10px;
   background: rgba(2, 26, 66, 0.32);
   border: 1px solid rgba(201, 168, 76, 0.22);
@@ -611,6 +611,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
   margin-bottom: 24px;
   box-shadow: 0 0 0 1px rgba(201, 168, 76, 0.1), var(--shadow-glow);
 }
@@ -624,7 +625,9 @@ body {
 .welcome-mark {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
+  object-position: center;
+  transform: scale(1.6);
   filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.35));
 }
 
@@ -3503,8 +3506,8 @@ body.is-overlay-active {
 }
 
 .welcome-icon {
-  width: 88px;
-  height: 88px;
+  width: 176px;
+  height: 176px;
   margin: 0 auto 18px;
 }
 

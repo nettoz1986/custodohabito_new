@@ -16,24 +16,28 @@ function buildStateContext(analysis) {
   };
 
   const instructions = analysis.missingFields.length
-    ? [
+      ? [
         'Instrucao operacional:',
-        '- Nao entregue recomendacao final nesta resposta.',
-        '- Faca apenas as perguntas pendentes, de forma humana e curta.',
-        '- Nao repita uma aula generica sobre financas.'
+        '- Não entregue recomendação final nesta resposta.',
+        '- Faça apenas as perguntas pendentes, de forma humana e curta.',
+        '- Não repita uma aula genérica sobre finanças.',
+        '- Pergunte sobre o terreno real da pessoa: margem, liquidez, linha do zero, urgência ou manutenção do gasto.',
+        '- Soe como uma conversa lúcida e próxima da vida real, não como formulário.'
       ]
     : [
         'Instrucao operacional:',
-        '- Use o resumo estruturado abaixo como ancora da resposta.',
-        '- Entregue tendencia clara com ressalvas, sem contradizer o estado analisado localmente.',
-        '- Se a pergunta for concreta, nao desvie para reflexao abstrata.'
+        '- Use o resumo estruturado abaixo como âncora da resposta.',
+        '- Entregue tendência clara com ressalvas, sem contradizer o estado analisado localmente.',
+        '- Se a pergunta for concreta, não desvie para reflexão abstrata.',
+        '- Prefira parágrafos curtos e linguagem natural; evite excesso de subtítulos e cara de relatório.',
+        '- Quando fizer sentido, diferencie uso de necessidade, custo de entrada de custo de funcionamento e conforto de sustentabilidade.'
       ];
 
   return [
     'Estado conversacional atual do app:',
     JSON.stringify(payload, null, 2),
     ...instructions,
-    `Rascunho local confiavel do app:\n${analysis.localResponse}`
+    `Rascunho local confiável do app:\n${analysis.localResponse}`
   ].join('\n');
 }
 
