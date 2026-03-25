@@ -59,6 +59,10 @@
           <i data-lucide="book-open"></i>
           <span>Aprender</span>
         </button>
+        <button class="nav-item" type="button" data-section="tools">
+          <i data-lucide="wrench"></i>
+          <span>Ferramentas</span>
+        </button>
         <button class="nav-item" type="button" data-section="planning">
           <i data-lucide="route"></i>
           <span>Planejamento</span>
@@ -178,6 +182,9 @@
                   <small>Custo invisível na compra</small>
                 </button>
               </div>
+              <p class="chat-disclaimer chat-disclaimer-welcome">
+                Conteúdo educacional. Não substitui consultoria financeira individual nem recomendações personalizadas de investimento.
+              </p>
             </div>
           </div>
 
@@ -194,9 +201,6 @@
                 <i data-lucide="send-horizontal"></i>
               </button>
             </div>
-            <p class="chat-disclaimer">
-              Conteúdo educacional. Não substitui consultoria financeira individual nem recomendações personalizadas de investimento.
-            </p>
           </div>
         </section>
 
@@ -215,6 +219,12 @@
         <section id="view-study-hub" class="main-view hidden view-shell view-scrollable" aria-hidden="true">
           <div id="study-hub-container" class="study-hub-container">
             <!-- Conteudo injetado por study-hub.js -->
+          </div>
+        </section>
+
+        <section id="view-tools" class="main-view hidden view-shell view-scrollable" aria-hidden="true">
+          <div id="budget-tools-container" class="budget-tools-container">
+            <!-- Conteudo injetado por budget-tools.js -->
           </div>
         </section>
 
@@ -265,6 +275,29 @@
       </div>
     </aside>
   </div>
+
+  <nav class="mobile-bottom-nav" aria-label="Navegacao principal">
+    <button class="mob-nav-btn active" type="button" data-mob-section="chat" aria-label="Agente">
+      <i data-lucide="message-circle-more"></i>
+      <span>Agente</span>
+    </button>
+    <button class="mob-nav-btn" type="button" data-mob-section="diagnostic" aria-label="Diagnostico">
+      <i data-lucide="badge-help"></i>
+      <span>Diagnostico</span>
+    </button>
+    <button class="mob-nav-btn" type="button" data-mob-section="tools" aria-label="Ferramentas">
+      <i data-lucide="wrench"></i>
+      <span>Ferramentas</span>
+    </button>
+    <button class="mob-nav-btn" type="button" data-mob-section="learn" aria-label="Aprender">
+      <i data-lucide="book-open"></i>
+      <span>Aprender</span>
+    </button>
+    <button class="mob-nav-btn" type="button" data-mob-section="planning" aria-label="Planos">
+      <i data-lucide="route"></i>
+      <span>Planos</span>
+    </button>
+  </nav>
 
   <div id="overlay-backdrop" class="overlay-backdrop"></div>
 
@@ -368,7 +401,7 @@
         </ul>
 
         <p><strong>4. Armazenamento e seguranca</strong></p>
-        <p>Os dados sao armazenados de forma segura por meio do servico Formspree, com acesso restrito ao responsavel pelo canal. O trafego e protegido por criptografia HTTPS.</p>
+        <p>Os dados enviados pelo diagnostico sao recebidos por uma API propria do projeto e armazenados em ambiente com acesso restrito ao responsavel pelo canal. O trafego e protegido por criptografia HTTPS quando a aplicacao esta publicada em servidor seguro.</p>
 
         <p><strong>5. Seus direitos (LGPD)</strong></p>
         <p>Em conformidade com a Lei Geral de Protecao de Dados (Lei no 13.709/2018), voce pode solicitar consulta, correcao ou exclusao dos seus dados a qualquer momento pelo e-mail <strong>custodohabito@gmail.com.br</strong>.</p>

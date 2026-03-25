@@ -11,6 +11,7 @@ import { openUtilityView } from '../utils/chat-actions.js';
 const STORAGE_KEY = 'custodohabito_diagnostic_state_v3';
 const DIAGNOSTIC_API_BASE_URL = (import.meta.env?.VITE_DIAGNOSTIC_API_BASE_URL || '').trim();
 const SITE_BASE_URL = import.meta.env?.BASE_URL || '';
+const GITHUB_PAGES_HOST_SUFFIX = '.github.io';
 const PROFILE_IMAGE_DIMENSIONS = {
   bia: { width: 1024, height: 1536 },
   heitor: { width: 1024, height: 1536 },
@@ -910,14 +911,32 @@ export function initDiagnostic() {
   }
 
   function resolveDiagnosticApiUrl() {
-    if (!DIAGNOSTIC_API_BASE_URL) return null;
-    return `${DIAGNOSTIC_API_BASE_URL.replace(/\/$/, '')}/api/diagnostic-leads`;
+    if (DIAGNOSTIC_API_BASE_URL) {
+      return `${DIAGNOSTIC_API_BASE_URL.replace(/\/$/, '')}/api/diagnostic-leads`;
+    }
+
+    if (isSameOriginDiagnosticApiAvailable()) {
+      return `${window.location.origin}/api/diagnostic-leads`;
+    }
+
+    return null;
   }
 
   function isLocalEnvironment() {
     if (import.meta.env?.DEV) return true;
     const host = window.location.hostname;
     return host === 'localhost' || host === '127.0.0.1';
+  }
+
+  function isSameOriginDiagnosticApiAvailable() {
+    const { protocol, hostname } = window.location;
+
+    if (!/^https?:$/.test(protocol)) return false;
+    if (isLocalEnvironment()) return true;
+    if (!hostname) return false;
+    if (hostname.endsWith(GITHUB_PAGES_HOST_SUFFIX)) return false;
+
+    return true;
   }
 
   function saveState() {

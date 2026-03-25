@@ -5,6 +5,7 @@ import { initLearningReader } from './modules/learning-reader.js';
 import { initDiagnostic } from './modules/diagnostic.js';
 import { initStudyPanel } from './modules/study-panel.js';
 import { initStudyHub } from './modules/study-hub.js';
+import { initBudgetTools } from './modules/budget-tools.js';
 import { openChatView } from './utils/chat-actions.js';
 
 const DESKTOP_MIN_WIDTH = 1024;
@@ -23,6 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initDiagnostic();
   initStudyPanel();
   initStudyHub();
+  initBudgetTools();
 
   const refs = {
     app: document.getElementById('app'),
@@ -43,11 +45,13 @@ document.addEventListener('DOMContentLoaded', () => {
     utilitySettingsTemplate: document.getElementById('template-utility-settings'),
     utilityPrivacyTemplate: document.getElementById('template-utility-privacy'),
     navItems: Array.from(document.querySelectorAll('.nav-item')),
+    mobNavBtns: Array.from(document.querySelectorAll('.mob-nav-btn')),
     views: {
       chat: document.getElementById('view-chat'),
       diagnostic: document.getElementById('view-diagnostic'),
       learn: document.getElementById('view-topic-reader'),
       planning: document.getElementById('view-study-hub'),
+      tools: document.getElementById('view-tools'),
       utility: document.getElementById('view-utility')
     },
     scrollTargets: {
@@ -55,6 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
       diagnostic: document.getElementById('view-diagnostic'),
       learn: document.getElementById('topic-reader-container'),
       planning: document.getElementById('view-study-hub'),
+      tools: document.getElementById('view-tools'),
       utility: document.getElementById('view-utility')
     }
   };
@@ -86,6 +91,12 @@ document.addEventListener('DOMContentLoaded', () => {
     refs.navItems.forEach((item) => {
       item.addEventListener('click', () => {
         navigateTo({ section: item.dataset.section });
+      });
+    });
+
+    refs.mobNavBtns.forEach((button) => {
+      button.addEventListener('click', () => {
+        navigateTo({ section: button.dataset.mobSection });
       });
     });
 
@@ -200,6 +211,10 @@ document.addEventListener('DOMContentLoaded', () => {
     refs.navItems.forEach((item) => {
       item.classList.toggle('active', item.dataset.section === section);
     });
+
+    refs.mobNavBtns.forEach((button) => {
+      button.classList.toggle('active', button.dataset.mobSection === section);
+    });
   }
 
   function updateHeader(state, topic) {
@@ -231,16 +246,20 @@ document.addEventListener('DOMContentLoaded', () => {
         status: 'Online - pronto para educar, organizar e orientar'
       },
       diagnostic: {
-        title: 'Diagnóstico de hábito',
-        status: 'Descubra o personagem financeiro que mais se aproxima do seu padrão'
+        title: 'Diagnostico de habito',
+        status: 'Descubra o personagem financeiro que mais se aproxima do seu padrao'
       },
       learn: {
         title: 'Aprender com clareza',
-        status: 'Leituras guiadas, conceitos essenciais e conexão direta com o agente'
+        status: 'Leituras guiadas, conceitos essenciais e conexao direta com o agente'
+      },
+      tools: {
+        title: 'Ferramentas',
+        status: 'Painel de gastos e lista do mercado para leitura pratica do mes'
       },
       planning: {
         title: 'Planejamento financeiro',
-        status: 'Trilhas, ferramentas e próximos passos'
+        status: 'Trilhas, ferramentas e proximos passos'
       }
     };
 
@@ -351,6 +370,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     refs.app?.classList.toggle('panel-closed', !forcePanelVisible && !overlayState.panel);
     refs.studyPanel?.classList.toggle('desktop-visible', forcePanelVisible);
+    refs.body?.classList.toggle('has-mob-nav', !forcePanelVisible);
   }
 
   function syncOverlayUI() {
@@ -419,7 +439,7 @@ function normalizeState(input, previousState = {}) {
   }
 
   return {
-    section: ['chat', 'diagnostic', 'planning'].includes(requestedSection) ? requestedSection : 'chat',
+    section: ['chat', 'diagnostic', 'planning', 'tools'].includes(requestedSection) ? requestedSection : 'chat',
     topicId: null,
     utilityView: null
   };
@@ -456,7 +476,7 @@ function parseHash() {
     };
   }
 
-  if (['chat', 'diagnostic', 'learn', 'planning'].includes(rawHash)) {
+  if (['chat', 'diagnostic', 'learn', 'planning', 'tools'].includes(rawHash)) {
     return { section: rawHash };
   }
 
