@@ -1,54 +1,8 @@
 import { glossaryTerms } from '../data/finance-topics.js';
 
 export function initStudyPanel() {
-  const studyPanel = document.getElementById('study-panel');
-  const btnTogglePanel = document.getElementById('btn-toggle-panel');
-  const btnClosePanel = document.getElementById('btn-close-panel');
   const glossaryContent = document.getElementById('glossary-content');
   const notesContent = document.getElementById('study-notes-content');
-  const appLayout = document.getElementById('app');
-
-  if (window.innerWidth > 1024) {
-    appLayout.classList.remove('panel-closed');
-    studyPanel.classList.remove('hidden');
-    studyPanel.classList.add('visible');
-  } else {
-    appLayout.classList.add('panel-closed');
-    studyPanel.classList.add('hidden');
-  }
-
-  let panelBackdrop = document.querySelector('.panel-backdrop');
-  if (!panelBackdrop) {
-    panelBackdrop = document.createElement('div');
-    panelBackdrop.className = 'panel-backdrop';
-    document.body.appendChild(panelBackdrop);
-  }
-
-  const closePanel = () => {
-    studyPanel.classList.add('hidden');
-    studyPanel.classList.remove('visible');
-    appLayout.classList.add('panel-closed');
-    panelBackdrop.classList.remove('visible');
-  };
-
-  if (btnTogglePanel) {
-    btnTogglePanel.addEventListener('click', () => {
-      const isHidden = studyPanel.classList.contains('hidden');
-      if (isHidden) {
-        studyPanel.classList.remove('hidden');
-        studyPanel.classList.add('visible');
-        appLayout.classList.remove('panel-closed');
-        if (window.innerWidth <= 1080) {
-          panelBackdrop.classList.add('visible');
-        }
-      } else {
-        closePanel();
-      }
-    });
-  }
-
-  if (btnClosePanel) btnClosePanel.addEventListener('click', closePanel);
-  panelBackdrop.addEventListener('click', closePanel);
 
   renderGlossary();
 
@@ -98,4 +52,10 @@ export function initStudyPanel() {
     if (text.length <= maxLength) return text;
     return `${text.slice(0, maxLength)}...`;
   }
+
+  return {
+    focusPanel() {
+      document.getElementById('study-panel')?.focus?.();
+    }
+  };
 }

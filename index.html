@@ -3,16 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Custo do Hábito | Educação Financeira com Agente</title>
+  <title>Custo do Habito | Educacao Financeira com Agente</title>
   <meta
     name="description"
-    content="Plataforma de educação financeira com agente para orçamento, reserva de emergência, dívidas, consumo consciente e investimentos para iniciantes."
+    content="Plataforma com agente para ler contexto, habitos, linha do zero, custo de funcionamento e decisoes financeiras com mais clareza."
   />
   <meta name="theme-color" content="#021a42" />
-  <meta property="og:title" content="Custo do Hábito | Educação Financeira com Agente" />
+  <meta property="og:title" content="Custo do Habito | Educacao Financeira com Agente" />
   <meta
     property="og:description"
-    content="Aprenda finanças pessoais com trilhas, ferramentas e um agente educador focado em clareza e plano de ação."
+    content="Leia decisoes, habitos e riscos estruturais com um agente educador mais humano, claro e aplicavel a vida real."
   />
   <meta property="og:type" content="website" />
 
@@ -32,34 +32,34 @@
       <div class="sidebar-header">
         <div class="logo">
           <div class="logo-icon">
-            <img src="/public/assets/logo_custodohabito.jpg" alt="Logo Custo do Hábito" class="brand-mark" />
+            <img src="./public/assets/logo_custodohabito.jpg" alt="Logo Custo do Habito" class="brand-mark" width="52" height="52" />
           </div>
           <div class="logo-text">
-            <h1>Custo do Hábito</h1>
-            <span class="logo-subtitle">Educação financeira com agente</span>
+            <h1>Custo do Habito</h1>
+            <span class="logo-subtitle">Educacao financeira com agente</span>
           </div>
         </div>
       </div>
 
-      <button id="btn-new-chat" class="btn-new-chat">
+      <button id="btn-new-chat" class="btn-new-chat" type="button">
         <i data-lucide="message-square-plus"></i>
         <span>Nova conversa</span>
       </button>
 
       <nav class="sidebar-nav">
-        <button class="nav-item active" data-section="chat">
+        <button class="nav-item active" type="button" data-section="chat">
           <i data-lucide="message-circle-more"></i>
           <span>Agente</span>
         </button>
-        <button class="nav-item" data-section="diagnostic">
+        <button class="nav-item" type="button" data-section="diagnostic">
           <i data-lucide="badge-help"></i>
-          <span>Diagnóstico</span>
+          <span>Diagnostico</span>
         </button>
-        <button class="nav-item" data-section="learn">
+        <button class="nav-item" type="button" data-section="learn">
           <i data-lucide="book-open"></i>
           <span>Aprender</span>
         </button>
-        <button class="nav-item" data-section="planning">
+        <button class="nav-item" type="button" data-section="planning">
           <i data-lucide="route"></i>
           <span>Planejamento</span>
         </button>
@@ -67,9 +67,9 @@
 
       <div id="catalog-nav-panel" class="learning-nav-panel bible-nav-panel hidden">
         <div class="learning-tabs bible-tabs">
-          <button class="learning-tab bible-tab active" data-category="fundamentos">Fundamentos</button>
-          <button class="learning-tab bible-tab" data-category="ferramentas">Ferramentas</button>
-          <button class="learning-tab bible-tab" data-category="planejamento">Planejamento</button>
+          <button class="learning-tab bible-tab active" type="button" data-category="fundamentos">Fundamentos</button>
+          <button class="learning-tab bible-tab" type="button" data-category="ferramentas">Ferramentas</button>
+          <button class="learning-tab bible-tab" type="button" data-category="planejamento">Planejamento</button>
         </div>
         <div id="topic-list" class="learning-topics-list bible-books-list">
           <!-- Preenchido dinamicamente por learning-nav.js -->
@@ -79,86 +79,103 @@
       <div class="sidebar-divider"></div>
 
       <div class="sidebar-footer">
-        <button id="btn-settings" class="sidebar-footer-btn">
+        <button id="btn-settings" class="sidebar-footer-btn" type="button">
           <i data-lucide="settings"></i>
-          <span>Configurações</span>
+          <span>Configuracoes</span>
         </button>
         <div class="site-footer">
-          <p><strong>Custo do Hábito</strong> &copy; 2026. Todos os direitos reservados.</p>
+          <p><strong>Custo do Habito</strong> &copy; 2026. Todos os direitos reservados.</p>
           <p>
             <a href="https://instagram.com/custodohabito" target="_blank" rel="noopener noreferrer">Instagram</a> |
             <a href="mailto:custodohabito@gmail.com.br">Contato</a> |
-            <a href="#" id="open-privacy-link">Política de Privacidade</a>
+            <a href="#" id="open-privacy-link">Politica de Privacidade</a>
           </p>
-          <p class="footer-legal">Este conteúdo possui fins educacionais e de autoconhecimento. A marca "Custo do Hábito" encontra-se em processo de registro junto ao INPI.</p>
+          <p class="footer-legal">Este conteudo possui fins educacionais e de autoconhecimento. A marca "Custo do Habito" encontra-se em processo de registro junto ao INPI.</p>
           <p class="footer-dev">
             Site desenvolvido por David Vieira |
             <a href="https://www.vieiralabs.ia.br" target="_blank" rel="noopener noreferrer">vieiralabs.ia.br</a>
           </p>
-          <p class="footer-dev-note">Crédito de desenvolvimento do site. A marca Custo do Hábito e sua operação não pertencem ao desenvolvedor.</p>
+          <p class="footer-dev-note">Credito de desenvolvimento do site. A marca Custo do Habito e sua operacao nao pertencem ao desenvolvedor.</p>
         </div>
       </div>
     </aside>
 
     <main id="main-content" class="main-content">
       <header class="chat-header">
-        <button id="btn-toggle-sidebar" class="btn-icon mobile-only">
+        <button
+          id="btn-toggle-sidebar"
+          class="btn-icon mobile-only"
+          type="button"
+          aria-label="Abrir menu principal"
+          aria-controls="sidebar"
+          aria-expanded="false"
+        >
           <i data-lucide="menu"></i>
         </button>
         <div class="chat-header-info">
           <h2 id="chat-title">Agente financeiro</h2>
           <span id="chat-status" class="chat-status">
             <span class="status-dot"></span>
-            Online — pronto para educar, organizar e orientar
+            Online - pronto para educar, organizar e orientar
           </span>
         </div>
-        <button id="btn-toggle-panel" class="btn-icon">
+        <button
+          id="btn-toggle-panel"
+          class="btn-icon"
+          type="button"
+          aria-label="Abrir painel de apoio"
+          aria-controls="study-panel"
+          aria-expanded="true"
+        >
           <i data-lucide="panel-right"></i>
         </button>
       </header>
 
-      <div
-        id="views-container"
-        class="views-container"
-        style="flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative;"
-      >
-        <section id="view-chat" class="main-view active" style="flex: 1; display: flex; flex-direction: column; min-height: 0;">
+      <div id="views-container" class="views-container">
+        <section id="view-chat" class="main-view active" aria-hidden="false">
           <div id="chat-messages" class="chat-messages">
             <div class="welcome-screen" id="welcome-screen">
               <div class="welcome-icon">
-                <img src="/public/assets/logo_custodohabito_dourada.png" alt="Logo Custo do Hábito" class="welcome-mark" />
+                <img
+                  src="./public/assets/logo_custodohabito_dourada.webp"
+                  alt="Logo Custo do Habito"
+                  class="welcome-mark"
+                  width="900"
+                  height="600"
+                  decoding="async"
+                />
               </div>
               <h2>O valor do amanhã é fruto do seu dia a dia</h2>
               <p>
-                O <strong>Custo do Hábito</strong> é uma proposta de educação financeira simulando experiências práticas. Aqui você pode aprender,
-                revisar decisões e transformar pensamentos em planos executáveis.
+                O <strong>Custo do Hábito</strong> te ajuda a ler o terreno antes da decisão.
+                Aqui você pode entender custo de funcionamento, linha do zero, uso versus necessidade e transformar dúvidas em escolhas mais sustentáveis.
               </p>
 
               <div class="welcome-cards">
-                <button class="welcome-card welcome-card-featured" data-section="diagnostic">
+                <button class="welcome-card welcome-card-featured" type="button" data-section="diagnostic">
                   <i data-lucide="badge-help"></i>
                   <span>Descobrir seu perfil financeiro</span>
                   <small>Entenda como seus hábitos influenciam suas decisões</small>
                 </button>
-                <button class="welcome-card" data-prompt="Me explique orçamento pessoal de forma simples e prática.">
+                <button class="welcome-card" type="button" data-prompt="Me ajude a mapear meu mês e entender onde está a pressão estrutural.">
                   <i data-lucide="wallet"></i>
                   <span>Entender o orçamento</span>
                   <small>Começando do zero</small>
                 </button>
-                <button class="welcome-card" data-prompt="Quero um plano para construir reserva de emergência.">
+                <button class="welcome-card" type="button" data-prompt="Quero entender minha linha do zero e ganhar margem de manobra.">
                   <i data-lucide="shield-check"></i>
-                  <span>Montar a reserva</span>
-                  <small>Proteção contra imprevistos</small>
+                  <span>"Linha do zero"</span>
+                  <small>Folga, aperto e seus impactos</small>
                 </button>
-                <button class="welcome-card" data-prompt="Me ajude a criar um plano para sair das dívidas.">
-                  <i data-lucide="hand-coins"></i>
-                  <span>Sair das dívidas</span>
-                  <small>Prioridade e renegociação</small>
+                <button class="welcome-card" type="button" data-prompt="Tenho uma compra em mente e quero diferenciar uso de necessidade real.">
+                  <i data-lucide="scale"></i>
+                  <span>Uso ou necessidade</span>
+                  <small>Separar desejo de prioridade</small>
                 </button>
-                <button class="welcome-card" data-prompt="Explique investimentos para iniciantes sem jargão.">
-                  <i data-lucide="chart-no-axes-combined"></i>
-                  <span>Começar a investir</span>
-                  <small>Risco, liquidez e prazo</small>
+                <button class="welcome-card" type="button" data-prompt="Me explique a fisiologia do gasto e como uma compra continua custando depois.">
+                  <i data-lucide="activity"></i>
+                  <span>Gastos após aquisição</span>
+                  <small>Custo invisível na compra</small>
                 </button>
               </div>
             </div>
@@ -169,11 +186,11 @@
               <textarea
                 id="chat-input"
                 class="chat-input"
-                placeholder="Pergunte sobre orçamento, dívidas, reserva, consumo ou investimentos..."
+                placeholder="Descreve aqui sua dúvida..."
                 rows="1"
                 aria-label="Campo de mensagem para o agente financeiro"
               ></textarea>
-              <button id="btn-send" class="btn-send" disabled aria-label="Enviar mensagem">
+              <button id="btn-send" class="btn-send" type="button" disabled aria-label="Enviar mensagem">
                 <i data-lucide="send-horizontal"></i>
               </button>
             </div>
@@ -183,30 +200,34 @@
           </div>
         </section>
 
-        <section id="view-diagnostic" class="main-view hidden" style="flex: 1; display: none; flex-direction: column; min-height: 0; padding: 24px; overflow-y: auto;">
+        <section id="view-diagnostic" class="main-view hidden view-shell view-scrollable" aria-hidden="true">
           <div id="diagnostic-container" class="diagnostic-container">
-            <!-- Conteúdo injetado por diagnostic.js -->
+            <!-- Conteudo injetado por diagnostic.js -->
           </div>
         </section>
 
-        <section id="view-topic-reader" class="main-view hidden" style="flex: 1; display: none; flex-direction: column; min-height: 0;">
-          <div id="topic-reader-container" class="learning-reader-container bible-reader-container" style="flex: 1; overflow-y: auto;">
+        <section id="view-topic-reader" class="main-view hidden view-shell" aria-hidden="true">
+          <div id="topic-reader-container" class="learning-reader-container bible-reader-container view-scrollable">
             <!-- Conteudo injetado por learning-reader.js -->
           </div>
         </section>
 
-        <section id="view-study-hub" class="main-view hidden" style="flex: 1; display: none; flex-direction: column; min-height: 0; padding: 20px; overflow-y: auto;">
+        <section id="view-study-hub" class="main-view hidden view-shell view-scrollable" aria-hidden="true">
           <div id="study-hub-container" class="study-hub-container">
-            <!-- Conteúdo injetado por study-hub.js -->
+            <!-- Conteudo injetado por study-hub.js -->
           </div>
+        </section>
+
+        <section id="view-utility" class="main-view hidden view-shell view-scrollable utility-view" aria-hidden="true">
+          <div id="utility-view-content" class="utility-view-content"></div>
         </section>
       </div>
     </main>
 
-    <aside id="study-panel" class="study-panel">
+    <aside id="study-panel" class="study-panel" tabindex="-1">
       <div class="panel-header">
         <h3>Painel de apoio</h3>
-        <button id="btn-close-panel" class="btn-icon">
+        <button id="btn-close-panel" class="btn-icon mobile-only" type="button" aria-label="Fechar painel de apoio">
           <i data-lucide="x"></i>
         </button>
       </div>
@@ -219,32 +240,9 @@
         <blockquote id="daily-insight-quote" class="daily-insight-quote devotional-verse"></blockquote>
         <p id="daily-insight-reference" class="daily-insight-reference devotional-reference"></p>
         <p id="daily-insight-reflection" class="daily-insight-reflection devotional-reflection"></p>
-        <button id="btn-open-daily-insight" class="btn-open-daily-insight btn-study-devotional">
+        <button id="btn-open-daily-insight" class="btn-open-daily-insight btn-study-devotional" type="button">
           <i data-lucide="message-circle"></i>
           Explorar este insight
-        </button>
-      </div>
-
-      <div id="quick-actions" class="quick-actions panel-quick-actions">
-        <h4 class="quick-actions-title">
-          <i data-lucide="messages-square"></i>
-          Perguntas sugeridas
-        </h4>
-        <button class="quick-action-btn" data-prompt="Monte um plano simples para organizar meu orçamento pessoal.">
-          <i data-lucide="badge-dollar-sign"></i>
-          <span>Organizar orçamento</span>
-        </button>
-        <button class="quick-action-btn" data-prompt="Como começar minha reserva de emergência sem me perder?">
-          <i data-lucide="shield-plus"></i>
-          <span>Reserva de emergência</span>
-        </button>
-        <button class="quick-action-btn" data-prompt="Quero entender juros compostos com exemplos simples.">
-          <i data-lucide="chart-column"></i>
-          <span>Juros compostos</span>
-        </button>
-        <button class="quick-action-btn" data-prompt="Como sair das dívidas com um plano realista?">
-          <i data-lucide="circle-dollar-sign"></i>
-          <span>Sair das dívidas</span>
         </button>
       </div>
 
@@ -254,100 +252,132 @@
           Resumo da conversa
         </h4>
         <div id="study-notes-content" class="study-notes-content">
-          <p class="empty-state">As principais respostas do agente vão aparecer aqui como insights rápidos.</p>
+          <p class="empty-state">As principais respostas do agente vao aparecer aqui como insights rapidos.</p>
         </div>
       </div>
 
       <div id="glossary-section" class="glossary-section">
         <h4>
           <i data-lucide="book-a"></i>
-          Glossário financeiro
+          Glossario financeiro
         </h4>
         <div id="glossary-content" class="glossary-content"></div>
       </div>
     </aside>
   </div>
 
-  <div id="settings-modal" class="modal hidden">
-    <div class="modal-backdrop"></div>
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3>Configurações</h3>
-        <button id="btn-close-settings" class="btn-icon">
-          <i data-lucide="x"></i>
+  <div id="overlay-backdrop" class="overlay-backdrop"></div>
+
+  <template id="template-utility-settings">
+    <section class="utility-shell" aria-labelledby="utility-settings-title">
+      <div class="utility-header">
+        <div>
+          <span class="utility-kicker">Utility view</span>
+          <h2 id="utility-settings-title">Configuracoes</h2>
+          <p>Ajuste a chave da API, confirme o modo atual do app e acesse a politica de privacidade sem sair do fluxo principal.</p>
+        </div>
+        <button class="btn-secondary utility-back-btn" type="button" data-utility-back>
+          <i data-lucide="arrow-left"></i>
+          Voltar
         </button>
       </div>
-      <div class="modal-body">
-        <div class="setting-group">
-          <label for="api-key-input">Chave da API Groq (opcional)</label>
-          <p class="setting-description">
-            Use sua chave se quiser respostas personalizadas da IA. Sem a chave, o app continua funcionando com respostas demo focadas em educação financeira.
-          </p>
-          <input type="password" id="api-key-input" class="setting-input" placeholder="Sua chave secreta..." />
-        </div>
-        <div class="setting-group">
-          <label>Modo atual</label>
-          <div id="mode-indicator" class="mode-indicator">
-            <span class="mode-badge demo">Demonstração</span>
+
+      <div class="utility-card-grid">
+        <article class="utility-card">
+          <div class="setting-group">
+            <label for="utility-api-key-input">Chave da API Groq (opcional)</label>
+            <p class="setting-description">
+              Use sua chave se quiser respostas personalizadas da IA. Sem a chave, o app continua funcionando com respostas demo focadas em educacao financeira.
+            </p>
+            <input type="password" id="utility-api-key-input" class="setting-input" placeholder="Sua chave secreta..." />
           </div>
+
+          <div class="setting-group">
+            <label>Modo atual</label>
+            <div id="utility-mode-indicator" class="mode-indicator">
+              <span class="mode-badge demo">Demonstracao</span>
+            </div>
+          </div>
+
+          <div class="utility-actions">
+            <button id="utility-save-settings" class="btn-primary" type="button">
+              <i data-lucide="save"></i>
+              Salvar
+            </button>
+            <span class="utility-save-feedback" aria-live="polite">Configuracoes salvas.</span>
+          </div>
+        </article>
+
+        <article class="utility-card utility-card-secondary">
+          <span class="utility-card-label">Privacidade</span>
+          <h3>Seus dados e consentimento</h3>
+          <p>Consulte os dados coletados no diagnostico, como eles sao usados e quais direitos voce pode exercer segundo a LGPD.</p>
+          <a href="#" id="utility-open-privacy" class="utility-link">Abrir politica de privacidade</a>
+        </article>
+      </div>
+    </section>
+  </template>
+
+  <template id="template-utility-privacy">
+    <section class="utility-shell" aria-labelledby="utility-privacy-title">
+      <div class="utility-header">
+        <div>
+          <span class="utility-kicker">Utility view</span>
+          <h2 id="utility-privacy-title">Politica de Privacidade</h2>
+          <p>Resumo claro dos dados coletados no diagnostico e da forma como o Custo do Habito trata essas informacoes.</p>
         </div>
-        <button id="btn-save-settings" class="btn-primary">
-          <i data-lucide="save"></i>
-          Salvar
-        </button>
+        <div class="utility-header-actions">
+          <button class="btn-secondary utility-back-btn" type="button" data-open-settings>
+            <i data-lucide="settings"></i>
+            Configuracoes
+          </button>
+          <button class="btn-secondary utility-back-btn" type="button" data-utility-back>
+            <i data-lucide="arrow-left"></i>
+            Voltar
+          </button>
+        </div>
       </div>
-    </div>
-  </div>
 
-  <div id="privacy-modal" class="modal hidden">
-    <div class="modal-backdrop"></div>
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3>Política de Privacidade</h3>
-        <button id="btn-close-privacy" class="btn-icon">
-          <i data-lucide="x"></i>
-        </button>
-      </div>
-      <div class="modal-body">
-        <p><strong>Última atualização:</strong> março de 2026</p>
+      <article class="utility-card utility-privacy-card">
+        <p><strong>Ultima atualizacao:</strong> marco de 2026</p>
 
-        <p>O <strong>Custo do Hábito</strong> valoriza a privacidade de quem realiza o diagnóstico financeiro. Esta política explica de forma clara quais dados coletamos, como utilizamos e como protegemos suas informações.</p>
+        <p>O <strong>Custo do Habito</strong> valoriza a privacidade de quem realiza o diagnostico financeiro. Esta politica explica de forma clara quais dados coletamos, como utilizamos e como protegemos suas informacoes.</p>
 
         <p><strong>1. Dados coletados</strong></p>
-        <p>Ao preencher o formulário de diagnóstico, coletamos apenas as seguintes informações:</p>
+        <p>Ao preencher o formulario de diagnostico, coletamos apenas as seguintes informacoes:</p>
         <ul>
-          <li><strong>E-mail:</strong> para envio do diagnóstico personalizado e eventuais comunicações educacionais do canal.</li>
-          <li><strong>Profissão ou atividade:</strong> usada exclusivamente para personalizar o texto do seu diagnóstico.</li>
-          <li><strong>Faixa de renda mensal:</strong> utilizada de forma agregada para contextualizar o resultado. Não identifica você individualmente.</li>
-          <li><strong>Situação previdenciária:</strong> se você contribui para INSS, previdência privada, investimentos próprios ou nenhum. Usada apenas para personalizar os insights do diagnóstico.</li>
+          <li><strong>E-mail:</strong> para envio do diagnostico personalizado e eventuais comunicacoes educacionais do canal.</li>
+          <li><strong>Profissao ou atividade:</strong> usada exclusivamente para personalizar o texto do seu diagnostico.</li>
+          <li><strong>Faixa de renda mensal:</strong> utilizada de forma agregada para contextualizar o resultado. Nao identifica voce individualmente.</li>
+          <li><strong>Situacao previdenciaria:</strong> se voce contribui para INSS, previdencia privada, investimentos proprios ou nenhum. Usada apenas para personalizar os insights do diagnostico.</li>
         </ul>
 
         <p><strong>2. Como usamos seus dados</strong></p>
         <ul>
-          <li>Envio do diagnóstico personalizado para o e-mail informado.</li>
-          <li>Comunicações esporádicas com conteúdos educacionais do Custo do Hábito (você pode cancelar a qualquer momento).</li>
-          <li>Melhoria interna dos conteúdos, sempre de forma agregada e anônima, nunca vinculada à sua identidade.</li>
+          <li>Envio do diagnostico personalizado para o e-mail informado.</li>
+          <li>Comunicacoes esporadicas com conteudos educacionais do Custo do Habito (voce pode cancelar a qualquer momento).</li>
+          <li>Melhoria interna dos conteudos, sempre de forma agregada e anonima, nunca vinculada a sua identidade.</li>
         </ul>
 
-        <p><strong>3. O que não fazemos</strong></p>
+        <p><strong>3. O que nao fazemos</strong></p>
         <ul>
-          <li>Não vendemos, alugamos nem compartilhamos seus dados com terceiros para fins comerciais.</li>
-          <li>Não usamos seus dados para análise de crédito ou qualquer finalidade financeira vinculante.</li>
-          <li>Não coletamos dados bancários, CPF, senhas ou qualquer informação financeira sensível.</li>
-          <li>Não exibimos publicidade baseada no seu perfil para anunciantes.</li>
+          <li>Nao vendemos, alugamos nem compartilhamos seus dados com terceiros para fins comerciais.</li>
+          <li>Nao usamos seus dados para analise de credito ou qualquer finalidade financeira vinculante.</li>
+          <li>Nao coletamos dados bancarios, CPF, senhas ou qualquer informacao financeira sensivel.</li>
+          <li>Nao exibimos publicidade baseada no seu perfil para anunciantes.</li>
         </ul>
 
-        <p><strong>4. Armazenamento e segurança</strong></p>
-        <p>Os dados são armazenados de forma segura por meio do serviço Formspree, com acesso restrito ao responsável pelo canal. O tráfego é protegido por criptografia HTTPS.</p>
+        <p><strong>4. Armazenamento e seguranca</strong></p>
+        <p>Os dados sao armazenados de forma segura por meio do servico Formspree, com acesso restrito ao responsavel pelo canal. O trafego e protegido por criptografia HTTPS.</p>
 
         <p><strong>5. Seus direitos (LGPD)</strong></p>
-        <p>Em conformidade com a Lei Geral de Proteção de Dados (Lei nº 13.709/2018), você pode solicitar consulta, correção ou exclusão dos seus dados a qualquer momento pelo e-mail <strong>custodohabito@gmail.com.br</strong>.</p>
+        <p>Em conformidade com a Lei Geral de Protecao de Dados (Lei no 13.709/2018), voce pode solicitar consulta, correcao ou exclusao dos seus dados a qualquer momento pelo e-mail <strong>custodohabito@gmail.com.br</strong>.</p>
 
         <p><strong>6. Consentimento</strong></p>
-        <p>Ao utilizar este ambiente e, quando aplicável, marcar a caixa de aceite, você confirma que leu esta política e concorda com o uso dos seus dados conforme descrito acima.</p>
-      </div>
-    </div>
-  </div>
+        <p>Ao utilizar este ambiente e, quando aplicavel, marcar a caixa de aceite, voce confirma que leu esta politica e concorda com o uso dos seus dados conforme descrito acima.</p>
+      </article>
+    </section>
+  </template>
 
   <script type="module" src="./src/main.js"></script>
 </body>

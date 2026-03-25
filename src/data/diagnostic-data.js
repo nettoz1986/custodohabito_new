@@ -362,10 +362,10 @@ export const diagnosticProfiles = {
 };
 
 export const diagnosticProfileImages = {
-  bia: 'assets/biaAgora.png',
-  heitor: 'assets/heitorReserva.png',
-  lia: 'assets/liaEquilibrio.png',
-  valen: 'assets/valenLuxo.png'
+  bia: 'assets/biaAgora.webp',
+  heitor: 'assets/heitorReserva.webp',
+  lia: 'assets/liaEquilibrio.webp',
+  valen: 'assets/valenLuxo.webp'
 };
 
 export const diagnosticMeta = {
@@ -539,7 +539,7 @@ export const diagnosticReportVariations = {
       (data) => `Seu perfil costuma manter o pe no chao sem sufocar totalmente a vida. Essa leitura mais equilibrada vale muito quando o mes exige escolhas menos emocionais e mais sustentaveis.`
     ],
     alert: [
-      (data) => `Seu ponto de atencao não e o descontrole evidente. Com ${data.comprometidoLabel} comprometidos e seguranca futura apoiada em ${data.previdenciaLabel}, o risco esta em normalizar pequenos custos que "mais ou menos cabem" ate virarem estrutura fixa.`,
+      (data) => `Seu ponto de atenção não e o descontrole evidente. Com ${data.comprometidoLabel} comprometidos e seguranca futura apoiada em ${data.previdenciaLabel}, o risco esta em normalizar pequenos custos que "mais ou menos cabem" ate virarem estrutura fixa.`,
       (data) => `O equilibrio pode mascarar acomodacao silenciosa. Quando a vida vai sendo ajustada sem revisao, o que parecia flexibilidade pode virar um padrão caro dificil de perceber.`,
       (data) => `O cuidado aqui e não confundir viabilidade com margem saudavel. Dependendo de quanto do seu mes ja esta travado, um sistema so "ok" pode ficar fragil rapido diante de imprevistos.`
     ],
@@ -585,7 +585,7 @@ export const diagnosticReportVariations = {
     alert: [
       (data) => `O risco principal aqui e a falta de amortecedor. Com ${data.comprometidoLabel} da renda comprometida e seguranca futura apoiada em ${data.previdenciaLabel}, qualquer desvio pode apertar demais o mes seguinte.`,
       () => 'Quando alivio emocional e decisao financeira se misturam com frequencia, o custo raramente aparece de uma vez. Ele vai morar no mes aos poucos.',
-      (data) => `Seu ponto de atencao não e moral. E estrutural: sem margem minima, o presente passa a decidir demais, e isso dificulta sair do mesmo lugar.`
+      (data) => `Seu ponto de atenção não e moral. E estrutural: sem margem minima, o presente passa a decidir demais, e isso dificulta sair do mesmo lugar.`
     ],
     action: [
       () => 'A acao pratica mais util agora e criar uma pequena camada de friccao entre vontade e compra. não para te punir, mas para devolver alguns segundos de clareza a decisoes automaticas.',

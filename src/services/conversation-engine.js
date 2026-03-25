@@ -16,11 +16,11 @@ const conceptLibrary = [
     id: 'orcamento',
     triggers: ['orcamento', 'organizar', 'controle financeiro', 'mapa financeiro', 'planejamento'],
     response: {
-      reading: 'Orçamento não precisa funcionar como punição. Ele serve para mostrar quanto custa sustentar o seu mês antes de tentar acelerar qualquer meta.',
-      pattern: 'Um padrão comum aqui é gastar por blocos invisíveis: fixos, variáveis, recorrências pequenas e metas que nunca entram no calendário.',
-      impact: 'Sem esse mapa, o dinheiro some dentro do automático e fica difícil saber se falta renda, margem ou priorização.',
-      awareness: 'Vale observar menos a categoria isolada e mais o desenho inteiro do mês.',
-      nextStep: 'Comece separando em quatro blocos: essenciais, estilo de vida, segurança e metas.'
+      reading: 'O orçamento não é uma ferramenta de castigo, é o mapa da sua autonomia. Ele serve para mostrar quanto custa sustentar sua vida hoje antes de você tentar acelerar qualquer meta.',
+      pattern: 'O padrão invisível aqui é o "gasto por esperança": você assume compromissos contando com uma clareza que o automático apaga.',
+      impact: 'Sem esse mapa, você não perde só dinheiro; você perde a margem de manobra para reagir quando o sistema oscila.',
+      awareness: 'Em vez de vigiar cada centavo, vigie o desenho dos seus blocos: quanto do seu mês já nasce comprometido?',
+      nextStep: 'Separe o que é custo de sobrevivência (essencial) do que é custo de estilo de vida. Onde está a sua gordura?'
     }
   },
   {
@@ -65,6 +65,50 @@ const conceptLibrary = [
       impact: 'Quando o gasto vira alívio recorrente, ele pesa pouco por vez e muito no acumulado.',
       awareness: 'O gatilho vem antes da compra. Ler o contexto vale mais do que só tentar se proibir.',
       nextStep: 'Crie tempo entre vontade e compra nas categorias em que você mais se arrepende.'
+    }
+  },
+  {
+    id: 'linha_do_zero',
+    triggers: ['linha do zero', 'zero relativo', 'margem de manobra', 'sem margem', 'perto do zero'],
+    response: {
+      reading: 'A linha do zero não é um número na planilha. É o ponto de pressão onde sua rotina deixa de absorver imprevistos e passa a depender de crédito ou pressa.',
+      pattern: 'Muitas pessoas operam "encostadas no zero" achando que estão seguras só porque o saldo é positivo, ignorando que não possuem amortecedores.',
+      impact: 'Quanto mais perto da linha, mais caro fica qualquer erro e mais agressivo o sistema se torna com você.',
+      awareness: 'A pergunta não é quanto você tem, mas quanta distância existe entre sua vida atual e o desespero.',
+      nextStep: 'Identifique seus amortecedores hoje: liquidez imediata, reserva de tempo ou flexibilidade de custos.'
+    }
+  },
+  {
+    id: 'fisiologia_do_gasto',
+    triggers: ['fisiologia do gasto', 'custo de funcionamento', 'custo basal', 'manutencao invisivel'],
+    response: {
+      reading: 'Todo gasto ativa um circuito vivo. O preço da etiqueta é apenas o nascimento; a vida do objeto exige manutenção, tempo e espaço.',
+      pattern: 'O erro comum é olhar o custo de entrada e ignorar o custo de funcionamento que vai drenar sua margem nos próximos meses.',
+      impact: 'Ignorar a fisiologia do gasto cria uma rigidez silenciosa: você tem as coisas, mas não tem mais fôlego financeiro.',
+      awareness: 'Não se pergunte apenas se "cabe no bolso" agora, pergunte se você quer sustentar esse organismo no longo prazo.',
+      nextStep: 'Liste o que esse gasto puxa junto: ele pede upgrades, revisões, mensalidades ou mais do seu tempo?'
+    }
+  },
+  {
+    id: 'uso_vs_necessidade',
+    triggers: ['uso ou necessidade', 'uso vs necessidade', 'necessidade real', 'isso serve', 'se eu nao tiver isso'],
+    response: {
+      reading: 'Quase tudo tem algum uso. O ponto e descobrir se existe necessidade real agora.',
+      pattern: 'A mente costuma justificar com facilidade: pode ajudar, pode otimizar, pode ser util depois. Uso quase sempre aparece primeiro; necessidade precisa ser provada.',
+      impact: 'Quando uso vira criterio de prioridade, o dinheiro comeca a correr para tudo o que parece justificavel e a estrutura perde foco.',
+      awareness: 'Uso justifica. Necessidade decide.',
+      nextStep: 'Pergunte assim: se eu nao tiver isso agora, o que de fato acontece com meu objetivo, meu trabalho ou minha seguranca?'
+    }
+  },
+  {
+    id: 'sustentabilidade',
+    triggers: ['saude', 'cansaco', 'fadiga', 'sono', 'energia', 'corpo', 'rotina insustentavel'],
+    response: {
+      reading: 'Corpo, mente, tempo e energia tambem entram na equacao financeira. Algumas dividas comecam no corpo antes de aparecer no extrato.',
+      pattern: 'Um padrao comum e tentar ganhar eficiencia financeira sacrificando sono, recuperacao, movimento ou clareza mental.',
+      impact: 'Quando a sustentacao corporal cai, piora a decisao, piora a renda e cresce a chance de custo corretivo no futuro.',
+      awareness: 'Saude aqui nao e estetica nem performance. E infraestrutura silenciosa para sustentar a vida.',
+      nextStep: 'Vale observar se sua rotina atual esta te dando margem de decisao ou se esta te empurrando para respostas cada vez mais curtas e caras.'
     }
   }
 ];
@@ -984,25 +1028,17 @@ function formatDecisionResponse(snapshot) {
     : '- Ainda faltam variáveis importantes para uma leitura segura.';
 
   return [
-    '## Leitura do contexto',
-    `Você trouxe uma decisão concreta sobre ${themeTitle.toLowerCase()}. Em vez de te empurrar uma resposta pronta, eu estou olhando custo total, risco de caixa, risco de juros e risco comportamental juntos.`,
+    `### Como eu leio o seu terreno`,
+    `Olhando para a decisão sobre **${snapshot.theme?.title.toLowerCase()}**, vejo que a direção mais sustentável agora é **${result.tendency}**.`,
     '',
-    '## Tendência',
-    `${result.tendency}. A decisão final continua sendo sua, mas essa é a direção que hoje parece mais coerente com o que você me trouxe.`,
+    `**O que está operando aqui:**`,
+    result.logic.map((item) => `- ${item}`).join('\n'),
     '',
-    '## O que mais pesou aqui',
-    logicLines,
+    `**O risco que vale vigiar:** ${result.alert}`,
     '',
-    '## Principal risco',
-    result.alert,
+    `**Para ganhar margem agora:** ${result.nextStep}`,
     '',
-    '## Próximo passo',
-    result.nextStep,
-    '',
-    '## Se a opção principal não couber',
-    result.alternative,
-    '',
-    '_Conteúdo educacional. Não substitui consultoria financeira individual._'
+    `*Essa é uma leitura lógica do sistema, a autoria da decisão final é sempre sua.*`
   ].join('\n');
 }
 
@@ -1166,6 +1202,186 @@ function formatOpenResponse() {
   ].join('\n');
 }
 
+function formatDecisionResponseHuman(snapshot) {
+  const themeTitle = snapshot.theme?.title || 'essa decisão';
+  const result = snapshot.evaluation || buildDefaultResult();
+  const logicLines = result.logic.length
+    ? result.logic.map((item) => `- ${item}`).join('\n')
+    : '- Ainda faltam variáveis importantes para uma leitura segura.';
+
+  return [
+    `Vamos olhar para o contexto antes da decisão sobre ${themeTitle.toLowerCase()}.`,
+    `A tendência hoje é ${result.tendency}. Não como regra universal, mas como a direção que parece mais sustentável para o terreno que você me mostrou.`,
+    '',
+    'O que mais pesou aqui:',
+    logicLines,
+    '',
+    `Principal risco: ${result.alert}`,
+    '',
+    `Próximo passo: ${result.nextStep}`,
+    '',
+    `Se a melhor opção não couber agora: ${result.alternative}`,
+    '',
+    '_Conteúdo educacional. Não substitui consultoria financeira individual._'
+  ].join('\n');
+}
+
+function formatPatternResponseHuman(snapshot) {
+  const reading = snapshot.patternReading;
+
+  return [
+    reading.reading,
+    '',
+    `O impacto estrutural aqui é este: ${reading.impact}`,
+    '',
+    `Vale observar: ${reading.awareness}`,
+    '',
+    `Próximo passo: ${reading.nextStep}`,
+    '',
+    reading.bridgeToDecision,
+    '',
+    '_Conteúdo educacional. A decisão final continua sendo sua._'
+  ].join('\n');
+}
+
+function formatFollowUpDecisionResponseHuman(snapshot) {
+  const themeTitle = snapshot.theme?.title || 'essa decisão';
+  const questions = snapshot.followUpQuestions.length
+    ? snapshot.followUpQuestions.map((item) => `- ${item.question}`).join('\n')
+    : '- Me conte um pouco mais do contexto para eu não cair numa resposta padrão.';
+
+  return [
+    `Você trouxe uma dúvida sobre **${snapshot.theme?.title.toLowerCase()}**, e para não te dar uma resposta rasa, eu prefiro olhar para o contexto antes.`,
+    '',
+    `**Para eu entender sua linha do zero, me conte:**`,
+    questions,
+    '',
+    `**Por que isso importa?** Porque a diferença entre uma escolha estratégica e um erro caro está nos detalhes do seu caixa e na urgência do momento.`,
+    '',
+    `*Enquanto isso, evite decisões automáticas baseadas apenas em benefícios pequenos de cartão ou parcelas "que cabem".*`
+  ].join('\n');
+}
+
+function formatFollowUpPatternResponseHuman(snapshot) {
+  const questions = snapshot.followUpQuestions.length
+    ? snapshot.followUpQuestions.map((item) => `- ${item.question}`).join('\n')
+    : '- Me conta um pouco mais de quando isso costuma acontecer.';
+
+  return [
+    'Tem um padrão aqui que vale nomear com mais cuidado antes de tentar resolver rápido.',
+    '',
+    'Para eu ler isso melhor:',
+    questions,
+    '',
+    'Estou te perguntando isso porque comportamento financeiro quase nunca nasce só da matemática. Contexto, gatilho, repetição e linha do zero importam muito.',
+    '',
+    'Direção provisória: antes de corrigir o gasto, vale entender o que ele está tentando resolver.',
+    '',
+    '_Conteúdo educacional. Isso não é sobre certo ou errado._'
+  ].join('\n');
+}
+
+function formatConceptResponseHuman(concept) {
+  return [
+    concept.response.reading,
+    '',
+    `Um ponto central aqui é este: ${concept.response.pattern}`,
+    '',
+    `Impacto estrutural: ${concept.response.impact}`,
+    '',
+    `Vale observar: ${concept.response.awareness}`,
+    '',
+    `Próximo passo prático: ${concept.response.nextStep}`,
+    '',
+    '_Conteúdo educacional. Não substitui consultoria financeira individual._'
+  ].join('\n');
+}
+
+function formatScenarioResponseHuman(scenario) {
+  const scenarioResponses = {
+    pressao_financeira: {
+      reading: 'Viver sob pressão financeira raramente é um erro de caráter. Na maioria das vezes, é o resultado de um mês que já nasce estrangulado por compromissos automáticos.',
+      pattern: 'O padrão aqui é a "reação constante": como não sobra margem, toda decisão é urgente e, por ser urgente, acaba saindo mais cara.',
+      impact: 'Isso gera uma fadiga de decisão que te empurra de volta para o consumo de alívio, fechando o ciclo.',
+      awareness: 'O ponto de virada não é ganhar mais, é recuperar o oxigênio entre o que entra e o que já sai carimbado.',
+      nextStep: 'Vamos olhar para os seus blocos fixos. Onde o seu dinheiro está morando antes mesmo de você acordar?'
+    },
+    padrao_de_vida: {
+      reading: 'Buscar conforto ou praticidade não é erro moral. A questão é entender qual estrutura financeira isso exige para continuar de pé.',
+      pattern: 'Um padrão comum aqui é o custo principal não estar na compra, e sim na manutenção do padrão que ela puxa junto.',
+      impact: 'Quando o estilo de vida cresce no automático, o mês fica mais rígido e qualquer queda de margem assusta mais.',
+      awareness: 'Vale perguntar menos "isso cabe?" e mais "que padrão isso alimenta ao longo do tempo?".',
+      nextStep: 'A boa próxima etapa é separar valor real para você de custo automático de manutenção.'
+    },
+    habito_e_consumo: {
+      reading: 'Comportamento financeiro responde muito a contexto, cansaço e busca de alívio. Isso não é julgamento; é leitura de ambiente.',
+      pattern: 'Um padrão comum é o gasto pequeno recorrente parecer irrelevante no dia e pesado no acumulado.',
+      impact: 'O problema raramente vem de um ato só. Ele nasce na repetição que reduz margem sem chamar atenção.',
+      awareness: 'Ler o gatilho antes da compra costuma ser mais útil do que só tentar aumentar força de vontade.',
+      nextStep: 'Escolha um hábito específico e leia o ciclo completo: gatilho, compra, recorrência e custo.'
+    },
+    planejamento_e_clareza: {
+      reading: 'Planejamento não serve para apertar sua vida. Serve para devolver visibilidade ao seu dinheiro.',
+      pattern: 'Sem mapa, o mês vira uma sequência de reações. É fácil confundir correria com progresso.',
+      impact: 'Quando você nomeia blocos e prioridades, recupera margem de escolha e reduz improviso caro.',
+      awareness: 'Clareza não é restrição; é o que permite decidir sem neblina.',
+      nextStep: 'Se quiser, a próxima conversa pode ser montar um mapa simples do mês com prioridades reais.'
+    },
+    linha_do_zero: {
+      reading: 'O ponto talvez não seja apenas quanto você ganha ou gasta, mas quão perto sua rotina está do lugar em que qualquer desvio vira aperto.',
+      pattern: 'Um padrão comum aqui é operar com pouca folga e descobrir isso só quando aparece um imprevisto.',
+      impact: 'Quando a linha do zero fica muito perto, o sistema perde amortecimento e começa a responder com mais rigidez.',
+      awareness: 'Vale olhar menos para o saldo isolado e mais para a distância entre sua rotina e a necessidade de usar crédito, improviso ou pressa.',
+      nextStep: 'Se quiser, a próxima conversa pode ser mapear seus amortecedores reais: folga mensal, liquidez, reserva e rigidez de custos.'
+    },
+    fisiologia_do_gasto: {
+      reading: 'A compra pode até parecer simples, mas o custo real costuma aparecer no organismo que ela cria depois.',
+      pattern: 'Um padrão comum aqui é olhar a entrada e ignorar manutenção, reposição, recorrência e perda de liquidez.',
+      impact: 'Quando isso acontece, o gasto parece caber hoje e começa a apertar o sistema em silêncio nos meses seguintes.',
+      awareness: 'Vale perguntar não só quanto custa comprar, mas quanto custa sustentar esse circuito em funcionamento.',
+      nextStep: 'A boa próxima etapa é listar quais custos passam a existir depois da compra, mesmo que eles pareçam pequenos.'
+    },
+    sustentabilidade_da_vida: {
+      reading: 'Seu corpo e sua mente são a infraestrutura invisível das suas finanças. Algumas dívidas começam no cansaço antes de chegar ao extrato.',
+      pattern: 'Tentar ganhar eficiência financeira sacrificando o sono ou a saúde é como queimar os móveis da casa para manter a lareira acesa.',
+      impact: 'Quando a sustentação corporal cai, a qualidade da sua decisão despenca e o custo corretivo no futuro será exponencial.',
+      awareness: 'Saúde não é luxo nem performance; é margem de manobra operacional.',
+      nextStep: 'Onde sua rotina atual está cobrando juros da sua energia que o dinheiro não vai conseguir pagar depois?'
+    }
+  };
+
+  const response = scenarioResponses[scenario.id] || scenarioResponses.planejamento_e_clareza;
+
+  return [
+    response.reading,
+    '',
+    `Um padrão possível aqui é: ${response.pattern}`,
+    '',
+    `Impacto estrutural: ${response.impact}`,
+    '',
+    `Vale observar: ${response.awareness}`,
+    '',
+    `Direcionamento leve: ${response.nextStep}`,
+    '',
+    '_Conteúdo educacional. Não substitui consultoria financeira individual._'
+  ].join('\n');
+}
+
+function formatOpenResponseHuman() {
+  return [
+    'Posso te ajudar de três jeitos por aqui: ler uma decisão concreta, explicar um conceito sem jargão ou mapear o padrão que está apertando sua vida hoje.',
+    '',
+    'Meu jeito de responder é olhar o terreno antes da resposta. Em vez de só dizer "sim" ou "não", eu tento ler custo total, liquidez, linha do zero, manutenção do gasto e risco de você perder margem de manobra.',
+    '',
+    'Se quiser começar de forma objetiva:',
+    '- Me diga a decisão que você está tentando tomar.',
+    '- Ou me diga o que mais está te incomodando hoje na sua vida financeira.',
+    '- Ou me pergunte sobre um conceito como linha do zero, custo de funcionamento ou uso versus necessidade.',
+    '',
+    '_Conteúdo educacional. Não substitui consultoria financeira individual._'
+  ].join('\n');
+}
+
 function summarizeEvaluation(evaluation) {
   if (!evaluation) return 'Ainda sem recomendação final; faltam dados críticos.';
   return [
@@ -1264,26 +1480,26 @@ export function analyzeConversationTurn(userMessage, previousState = createConve
         : null;
 
   let stage = 'abertura';
-  let localResponse = formatOpenResponse();
+  let localResponse = formatOpenResponseHuman();
 
   if (shouldAskDecision) {
     stage = 'coleta_decisao';
-    localResponse = formatFollowUpDecisionResponse({ theme: activeTheme, followUpQuestions });
+    localResponse = formatFollowUpDecisionResponseHuman({ theme: activeTheme, followUpQuestions });
   } else if (shouldAskPattern) {
     stage = 'coleta_padrao';
-    localResponse = formatFollowUpPatternResponse({ theme: activeTheme, followUpQuestions });
+    localResponse = formatFollowUpPatternResponseHuman({ theme: activeTheme, followUpQuestions });
   } else if (activeTheme?.mode === 'decision' && evaluation) {
     stage = 'recomendacao_decisao';
-    localResponse = formatDecisionResponse({ theme: activeTheme, evaluation });
+    localResponse = formatDecisionResponseHuman({ theme: activeTheme, evaluation });
   } else if (patternReading) {
     stage = 'leitura_padrao';
-    localResponse = formatPatternResponse({ theme: activeTheme, patternReading });
+    localResponse = formatPatternResponseHuman({ theme: activeTheme, patternReading });
   } else if (concept) {
     stage = 'explicacao';
-    localResponse = formatConceptResponse(concept);
+    localResponse = formatConceptResponseHuman(concept);
   } else if (fallbackScenario) {
     stage = 'leitura';
-    localResponse = formatScenarioResponse(fallbackScenario);
+    localResponse = formatScenarioResponseHuman(fallbackScenario);
   }
 
   const knowledgeSnippets = findRelevantKnowledge(userMessage, activeTheme?.id, diagnosticContext);
