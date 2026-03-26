@@ -20,6 +20,8 @@ export function initChat() {
     const welcomeScreen = document.getElementById('welcome-screen');
     const btnNewChat = document.getElementById('btn-new-chat');
 
+    applyChatCopyFixes();
+
     // Instância do serviço de IA
     const aiService = new AIService();
 
@@ -138,6 +140,46 @@ export function initChat() {
             }
         });
     });
+
+    function applyChatCopyFixes() {
+        const welcomeTitle = welcomeScreen?.querySelector('h2');
+        const welcomeBody = welcomeScreen?.querySelector('p:not(.chat-disclaimer)');
+        const welcomeDisclaimer = welcomeScreen?.querySelector('.chat-disclaimer');
+        const welcomeCardSpans = welcomeScreen?.querySelectorAll('.welcome-card span');
+        const welcomeCardSmalls = welcomeScreen?.querySelectorAll('.welcome-card small');
+
+        if (welcomeTitle) {
+            welcomeTitle.textContent = 'O valor do amanh\u00e3 \u00e9 fruto do seu dia a dia';
+        }
+
+        if (welcomeBody) {
+            welcomeBody.innerHTML = 'O <strong>Custo do H\u00e1bito</strong> te ajuda a ler o terreno antes da decis\u00e3o. Aqui voc\u00ea pode entender custo de funcionamento, linha do zero, uso versus necessidade e transformar d\u00favidas em escolhas mais sustent\u00e1veis.';
+        }
+
+        if (welcomeCardSpans?.length >= 5) {
+            welcomeCardSpans[0].textContent = 'Descobrir seu perfil financeiro';
+            welcomeCardSpans[1].textContent = 'Entender o or\u00e7amento';
+            welcomeCardSpans[2].textContent = '"Linha do zero"';
+            welcomeCardSpans[3].textContent = 'Uso ou necessidade';
+            welcomeCardSpans[4].textContent = 'Gastos ap\u00f3s aquisi\u00e7\u00e3o';
+        }
+
+        if (welcomeCardSmalls?.length >= 5) {
+            welcomeCardSmalls[0].textContent = 'Entenda como seus h\u00e1bitos influenciam suas decis\u00f5es';
+            welcomeCardSmalls[1].textContent = 'Come\u00e7ando do zero';
+            welcomeCardSmalls[2].textContent = 'Folga, aperto e seus impactos';
+            welcomeCardSmalls[3].textContent = 'Separar desejo de prioridade';
+            welcomeCardSmalls[4].textContent = 'Custo invis\u00edvel na compra';
+        }
+
+        if (welcomeDisclaimer) {
+            welcomeDisclaimer.textContent = 'Conte\u00fado educacional. N\u00e3o substitui consultoria financeira individual nem recomenda\u00e7\u00f5es personalizadas de investimento.';
+        }
+
+        if (chatInput) {
+            chatInput.setAttribute('placeholder', 'Descreva aqui sua d\u00favida...');
+        }
+    }
 
     // ---- Botões de atalho rápido na sidebar ----
     const quickActionBtns = document.querySelectorAll('.quick-action-btn');

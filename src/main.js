@@ -78,14 +78,14 @@ document.addEventListener('DOMContentLoaded', () => {
   applyState(currentState, { replace: true });
 
   if (chatModule.aiService.isApiMode()) {
-    refs.chatStatus.innerHTML = '<span class="status-dot"></span> Online - API Groq ativa';
+    refs.chatStatus.innerHTML = '<span class="status-dot"></span> Online • API Groq ativa';
   }
 
   if (!location.hash) {
     openChatView({ replace: true });
   }
 
-  console.log('Custo do Habito inicializado com sucesso.');
+  console.log('Custo do Hábito inicializado com sucesso.');
 
   function bindChromeEvents() {
     refs.navItems.forEach((item) => {
@@ -221,11 +221,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (state.section === 'utility') {
       const utilityMeta = state.utilityView === 'privacy'
         ? {
-            title: 'Politica de privacidade',
-            status: 'Entenda como os dados do diagnostico sao utilizados e protegidos'
+            title: 'Pol\u00edtica de privacidade',
+            status: 'Entenda como os dados do diagn\u00f3stico s\u00e3o utilizados e protegidos'
           }
         : {
-            title: 'Configuracoes',
+            title: 'Configura\u00e7\u00f5es',
             status: 'Ajuste a chave da API e acompanhe o modo de funcionamento do app'
           };
 
@@ -236,30 +236,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (state.section === 'learn' && topic) {
       refs.chatTitle.textContent = topic.title;
-      refs.chatStatus.innerHTML = `<span class="status-dot"></span> ${topic.categoryLabel} - ${topic.level} - ${topic.time}`;
+      refs.chatStatus.innerHTML = `<span class="status-dot"></span> ${topic.categoryLabel} • ${topic.level} • ${topic.time}`;
       return;
     }
 
     const metaBySection = {
       chat: {
         title: 'Agente financeiro',
-        status: 'Online - pronto para educar, organizar e orientar'
+        status: 'Online • pronto para educar, organizar e orientar'
       },
       diagnostic: {
-        title: 'Diagnostico de habito',
-        status: 'Descubra o personagem financeiro que mais se aproxima do seu padrao'
+        title: 'Diagn\u00f3stico de h\u00e1bito',
+        status: 'Descubra o personagem financeiro que mais se aproxima do seu padr\u00e3o'
       },
       learn: {
         title: 'Aprender com clareza',
-        status: 'Leituras guiadas, conceitos essenciais e conexao direta com o agente'
+        status: 'Leituras guiadas, conceitos essenciais e conex\u00e3o direta com o agente'
       },
       tools: {
         title: 'Ferramentas',
-        status: 'Painel de gastos e lista do mercado para leitura pratica do mes'
+        status: 'Painel de gastos e lista do mercado para leitura pr\u00e1tica do m\u00eas'
       },
       planning: {
         title: 'Planejamento financeiro',
-        status: 'Trilhas, ferramentas e proximos passos'
+        status: 'Trilhas, ferramentas e pr\u00f3ximos passos'
       }
     };
 
@@ -310,7 +310,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!modeIndicator) return;
       modeIndicator.innerHTML = key && key.length > 10
         ? '<span class="mode-badge api">API Groq ativa</span>'
-        : '<span class="mode-badge demo">Demonstracao</span>';
+        : '<span class="mode-badge demo">Demonstração</span>';
     };
 
     const savedKey = localStorage.getItem('groq_api_key') || '';

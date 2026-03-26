@@ -60,7 +60,7 @@ export function initDiagnostic() {
         <header class="diagnostic-hero">
           <img
             src="${resolveAssetPath('assets/logo_custodohabito.jpg')}"
-            alt="Logo Custo do Habito"
+            alt="Logo Custo do Hábito"
             class="diagnostic-logo"
             width="512"
             height="512"
@@ -68,36 +68,36 @@ export function initDiagnostic() {
           />
 
           <div class="diagnostic-hero-copy">
-            <span class="diagnostic-kicker">Diagnostico de habito</span>
-            <h2 id="diagnostic-title">Qual logica financeira mais se aproxima do seu padrao atual?</h2>
+            <span class="diagnostic-kicker">Diagn\u00f3stico de h\u00e1bito</span>
+            <h2 id="diagnostic-title">Qual l\u00f3gica financeira mais se aproxima do seu padr\u00e3o atual?</h2>
             <p>
-              Este diagnostico nao mede "certo" ou "errado".
-              Ele le tendencias de comportamento, relacao com conforto, pressao do presente,
-              seguranca e manutencao de padrao.
+              Este diagn\u00f3stico n\u00e3o mede "certo" ou "errado".
+              Ele l\u00ea tend\u00eancias de comportamento, rela\u00e7\u00e3o com conforto, press\u00e3o do presente,
+              seguran\u00e7a e manuten\u00e7\u00e3o de padr\u00e3o.
             </p>
           </div>
         </header>
 
-        <section class="diagnostic-project-note" aria-label="Como ler este diagnostico">
+        <section class="diagnostic-project-note" aria-label="Como ler este diagn\u00f3stico">
           <div class="diagnostic-note-card">
             <h3>Como funciona</h3>
             <p>
               Você vai responder perguntas curtas sobre decisões do cotidiano.
               No final, o sistema identifica seu perfil predominante, perfis de apoio
-              e os principais vetores que estao influenciando sua rotina financeira.
+              e os principais vetores que est\u00e3o influenciando sua rotina financeira.
             </p>
           </div>
 
           <div class="diagnostic-note-card">
             <h3>Importante</h3>
             <p>
-              O objetivo nao é te rotular. É te ajudar a enxergar o custo do padrão
+              O objetivo não é te rotular. É te ajudar a enxergar o custo do padrão
               que está operando hoje, inclusive quando ele parece invisivel.
             </p>
           </div>
         </section>
 
-        <section class="diagnostic-profiles" aria-label="Perfis do diagnostico">
+        <section class="diagnostic-profiles" aria-label="Perfis do diagn\u00f3stico">
           ${Object.entries(diagnosticProfiles).map(([key, profile]) => `
             <article class="diagnostic-profile-card" data-profile-card="${key}">
               <img
@@ -241,12 +241,12 @@ export function initDiagnostic() {
 
           ${result.secondary ? `
             <div class="diagnostic-blend-card">
-              <div class="report-section-label">Composicao do seu padrao</div>
+              <div class="report-section-label">Composi\u00e7\u00e3o do seu padr\u00e3o</div>
               <p>${escapeHtml(result.blendReading)}</p>
             </div>
           ` : ''}
 
-          <div class="diagnostic-score-strip" aria-label="Distribuicao dos perfis">
+          <div class="diagnostic-score-strip" aria-label="Distribui\u00e7\u00e3o dos perfis">
             ${result.ranking.map((item) => `
               <div class="diagnostic-score-item">
                 <span class="diagnostic-score-name">${escapeHtml(item.name)}</span>
@@ -261,12 +261,12 @@ export function initDiagnostic() {
           </div>
 
           <div class="report-section warning">
-            <div class="report-section-label">Ponto de atencao</div>
+            <div class="report-section-label">Ponto de aten\u00e7\u00e3o</div>
             <p>${escapeHtml(result.primary.warning)}</p>
           </div>
 
           <div class="report-section action">
-            <div class="report-section-label">Direcao sugerida</div>
+            <div class="report-section-label">Dire\u00e7\u00e3o sugerida</div>
             <p>${escapeHtml(result.guidance)}</p>
           </div>
 
@@ -280,11 +280,11 @@ export function initDiagnostic() {
           <div class="diagnostic-actions">
             <button class="btn-primary" id="diagnostic-report-btn" type="button">
               <i data-lucide="file-text"></i>
-              Gerar relatorio completo gratis
+              Gerar relat\u00f3rio completo gr\u00e1tis
             </button>
 
             <button class="btn-secondary" id="diagnostic-restart-btn" type="button">
-              Refazer diagnostico
+              Refazer diagn\u00f3stico
             </button>
           </div>
         </div>
@@ -447,12 +447,12 @@ export function initDiagnostic() {
       <section class="diagnostic-shell" aria-labelledby="diagnostic-report-title">
         <div class="diagnostic-result diagnostic-report-screen">
           <div class="report-header">
-            <div class="report-title">Diagnostico completo</div>
+            <div class="report-title">Diagnóstico completo</div>
             <h2 id="diagnostic-report-title" class="report-name">${escapeHtml(result.primary.name)}</h2>
             <span class="badge report-badge-prof">${escapeHtml(state.leadForm.profissao || 'Leitura personalizada')}</span>
             <p class="diagnostic-report-disclaimer">
               Esta leitura foi montada localmente com base nas suas respostas e nos dados que voce informou.
-              E um conteudo educacional, nao consultoria financeira individual.
+              É um conteúdo educacional, não consultoria financeira individual.
             </p>
           </div>
 
@@ -460,7 +460,7 @@ export function initDiagnostic() {
 
           ${result.secondary ? `
             <div class="diagnostic-blend-card">
-              <div class="report-section-label">Composicao do seu padrao</div>
+              <div class="report-section-label">Composi\u00e7\u00e3o do seu padr\u00e3o</div>
               <p>${escapeHtml(result.blendReading)}</p>
             </div>
           ` : ''}
@@ -504,7 +504,7 @@ export function initDiagnostic() {
               Ajustar dados do relatorio
             </button>
             <button class="btn-secondary" id="diagnostic-restart-report-btn" type="button">
-              Refazer diagnostico
+              Refazer diagn\u00f3stico
             </button>
           </div>
         </div>
@@ -749,7 +749,7 @@ export function initDiagnostic() {
       return `Hoje, seu padrao aparece mais concentrado em ${primary.name}. ${strongAxes.length ? `Os vetores que mais apareceram foram ${joinHuman(strongAxes)}.` : ''}`;
     }
 
-    return `Seu padrao atual nao esta operando em linha unica. A base predominante e ${primary.name}, mas existe influencia relevante de ${secondary.name}. ${strongAxes.length ? `Os vetores mais visíveis foram ${joinHuman(strongAxes)}.` : ''}`;
+    return `Seu padrão atual não está operando em linha única. A base predominante é ${primary.name}, mas existe influência relevante de ${secondary.name}. ${strongAxes.length ? `Os vetores mais visíveis foram ${joinHuman(strongAxes)}.` : ''}`;
   }
 
   function buildGuidance(primary, secondary, axes) {
@@ -807,7 +807,7 @@ export function initDiagnostic() {
       .map((axis) => axis.label.toLowerCase());
 
     if (result.secondary) {
-      return `Sua leitura predominante hoje foi ${result.primary.name}, com influencia relevante de ${result.secondary.name}. ${axisLabels.length ? `Os vetores mais fortes apareceram em ${joinHuman(axisLabels)}.` : ''} O ponto nao e se enquadrar em um rotulo, e entender qual logica esta puxando suas decisoes com mais frequencia.`;
+      return `Sua leitura predominante hoje foi ${result.primary.name}, com influência relevante de ${result.secondary.name}. ${axisLabels.length ? `Os vetores mais fortes apareceram em ${joinHuman(axisLabels)}.` : ''} O ponto não é se enquadrar em um rótulo, e entender qual lógica está puxando suas decisões com mais frequência.`;
     }
 
     return `Sua leitura predominante hoje foi ${result.primary.name}. ${axisLabels.length ? `Os vetores mais fortes apareceram em ${joinHuman(axisLabels)}.` : ''} Isso ajuda a enxergar com mais clareza onde o seu padrao esta protegendo a estrutura e onde ele pode estar criando custo ao longo do tempo.`;
@@ -840,7 +840,7 @@ export function initDiagnostic() {
     }
 
     if (!leadForm.privacyAccepted) {
-      return 'Voce precisa aceitar a Politica de Privacidade para continuar.';
+      return 'Você precisa aceitar a Política de Privacidade para continuar.';
     }
 
     return '';
@@ -882,7 +882,7 @@ export function initDiagnostic() {
         };
       }
 
-      throw new Error('A integracao do diagnostico ainda nao esta configurada neste ambiente.');
+      throw new Error('A integração do diagnóstico ainda não está configurada neste ambiente.');
     }
 
     const response = await fetch(apiUrl, {
