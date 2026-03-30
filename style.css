@@ -4783,6 +4783,473 @@ textarea:focus-visible {
   border-color: rgba(239, 154, 154, 0.24);
 }
 
+.grocery-tab-advanced {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.grocery-total-banner,
+.grocery-market-card,
+.grocery-modal-card {
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(2, 26, 66, 0.74);
+  box-shadow: var(--shadow-md);
+}
+
+.grocery-total-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 18px 20px;
+}
+
+.grocery-banner-label,
+.grocery-price-caption,
+.grocery-modal-kicker {
+  display: block;
+  color: var(--text-muted);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.grocery-banner-total {
+  display: block;
+  margin-top: 6px;
+  font-family: var(--font-bible);
+  color: var(--accent);
+  font-size: 1.8rem;
+}
+
+.grocery-banner-meta {
+  display: block;
+  margin-top: 6px;
+  color: var(--text-muted);
+  font-size: 0.88rem;
+}
+
+.grocery-banner-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.grocery-total-trend {
+  font-size: 0.84rem;
+  font-weight: 600;
+  text-align: right;
+}
+
+.grocery-total-trend.up {
+  color: #ef9a9a;
+}
+
+.grocery-total-trend.down {
+  color: #7dd9b0;
+}
+
+.grocery-total-trend.neutral {
+  color: var(--text-muted);
+}
+
+.grocery-refresh-btn.is-loading svg {
+  animation: spin 0.8s linear infinite;
+}
+
+.grocery-add-form-advanced {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.grocery-add-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.grocery-add-hint {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.grocery-empty-advanced {
+  min-height: 180px;
+}
+
+.grocery-list-advanced {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.grocery-market-card {
+  padding: 16px;
+}
+
+.grocery-market-card.item-checked {
+  opacity: 0.72;
+  background: rgba(76, 175, 140, 0.08);
+  border-color: rgba(76, 175, 140, 0.16);
+}
+
+.grocery-market-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.grocery-check-btn-card {
+  margin-top: 2px;
+}
+
+.grocery-market-main,
+.grocery-inline-price {
+  min-width: 0;
+  flex: 1;
+}
+
+.grocery-market-main {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.grocery-market-card.is-collapsed {
+  padding-block: 12px;
+}
+
+.grocery-market-header {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.grocery-market-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 2px;
+}
+
+.grocery-market-summary-main {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.grocery-market-summary-value {
+  font-family: var(--font-bible);
+  font-size: 1.15rem;
+  color: var(--text-primary);
+}
+
+.grocery-market-summary-value.is-empty,
+.grocery-market-summary-label {
+  color: var(--text-muted);
+}
+
+.grocery-market-summary-label {
+  font-size: 0.84rem;
+}
+
+.grocery-market-expand-hint {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  flex-shrink: 0;
+}
+
+.grocery-market-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 4px;
+}
+
+.grocery-market-title-row,
+.grocery-market-price-row,
+.grocery-market-controls,
+.grocery-market-tags,
+.grocery-market-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.grocery-market-title-row,
+.grocery-market-price-row {
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.grocery-market-tags,
+.grocery-market-controls {
+  flex-wrap: wrap;
+}
+
+.grocery-market-name {
+  margin: 0 0 8px;
+  font-family: var(--font-bible);
+  font-size: 1.08rem;
+  color: var(--text-primary);
+}
+
+.grocery-market-card.is-collapsed .grocery-market-name {
+  margin-bottom: 6px;
+}
+
+.grocery-item-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 10px;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  line-height: 1;
+}
+
+.grocery-item-tag.source-ml {
+  background: rgba(76, 175, 140, 0.14);
+  color: #7dd9b0;
+}
+
+.grocery-item-tag.source-manual {
+  background: rgba(201, 168, 76, 0.18);
+  color: var(--accent-hover);
+}
+
+.grocery-item-tag.source-none,
+.grocery-item-tag-muted {
+  color: var(--text-muted);
+}
+
+.grocery-card-icon {
+  width: 38px;
+  height: 38px;
+  min-height: 38px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.grocery-card-icon:hover {
+  color: var(--accent-hover);
+  border-color: rgba(201, 168, 76, 0.26);
+}
+
+.grocery-price-value,
+.grocery-price-subtotal strong {
+  display: block;
+  margin-top: 4px;
+  font-family: var(--font-bible);
+  font-size: 1.08rem;
+  color: var(--text-primary);
+}
+
+.grocery-price-value.is-empty {
+  color: var(--text-muted);
+}
+
+.grocery-price-subtotal {
+  text-align: right;
+}
+
+.grocery-market-trend {
+  min-height: 20px;
+}
+
+.grocery-price-trend {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.grocery-price-trend.up {
+  color: #ef9a9a;
+}
+
+.grocery-price-trend.down {
+  color: #7dd9b0;
+}
+
+.grocery-price-trend.neutral {
+  color: var(--text-muted);
+}
+
+.grocery-inline-price {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  flex: 1 1 100%;
+}
+
+.grocery-inline-input {
+  width: 100%;
+  min-width: 0;
+}
+
+.grocery-inline-actions {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+}
+
+.grocery-inline-btn {
+  flex: 1 1 0;
+  justify-content: center;
+}
+
+.grocery-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(2, 9, 24, 0.72);
+  backdrop-filter: blur(8px);
+}
+
+.grocery-modal-overlay.open {
+  display: flex;
+}
+
+.grocery-modal-card {
+  width: min(720px, 100%);
+  max-height: min(88vh, 860px);
+  padding: 20px;
+  overflow: auto;
+}
+
+.grocery-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.grocery-modal-header h3 {
+  margin: 6px 0 4px;
+  font-family: var(--font-bible);
+  color: var(--text-primary);
+}
+
+.grocery-modal-header p {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.grocery-modal-close {
+  width: 38px;
+  height: 38px;
+  min-height: 38px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.grocery-history-chart-wrap,
+.grocery-history-table-wrap {
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.grocery-history-chart-wrap {
+  padding: 14px;
+  margin-bottom: 14px;
+  min-height: 240px;
+}
+
+.grocery-history-table-wrap {
+  overflow: hidden;
+}
+
+.grocery-history-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.grocery-history-table th,
+.grocery-history-table td {
+  padding: 12px 14px;
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.grocery-history-table th {
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.grocery-history-table td {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.grocery-history-empty {
+  padding: 24px 18px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.grocery-modal-close-btn {
+  width: 100%;
+  margin-top: 14px;
+}
+
+.grocery-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 28px;
+  z-index: 70;
+  transform: translate(-50%, 120%);
+  padding: 10px 18px;
+  border-radius: var(--radius-full);
+  background: rgba(2, 9, 24, 0.92);
+  color: var(--text-primary);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: var(--shadow-lg);
+  transition: transform 0.25s ease;
+  pointer-events: none;
+}
+
+.grocery-toast.show {
+  transform: translate(-50%, 0);
+}
+
 .budget-cats-ref-legend {
   display: inline-flex;
   align-items: center;
@@ -4814,6 +5281,94 @@ textarea:focus-visible {
 }
 
 @media (max-width: 1023px) {
+  .grocery-market-card {
+    padding: 12px;
+  }
+
+  .grocery-market-card.is-collapsed {
+    padding-block: 10px;
+  }
+
+  .grocery-total-banner,
+  .grocery-market-title-row,
+  .grocery-market-price-row,
+  .grocery-add-actions,
+  .grocery-market-summary {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .grocery-banner-actions,
+  .grocery-price-subtotal {
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .grocery-market-top {
+    gap: 8px;
+  }
+
+  .grocery-market-main {
+    gap: 8px;
+  }
+
+  .grocery-market-header {
+    gap: 8px;
+  }
+
+  .grocery-market-name {
+    margin-bottom: 4px;
+    font-size: 0.98rem;
+  }
+
+  .grocery-item-tag {
+    padding: 4px 8px;
+    font-size: 0.72rem;
+  }
+
+  .grocery-market-summary-value {
+    font-size: 1rem;
+  }
+
+  .grocery-market-summary-label {
+    font-size: 0.78rem;
+  }
+
+  .grocery-market-expand-hint,
+  .grocery-card-icon,
+  .grocery-check-btn,
+  .grocery-remove-btn {
+    width: 32px;
+    height: 32px;
+    min-height: 32px;
+  }
+
+  .grocery-market-actions {
+    gap: 8px;
+  }
+
+  .grocery-market-controls {
+    align-items: stretch;
+  }
+
+  .grocery-inline-actions {
+    flex-direction: column;
+  }
+
+  .grocery-inline-btn {
+    justify-content: center;
+  }
+
+  .grocery-modal-overlay {
+    padding: 14px;
+    align-items: flex-end;
+  }
+
+  .grocery-modal-card {
+    padding: 16px;
+    max-height: 90vh;
+  }
+
   #view-chat .chat-messages {
     display: flex;
     flex-direction: column;

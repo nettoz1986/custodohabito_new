@@ -1,5 +1,8 @@
 const STORAGE_KEY_BUDGET = 'custodohabito_budget_v2';
-const STORAGE_KEY_GROCERY = 'custodohabito_grocery_v1';
+const STORAGE_KEY_GROCERY = 'custodohabito_grocery_v2';
+const STORAGE_KEY_GROCERY_LEGACY = 'custodohabito_grocery_v1';
+const STORAGE_KEY_GROCERY_HISTORY = 'custodohabito_grocery_history_v1';
+const STORAGE_KEY_GROCERY_PREV_TOTAL = 'custodohabito_grocery_prev_total_v1';
 
 const CATEGORIES = [
   {
@@ -55,6 +58,17 @@ export function initBudgetTools() {
   let activeTab = 'budget';
   let budgetData = loadBudget();
   let groceryList = loadGrocery();
+  let groceryHistory = loadGroceryHistory();
+  let groceryModalItemId = null;
+  let groceryChartInstance = null;
+  let groceryChartLoader = null;
+  let groceryToastTimer = null;
+  let groceryUiState = {
+    loadingAll: false,
+    loadingIds: new Set(),
+    searchResults: {},
+    expandedIds: new Set()
+  };
 
   function render() {
     container.innerHTML = `
@@ -343,12 +357,31 @@ export function initBudgetTools() {
   }
 
   function renderGrocery() {
-    const total = groceryList.reduce((sum, item) => sum + (toNumber(item.qty) * toNumber(item.price)), 0);
+    const total = getGroceryTotal(groceryList);
     const checked = groceryList.filter((item) => item.checked).length;
+    const priced = groceryList.filter((item) => hasGroceryPrice(item)).length;
+    const trendMeta = getGroceryTrendMeta(total);
+    const modalItem = groceryModalItemId ? groceryList.find((item) => item.id === groceryModalItemId) : null;
 
     return `
-      <div class="grocery-tab">
-        <section class="grocery-add-form">
+      <div class="grocery-tab grocery-tab-advanced">
+        <section class="grocery-total-banner">
+          <div>
+            <span class="grocery-banner-label">Total estimado</span>
+            <strong class="grocery-banner-total">${formatCurrency(total)}</strong>
+            <span class="grocery-banner-meta">
+              ${groceryList.length} ${groceryList.length === 1 ? 'item' : 'itens'}
+              ${priced > 0 ? ` - ${priced} com preco` : ''}
+              ${checked > 0 ? ` - ${checked} marcado${checked > 1 ? 's' : ''}` : ''}
+            </span>
+          </div>
+
+          <div class="grocery-banner-actions">
+            <span class="grocery-total-trend ${trendMeta.className}">${trendMeta.label}</span>
+          </div>
+        </section>
+
+        <section class="grocery-add-form grocery-add-form-advanced">
           <div class="grocery-form-row">
             <input id="grocery-name" class="grocery-input grocery-name-input" type="text" maxlength="60" placeholder="Item (ex: arroz 5kg)" aria-label="Nome do item" />
             <div class="grocery-number-row">
@@ -357,49 +390,32 @@ export function initBudgetTools() {
                 <input id="grocery-qty" class="grocery-input grocery-qty-input" type="number" inputmode="decimal" min="0.1" step="0.5" value="1" />
               </div>
               <div class="grocery-price-wrap">
-                <label class="grocery-label-small" for="grocery-price">R$ unit.</label>
-                <input id="grocery-price" class="grocery-input grocery-price-input" type="number" inputmode="decimal" min="0" step="0.5" placeholder="0,00" />
+                <label class="grocery-label-small" for="grocery-price">R$ inicial</label>
+                <input id="grocery-price" class="grocery-input grocery-price-input" type="number" inputmode="decimal" min="0" step="0.01" placeholder="Opcional" />
               </div>
             </div>
           </div>
 
-          <button id="grocery-add-btn" class="btn-primary grocery-add-btn" type="button">
-            <i data-lucide="plus"></i>
-            Adicionar
-          </button>
+          <div class="grocery-add-actions">
+            <button id="grocery-add-btn" class="btn-primary grocery-add-btn" type="button">
+              <i data-lucide="plus"></i>
+              Adicionar
+            </button>
+            <p class="grocery-add-hint">Depois voce pode salvar um preco manual ou buscar no Mercado Livre por item.</p>
+          </div>
         </section>
 
         ${groceryList.length === 0
           ? `
-            <div class="grocery-empty">
+            <div class="grocery-empty grocery-empty-advanced">
               <i data-lucide="shopping-basket"></i>
-              <p>Monte a lista antes de sair para ter uma projecao do total no caixa.</p>
+              <p>Sua lista esta vazia. Adicione um item para testar preco manual, busca no Mercado Livre e historico.</p>
             </div>
           `
           : `
-            <div class="grocery-summary-bar">
-              <span>${groceryList.length} ${groceryList.length === 1 ? 'item' : 'itens'}${checked > 0 ? ` - ${checked} marcado${checked > 1 ? 's' : ''}` : ''}</span>
-              <strong class="grocery-total">${formatCurrency(total)}</strong>
+            <div class="grocery-list-advanced">
+              ${groceryList.map((item) => renderGroceryCard(item)).join('')}
             </div>
-
-            <ul class="grocery-list">
-              ${groceryList.map((item, index) => `
-                <li class="grocery-item ${item.checked ? 'item-checked' : ''}">
-                  <button class="grocery-check-btn" type="button" data-check="${index}" aria-label="${item.checked ? 'Desmarcar item' : 'Marcar item'}">
-                    <i data-lucide="${item.checked ? 'check-circle-2' : 'circle'}"></i>
-                  </button>
-
-                  <div class="grocery-item-info">
-                    <span class="grocery-item-name">${escapeHtml(item.name)}</span>
-                    <span class="grocery-item-detail">${formatPlainNumber(item.qty)} x ${formatCurrency(item.price)} = <strong>${formatCurrency(item.qty * item.price)}</strong></span>
-                  </div>
-
-                  <button class="grocery-remove-btn" type="button" data-remove="${index}" aria-label="Remover item">
-                    <i data-lucide="x"></i>
-                  </button>
-                </li>
-              `).join('')}
-            </ul>
 
             <div class="grocery-actions-bar">
               <button id="grocery-clear-checked" class="btn-secondary grocery-action-btn" type="button" ${checked === 0 ? 'disabled' : ''}>
@@ -413,11 +429,189 @@ export function initBudgetTools() {
             </div>
           `}
 
-        <p class="budget-footnote">
+        <p class="budget-footnote grocery-footnote">
           <i data-lucide="lightbulb"></i>
-          Lance quantidade e valor unitario para prever o total antes da compra.
+          Use a pesquisa externa para conferir preco no Google, depois copie o valor e salve manualmente no item.
         </p>
+
+        <div id="grocery-history-overlay" class="grocery-modal-overlay ${modalItem ? 'open' : ''}" aria-hidden="${String(!modalItem)}">
+          <div class="grocery-modal-card" role="dialog" aria-modal="true" aria-labelledby="grocery-history-title">
+            <div class="grocery-modal-header">
+              <div>
+                <span class="grocery-modal-kicker">Historico</span>
+                <h3 id="grocery-history-title">${modalItem ? escapeHtml(modalItem.name) : 'Historico de preco'}</h3>
+                <p>${renderGroceryHistorySubtitle(modalItem)}</p>
+              </div>
+              <button class="grocery-modal-close" type="button" data-close-history aria-label="Fechar historico">
+                <i data-lucide="x"></i>
+              </button>
+            </div>
+
+            <div class="grocery-history-chart-wrap">
+              <canvas id="grocery-history-chart" height="200"></canvas>
+            </div>
+
+            <div class="grocery-history-table-wrap">
+              ${renderGroceryHistoryTable(modalItem)}
+            </div>
+
+            <button class="btn-primary grocery-modal-close-btn" type="button" data-close-history>Fechar</button>
+          </div>
+        </div>
+
+        <div id="grocery-toast" class="grocery-toast" aria-live="polite"></div>
       </div>
+    `;
+  }
+
+  function renderGroceryCard(item) {
+    const price = getGroceryItemPrice(item);
+    const subtotal = price === null ? null : getGroceryItemQty(item) * price;
+    const history = getGroceryItemHistory(item.id);
+    const previous = history.length >= 2 ? history[history.length - 2] : null;
+    const diff = previous && price !== null ? price - toNumber(previous.price) : 0;
+    const isExpanded = groceryUiState.expandedIds.has(item.id);
+    const sourceClass = item.priceSource === 'ml'
+      ? 'source-ml'
+      : item.priceSource === 'manual'
+        ? 'source-manual'
+        : 'source-none';
+    const sourceLabel = item.priceSource === 'ml'
+      ? 'Mercado Livre'
+      : item.priceSource === 'manual'
+        ? 'Manual'
+        : 'Sem preco';
+
+    return `
+      <article class="grocery-market-card ${item.checked ? 'item-checked' : ''} ${isExpanded ? 'is-expanded' : 'is-collapsed'}" data-item-id="${item.id}">
+        <div class="grocery-market-top">
+          <button class="grocery-check-btn grocery-check-btn-card" type="button" data-check="${item.id}" aria-label="${item.checked ? 'Desmarcar item' : 'Marcar item'}">
+            <i data-lucide="${item.checked ? 'check-circle-2' : 'circle'}"></i>
+          </button>
+
+          <div class="grocery-market-main">
+            <div class="grocery-market-header" role="button" tabindex="0" data-toggle-expand="${item.id}" aria-expanded="${String(isExpanded)}">
+              <div class="grocery-market-title-row">
+                <div>
+                  <h3 class="grocery-market-name">${escapeHtml(item.name)}</h3>
+                  <div class="grocery-market-tags">
+                    <span class="grocery-item-tag">Qtd ${formatPlainNumber(getGroceryItemQty(item))}</span>
+                    <span class="grocery-item-tag ${sourceClass}">${sourceLabel}</span>
+                    ${item.mlTitle ? `<span class="grocery-item-tag grocery-item-tag-muted">${escapeHtml(trimText(item.mlTitle, 48))}</span>` : ''}
+                  </div>
+                </div>
+
+                <div class="grocery-market-actions">
+                  <button class="grocery-card-icon" type="button" data-history="${item.id}" aria-label="Abrir historico">
+                    <i data-lucide="chart-line"></i>
+                  </button>
+                  <button class="grocery-card-icon grocery-remove-btn" type="button" data-remove="${item.id}" aria-label="Remover item">
+                    <i data-lucide="x"></i>
+                  </button>
+                </div>
+              </div>
+
+              <div class="grocery-market-summary">
+                <span class="grocery-market-summary-value ${subtotal === null ? 'is-empty' : ''}">${subtotal === null ? 'Sem preco' : formatCurrency(subtotal)}</span>
+                <span class="grocery-market-summary-label">${price === null ? 'Adicione um valor' : `${formatPlainNumber(getGroceryItemQty(item))} x ${formatCurrency(price)}`}</span>
+                <span class="grocery-market-expand-hint">
+                  <i data-lucide="${isExpanded ? 'chevron-up' : 'chevron-down'}"></i>
+                </span>
+              </div>
+            </div>
+
+            ${isExpanded ? `
+              <div class="grocery-market-body">
+                <div class="grocery-market-price-row">
+                  <div>
+                    <span class="grocery-price-caption">Preco unitario</span>
+                    <strong class="grocery-price-value ${price === null ? 'is-empty' : ''}">${price === null ? 'Sem preco' : formatCurrency(price)}</strong>
+                  </div>
+                  <div class="grocery-price-subtotal">
+                    <span class="grocery-price-caption">Subtotal</span>
+                    <strong>${subtotal === null ? '--' : formatCurrency(subtotal)}</strong>
+                  </div>
+                </div>
+
+                <div class="grocery-market-trend">
+                  ${previous && price !== null && Math.abs(diff) > 0.009
+                    ? `
+                      <span class="grocery-price-trend ${diff > 0 ? 'up' : 'down'}">
+                        <i data-lucide="${diff > 0 ? 'trending-up' : 'trending-down'}"></i>
+                        ${formatSignedCurrency(diff)}
+                      </span>
+                    `
+                    : '<span class="grocery-price-trend neutral">Sem variacao registrada</span>'}
+                </div>
+
+                <div class="grocery-market-controls">
+                  <label class="grocery-inline-price">
+                    <span>Preco manual</span>
+                    <input
+                      class="grocery-input grocery-inline-input"
+                      type="text"
+                      inputmode="decimal"
+                      autocomplete="off"
+                      placeholder="R$ 0,00"
+                      data-manual-input="${item.id}"
+                      value="${item.priceSource === 'manual' && price !== null ? formatCurrencyInput(price) : ''}"
+                    />
+                  </label>
+
+                  <div class="grocery-inline-actions">
+                    <button class="btn-secondary grocery-inline-btn" type="button" data-manual-save="${item.id}">
+                      <i data-lucide="save"></i>
+                      Salvar
+                    </button>
+
+                    <button class="btn-secondary grocery-inline-btn grocery-search-btn" type="button" data-ml-search="${item.id}">
+                      <i data-lucide="search"></i>
+                      Pesquisar no Google
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ` : ''}
+          </div>
+        </div>
+      </article>
+    `;
+  }
+
+  function renderGroceryHistorySubtitle(item) {
+    if (!item) return 'Sem item selecionado.';
+    const history = getGroceryItemHistory(item.id);
+    return history.length === 0
+      ? 'Nenhum registro de preco ainda.'
+      : `${history.length} registro${history.length > 1 ? 's' : ''} salvo${history.length > 1 ? 's' : ''}.`;
+  }
+
+  function renderGroceryHistoryTable(item) {
+    const history = item ? [...getGroceryItemHistory(item.id)].reverse() : [];
+
+    if (history.length === 0) {
+      return '<div class="grocery-history-empty">Nenhum registro ainda.</div>';
+    }
+
+    return `
+      <table class="grocery-history-table">
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>Preco</th>
+            <th>Fonte</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${history.map((entry) => `
+            <tr>
+              <td>${formatHistoryDate(entry.date)}</td>
+              <td>${formatCurrency(entry.price)}</td>
+              <td>${entry.source === 'ml' ? 'Mercado Livre' : 'Manual'}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
     `;
   }
 
@@ -433,6 +627,7 @@ export function initBudgetTools() {
       bindBudgetEvents();
     } else {
       bindGroceryEvents();
+      renderGroceryHistoryChart();
     }
   }
 
@@ -476,42 +671,96 @@ export function initBudgetTools() {
   }
 
   function bindGroceryEvents() {
+    const nameInput = container.querySelector('#grocery-name');
+    const qtyInput = container.querySelector('#grocery-qty');
+    const priceInput = container.querySelector('#grocery-price');
+
     container.querySelector('#grocery-add-btn')?.addEventListener('click', addGroceryItem);
-    container.querySelector('#grocery-name')?.addEventListener('keydown', (event) => {
-      if (event.key === 'Enter') {
-        event.preventDefault();
-        addGroceryItem();
-      }
+
+    [nameInput, qtyInput, priceInput].forEach((input) => {
+      input?.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          addGroceryItem();
+        }
+      });
     });
 
     container.querySelectorAll('[data-check]').forEach((button) => {
-      button.addEventListener('click', () => {
-        const index = Number(button.dataset.check);
-        groceryList[index].checked = !groceryList[index].checked;
-        saveGrocery(groceryList);
-        render();
-      });
+      button.addEventListener('click', () => toggleGroceryChecked(button.dataset.check));
     });
 
     container.querySelectorAll('[data-remove]').forEach((button) => {
-      button.addEventListener('click', () => {
-        groceryList.splice(Number(button.dataset.remove), 1);
-        saveGrocery(groceryList);
-        render();
+      button.addEventListener('click', () => removeGroceryItem(button.dataset.remove));
+    });
+
+    container.querySelectorAll('[data-history]').forEach((button) => {
+      button.addEventListener('click', () => openGroceryHistory(button.dataset.history));
+    });
+
+    container.querySelectorAll('[data-toggle-expand]').forEach((toggle) => {
+      toggle.addEventListener('click', (event) => {
+        if (event.target.closest('button')) return;
+        toggleGroceryExpanded(toggle.dataset.toggleExpand);
+      });
+
+      toggle.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          toggleGroceryExpanded(toggle.dataset.toggleExpand);
+        }
       });
     });
 
+    bindCurrencyInput(priceInput);
+
+    container.querySelectorAll('[data-manual-save]').forEach((button) => {
+      button.addEventListener('click', () => saveGroceryManualPrice(button.dataset.manualSave));
+    });
+
+    container.querySelectorAll('[data-manual-input]').forEach((input) => {
+      bindCurrencyInput(input);
+      input.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          saveGroceryManualPrice(input.dataset.manualInput);
+        }
+      });
+    });
+
+    container.querySelectorAll('[data-ml-search]').forEach((button) => {
+      button.addEventListener('click', () => openGooglePriceSearch(button.dataset.mlSearch));
+    });
+
     container.querySelector('#grocery-clear-checked')?.addEventListener('click', () => {
+      rememberPreviousGroceryTotal();
       groceryList = groceryList.filter((item) => !item.checked);
+      cleanupGroceryHistory();
       saveGrocery(groceryList);
       render();
+      showGroceryToast('Itens marcados removidos.');
     });
 
     container.querySelector('#grocery-clear-all')?.addEventListener('click', () => {
       if (!window.confirm('Limpar toda a lista?')) return;
+      rememberPreviousGroceryTotal();
       groceryList = [];
+      groceryHistory = {};
+      groceryModalItemId = null;
       saveGrocery(groceryList);
+      saveGroceryHistory(groceryHistory);
       render();
+      showGroceryToast('Lista limpa.');
+    });
+
+    container.querySelectorAll('[data-close-history]').forEach((button) => {
+      button.addEventListener('click', closeGroceryHistory);
+    });
+
+    container.querySelector('#grocery-history-overlay')?.addEventListener('click', (event) => {
+      if (event.target === event.currentTarget) {
+        closeGroceryHistory();
+      }
     });
   }
 
@@ -526,15 +775,24 @@ export function initBudgetTools() {
       return;
     }
 
-    groceryList.push({
+    const initialPrice = parseCurrencyInput(priceInput?.value);
+    const item = {
       id: createId(),
       name,
       qty: Math.max(0.1, toNumber(qtyInput?.value) || 1),
-      price: Math.max(0, toNumber(priceInput?.value)),
-      checked: false
-    });
+      price: initialPrice > 0 ? initialPrice : null,
+      checked: false,
+      priceSource: initialPrice > 0 ? 'manual' : null,
+      mlTitle: null
+    };
 
+    rememberPreviousGroceryTotal();
+    groceryList.push(item);
     saveGrocery(groceryList);
+
+    if (initialPrice > 0) {
+      recordGroceryHistory(item.id, initialPrice, 'manual', item.name);
+    }
 
     if (nameInput) nameInput.value = '';
     if (qtyInput) qtyInput.value = '1';
@@ -542,6 +800,354 @@ export function initBudgetTools() {
 
     render();
     container.querySelector('#grocery-name')?.focus();
+    showGroceryToast(`"${name}" adicionado.`);
+  }
+
+  function toggleGroceryChecked(itemId) {
+    const item = groceryList.find((entry) => entry.id === itemId);
+    if (!item) return;
+
+    item.checked = !item.checked;
+    saveGrocery(groceryList);
+    render();
+  }
+
+  function removeGroceryItem(itemId) {
+    const item = groceryList.find((entry) => entry.id === itemId);
+    if (!item) return;
+
+    rememberPreviousGroceryTotal();
+    groceryList = groceryList.filter((entry) => entry.id !== itemId);
+    delete groceryHistory[itemId];
+    if (groceryModalItemId === itemId) groceryModalItemId = null;
+    saveGrocery(groceryList);
+    saveGroceryHistory(groceryHistory);
+    render();
+    showGroceryToast(`"${item.name}" removido.`);
+  }
+
+  function saveGroceryManualPrice(itemId) {
+    const input = container.querySelector(`[data-manual-input="${itemId}"]`);
+    const price = parseCurrencyInput(input?.value);
+    const item = groceryList.find((entry) => entry.id === itemId);
+
+    if (!item) return;
+    if (price <= 0) {
+      showGroceryToast('Insira um preco manual valido.');
+      input?.focus();
+      return;
+    }
+
+    setGroceryPrice(itemId, price, 'manual', item.name);
+    render();
+    showGroceryToast('Preco manual salvo.');
+  }
+
+  function openGooglePriceSearch(itemId) {
+    const item = groceryList.find((entry) => entry.id === itemId);
+    if (!item) return;
+
+    const query = `${item.name} preco mercado`;
+    const url = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+    const popup = window.open(url, `grocery_search_${item.id}`, buildPopupFeatures(560, 760));
+
+    if (!popup) {
+      window.open(url, '_blank', 'noopener,noreferrer');
+      showGroceryToast('Pop-up bloqueado. Busca aberta em nova aba.');
+      return;
+    }
+
+    popup.focus();
+    showGroceryToast('Pesquisa aberta em janela utilitaria.');
+  }
+
+  function toggleGroceryExpanded(itemId) {
+    if (!itemId) return;
+
+    if (groceryUiState.expandedIds.has(itemId)) {
+      groceryUiState.expandedIds.delete(itemId);
+    } else {
+      groceryUiState.expandedIds.add(itemId);
+    }
+
+    render();
+  }
+
+  function setGroceryPrice(itemId, priceValue, source, title) {
+    const item = groceryList.find((entry) => entry.id === itemId);
+    const price = toNumber(priceValue);
+
+    if (!item || price <= 0) return false;
+
+    const currentPrice = getGroceryItemPrice(item);
+    const nextTitle = source === 'ml' ? (title || item.name) : null;
+    const isSamePrice = currentPrice !== null && Math.abs(currentPrice - price) < 0.009;
+    const isSameSource = item.priceSource === source;
+    const isSameTitle = (item.mlTitle || null) === nextTitle;
+
+    if (isSamePrice && isSameSource && isSameTitle) {
+      return false;
+    }
+
+    rememberPreviousGroceryTotal();
+    item.price = price;
+    item.priceSource = source;
+    item.mlTitle = source === 'ml' ? nextTitle : null;
+    saveGrocery(groceryList);
+    recordGroceryHistory(item.id, price, source, title || item.name);
+    return true;
+  }
+
+  function recordGroceryHistory(itemId, price, source, title) {
+    const history = getGroceryItemHistory(itemId);
+    const lastEntry = history[history.length - 1];
+
+    if (
+      lastEntry
+      && Math.abs(toNumber(lastEntry.price) - toNumber(price)) < 0.009
+      && lastEntry.source === source
+      && (lastEntry.title || '') === (title || '')
+    ) {
+      return;
+    }
+
+    if (!groceryHistory[itemId]) {
+      groceryHistory[itemId] = [];
+    }
+
+    groceryHistory[itemId].push({
+      date: new Date().toISOString(),
+      price: toNumber(price),
+      source,
+      title: title || ''
+    });
+
+    saveGroceryHistory(groceryHistory);
+  }
+
+  function getGroceryItemHistory(itemId) {
+    return Array.isArray(groceryHistory[itemId]) ? groceryHistory[itemId] : [];
+  }
+
+  function cleanupGroceryHistory() {
+    const ids = new Set(groceryList.map((item) => item.id));
+    groceryHistory = Object.fromEntries(Object.entries(groceryHistory).filter(([itemId]) => ids.has(itemId)));
+    saveGroceryHistory(groceryHistory);
+  }
+
+  function openGroceryHistory(itemId) {
+    groceryModalItemId = itemId;
+    render();
+  }
+
+  function closeGroceryHistory() {
+    groceryModalItemId = null;
+    destroyGroceryChart();
+    render();
+  }
+
+  async function renderGroceryHistoryChart() {
+    if (!groceryModalItemId) {
+      destroyGroceryChart();
+      return;
+    }
+
+    const item = groceryList.find((entry) => entry.id === groceryModalItemId);
+    const canvas = container.querySelector('#grocery-history-chart');
+    const history = item ? getGroceryItemHistory(item.id) : [];
+
+    if (!item || !canvas) {
+      destroyGroceryChart();
+      return;
+    }
+
+    if (history.length === 0) {
+      destroyGroceryChart();
+      drawGroceryHistoryFallback(canvas, 'Sem historico ainda');
+      return;
+    }
+
+    try {
+      const Chart = await ensureGroceryChartJs();
+      const context = canvas.getContext('2d');
+      if (!context) return;
+
+      destroyGroceryChart();
+      groceryChartInstance = new Chart(context, {
+        type: 'line',
+        data: {
+          labels: history.map((entry) => formatHistoryAxis(entry.date)),
+          datasets: [{
+            data: history.map((entry) => toNumber(entry.price)),
+            borderColor: '#c9a84c',
+            backgroundColor: 'rgba(201,168,76,0.16)',
+            fill: true,
+            tension: 0.35,
+            borderWidth: 2.5,
+            pointRadius: 4,
+            pointHoverRadius: 5
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label(context) {
+                  return formatCurrency(context.parsed.y);
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: { display: false },
+              ticks: { color: 'rgba(255,255,255,0.65)' }
+            },
+            y: {
+              ticks: {
+                color: 'rgba(255,255,255,0.65)',
+                callback(value) {
+                  return formatCurrency(value);
+                }
+              },
+              grid: { color: 'rgba(255,255,255,0.08)' }
+            }
+          }
+        }
+      });
+    } catch {
+      destroyGroceryChart();
+      drawGroceryHistoryFallback(canvas, 'Nao foi possivel carregar o grafico');
+    }
+  }
+
+  function destroyGroceryChart() {
+    if (!groceryChartInstance) return;
+    groceryChartInstance.destroy();
+    groceryChartInstance = null;
+  }
+
+  function drawGroceryHistoryFallback(canvas, message) {
+    const context = canvas.getContext('2d');
+    if (!context) return;
+
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    context.fillStyle = 'rgba(255,255,255,0.65)';
+    context.font = '14px DM Sans, sans-serif';
+    context.textAlign = 'center';
+    context.fillText(message, canvas.width / 2, Math.max(80, canvas.height / 2));
+  }
+
+  function ensureGroceryChartJs() {
+    if (window.Chart) {
+      return Promise.resolve(window.Chart);
+    }
+
+    if (groceryChartLoader) {
+      return groceryChartLoader;
+    }
+
+    groceryChartLoader = new Promise((resolve, reject) => {
+      const existing = document.querySelector('script[data-chartjs-loader="grocery"]');
+      if (existing) {
+        existing.addEventListener('load', () => resolve(window.Chart), { once: true });
+        existing.addEventListener('error', reject, { once: true });
+        return;
+      }
+
+      const script = document.createElement('script');
+      script.src = 'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js';
+      script.async = true;
+      script.dataset.chartjsLoader = 'grocery';
+      script.onload = () => resolve(window.Chart);
+      script.onerror = reject;
+      document.head.appendChild(script);
+    });
+
+    return groceryChartLoader;
+  }
+
+  function showGroceryToast(message) {
+    const toast = container.querySelector('#grocery-toast');
+    if (!toast) return;
+
+    toast.textContent = message;
+    toast.classList.add('show');
+    window.clearTimeout(groceryToastTimer);
+    groceryToastTimer = window.setTimeout(() => {
+      toast.classList.remove('show');
+    }, 2400);
+  }
+
+  function bindCurrencyInput(input) {
+    if (!input) return;
+
+    input.addEventListener('input', () => {
+      input.value = normalizeCurrencyInput(input.value);
+    });
+
+    input.addEventListener('blur', () => {
+      const parsed = parseCurrencyInput(input.value);
+      input.value = parsed > 0 ? formatCurrencyInput(parsed) : '';
+    });
+  }
+
+  function buildPopupFeatures(width, height) {
+    const left = Math.max(0, Math.round(window.screenX + ((window.outerWidth - width) / 2)));
+    const top = Math.max(0, Math.round(window.screenY + ((window.outerHeight - height) / 2)));
+
+    return `popup=yes,width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes`;
+  }
+
+  function rememberPreviousGroceryTotal() {
+    localStorage.setItem(STORAGE_KEY_GROCERY_PREV_TOTAL, String(getGroceryTotal(groceryList)));
+  }
+
+  function getGroceryTrendMeta(total) {
+    const previousTotal = toNumber(localStorage.getItem(STORAGE_KEY_GROCERY_PREV_TOTAL));
+
+    if (previousTotal <= 0 || total <= 0) {
+      return {
+        className: 'neutral',
+        label: total > 0 ? 'Sem comparacao anterior' : 'Adicione itens para estimar'
+      };
+    }
+
+    const diff = total - previousTotal;
+    if (Math.abs(diff) < 0.009) {
+      return {
+        className: 'neutral',
+        label: 'Mesmo total da alteracao anterior'
+      };
+    }
+
+    return {
+      className: diff > 0 ? 'up' : 'down',
+      label: `${diff > 0 ? '+' : '-'}${formatCurrency(Math.abs(diff))} vs ultima alteracao`
+    };
+  }
+
+  function getGroceryTotal(items) {
+    return items.reduce((sum, item) => {
+      const price = getGroceryItemPrice(item);
+      return price === null ? sum : sum + (getGroceryItemQty(item) * price);
+    }, 0);
+  }
+
+  function getGroceryItemQty(item) {
+    return Math.max(0.1, toNumber(item?.qty) || 1);
+  }
+
+  function getGroceryItemPrice(item) {
+    const price = toNumber(item?.price);
+    return price > 0 ? price : null;
+  }
+
+  function hasGroceryPrice(item) {
+    return getGroceryItemPrice(item) !== null;
   }
 
   render();
@@ -561,7 +1167,9 @@ function saveBudget(data) {
 
 function loadGrocery() {
   try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY_GROCERY) || '[]');
+    return normalizeGroceryItems(
+      JSON.parse(localStorage.getItem(STORAGE_KEY_GROCERY) || localStorage.getItem(STORAGE_KEY_GROCERY_LEGACY) || '[]')
+    );
   } catch {
     return [];
   }
@@ -569,6 +1177,44 @@ function loadGrocery() {
 
 function saveGrocery(data) {
   localStorage.setItem(STORAGE_KEY_GROCERY, JSON.stringify(data));
+}
+
+function loadGroceryHistory() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY_GROCERY_HISTORY) || '{}');
+    return parsed && typeof parsed === 'object' ? parsed : {};
+  } catch {
+    return {};
+  }
+}
+
+function saveGroceryHistory(data) {
+  localStorage.setItem(STORAGE_KEY_GROCERY_HISTORY, JSON.stringify(data));
+}
+
+function normalizeGroceryItems(data) {
+  if (!Array.isArray(data)) return [];
+
+  return data
+    .map((item) => {
+      const price = toNumber(item?.price);
+      return {
+        id: item?.id || createId(),
+        name: String(item?.name || '').trim(),
+        qty: Math.max(0.1, toNumber(item?.qty) || 1),
+        price: price > 0 ? price : null,
+        checked: Boolean(item?.checked),
+        priceSource: item?.priceSource === 'ml' || item?.priceSource === 'manual'
+          ? item.priceSource
+          : price > 0
+            ? 'manual'
+            : null,
+        mlTitle: typeof item?.mlTitle === 'string' && item.mlTitle.trim()
+          ? item.mlTitle.trim()
+          : null
+      };
+    })
+    .filter((item) => item.name);
 }
 
 function calcPct(value, total) {
@@ -622,8 +1268,73 @@ function formatPlainNumber(value) {
   }).format(toNumber(value));
 }
 
+function formatSignedCurrency(value) {
+  return `${value > 0 ? '+' : '-'}${formatCurrency(Math.abs(toNumber(value)))}`;
+}
+
+function formatCurrencyInput(value) {
+  const amount = toNumber(value);
+  if (amount <= 0) return '';
+
+  return new Intl.NumberFormat('pt-BR', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }).format(amount);
+}
+
+function formatNumberInput(value) {
+  return toNumber(value).toFixed(2);
+}
+
+function parseCurrencyInput(value) {
+  const raw = String(value || '').replace(/[^\d,.-]/g, '');
+  const cleaned = raw.includes(',')
+    ? raw.replace(/\./g, '').replace(',', '.')
+    : raw;
+
+  return toNumber(cleaned);
+}
+
+function normalizeCurrencyInput(value) {
+  return String(value || '').replace(/[^\d,]/g, '');
+}
+
+function formatHistoryDate(rawDate) {
+  const date = new Date(rawDate);
+  if (Number.isNaN(date.getTime())) return '--';
+
+  return new Intl.DateTimeFormat('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  }).format(date);
+}
+
+function formatHistoryAxis(rawDate) {
+  const date = new Date(rawDate);
+  if (Number.isNaN(date.getTime())) return '--';
+
+  return new Intl.DateTimeFormat('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit'
+  }).format(date);
+}
+
 function createId() {
   return Math.random().toString(36).slice(2, 10);
+}
+
+function trimText(text, maxLength) {
+  const value = String(text || '');
+  return value.length > maxLength ? `${value.slice(0, maxLength - 1)}...` : value;
+}
+
+function delay(ms) {
+  return new Promise((resolve) => window.setTimeout(resolve, ms));
 }
 
 function escapeHtml(text) {

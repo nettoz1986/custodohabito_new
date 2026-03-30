@@ -42,6 +42,36 @@ function sendJson(res, statusCode, payload) {
   res.end(body);
 }
 
+async function proxyMercadoLivreSearch(query, limit) {
+  const url = new URL('https://api.mercadolibre.com/sites/MLB/search');
+  url.searchParams.set('q', query);
+  url.searchParams.set('limit', String(limit));
+
+  const response = await fetch(url, {
+    headers: {
+      Accept: 'application/json',
+      'User-Agent': 'CustoDoHabito/1.0 (+local-proxy)'
+    }
+  });
+
+  const text = await response.text();
+  let payload = {};
+
+  try {
+    payload = text ? JSON.parse(text) : {};
+  } catch {
+    payload = { message: text || 'Resposta invalida do Mercado Livre.' };
+  }
+
+  if (!response.ok) {
+    const error = new Error(payload.message || `Mercado Livre respondeu com status ${response.status}.`);
+    error.statusCode = response.status;
+    throw error;
+  }
+
+  return payload;
+}
+
 function setCorsHeaders(res) {
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -267,6 +297,26 @@ const server = http.createServer(async (req, res) => {
         ok: true,
         total: leads.length,
         leads
+      });
+      return;
+    }
+
+    if (url.pathname === '/api/mercadolivre/search' && req.method === 'GET') {
+      const query = String(url.searchParams.get('q') || '').trim();
+      const limit = Math.min(Math.max(Number(url.searchParams.get('limit') || 4), 1), 10);
+
+      if (!query) {
+        sendJson(res, 400, {
+          ok: false,
+          message: 'Informe um termo de busca.'
+        });
+        return;
+      }
+
+      const payload = await proxyMercadoLivreSearch(query, limit);
+      sendJson(res, 200, {
+        ok: true,
+        results: Array.isArray(payload.results) ? payload.results : []
       });
       return;
     }
