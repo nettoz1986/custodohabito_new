@@ -6,6 +6,7 @@
 
 import { AIService } from '../services/ai-service.js';
 import { parseMarkdown } from '../utils/markdown.js';
+import { shareContent } from '../share.js';
 import { resetChatConversation } from '../utils/chat-actions.js';
 
 /**
@@ -280,7 +281,39 @@ export function initChat() {
 
         if (role === 'assistant') {
             // Converter Markdown para HTML nas respostas do assistente
-            bubbleDiv.innerHTML = parseMarkdown(text);
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+            contentDiv.innerHTML = parseMarkdown(text);
+            bubbleDiv.appendChild(contentDiv);
+
+            if (shouldRenderAssistantShareActions(text)) {
+                const actionsDiv = document.createElement('div');
+                actionsDiv.className = 'message-inline-actions';
+                actionsDiv.innerHTML = `
+                  <button class="message-inline-btn" type="button" data-message-action="copy" aria-label="Copiar resposta">
+                    <i data-lucide="copy"></i>
+                    Copiar
+                  </button>
+                  <button class="message-inline-btn" type="button" data-message-action="share" aria-label="Compartilhar resposta">
+                    <i data-lucide="share-2"></i>
+                    Compartilhar
+                  </button>
+                `;
+
+                actionsDiv.querySelector('[data-message-action="copy"]')?.addEventListener('click', async (event) => {
+                    await copyAssistantMessage(text, event.currentTarget);
+                });
+
+                actionsDiv.querySelector('[data-message-action="share"]')?.addEventListener('click', () => {
+                    shareContent({
+                        title: 'Resposta do agente financeiro',
+                        text: buildShareSnippet(text),
+                        context: 'chat'
+                    });
+                });
+
+                bubbleDiv.appendChild(actionsDiv);
+            }
         } else {
             // Mensagem do usuário — texto puro com quebras de linha
             bubbleDiv.textContent = text;
@@ -297,6 +330,33 @@ export function initChat() {
 
         // Auto-scroll suave para a última mensagem
         scrollToBottom();
+    }
+
+    function shouldRenderAssistantShareActions(text) {
+        return String(text || '').trim().length >= 220;
+    }
+
+    function buildShareSnippet(text) {
+        const normalized = String(text || '').replace(/\s+/g, ' ').trim();
+        return normalized.length > 320 ? `${normalized.slice(0, 317)}...` : normalized;
+    }
+
+    async function copyAssistantMessage(text, button) {
+        try {
+            await navigator.clipboard.writeText(text);
+            const originalMarkup = button.innerHTML;
+            button.innerHTML = '<i data-lucide="check"></i> Copiado';
+            button.classList.add('is-copied');
+            window.lucide?.createIcons?.();
+
+            window.setTimeout(() => {
+                button.innerHTML = originalMarkup;
+                button.classList.remove('is-copied');
+                window.lucide?.createIcons?.();
+            }, 1800);
+        } catch (error) {
+            window.prompt('Copie a resposta abaixo:', text);
+        }
     }
 
     /**

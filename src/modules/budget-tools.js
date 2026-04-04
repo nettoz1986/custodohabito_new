@@ -1,3 +1,5 @@
+import { shareContent } from '../share.js';
+
 const STORAGE_KEY_BUDGET = 'custodohabito_budget_v2';
 const STORAGE_KEY_GROCERY = 'custodohabito_grocery_v2';
 const STORAGE_KEY_GROCERY_LEGACY = 'custodohabito_grocery_v1';
@@ -374,7 +376,7 @@ export function initBudgetTools() {
     const modalItem = groceryModalItemId ? groceryList.find((item) => item.id === groceryModalItemId) : null;
 
     return `
-      <div class="grocery-tab grocery-tab-advanced">
+      <div class="grocery-tab grocery-tab-advanced" id="grocery-share-card">
         <section class="grocery-total-banner">
           <div>
             <span class="grocery-banner-label">Total estimado</span>
@@ -465,6 +467,10 @@ export function initBudgetTools() {
               <button id="grocery-clear-all" class="btn-secondary grocery-action-btn grocery-danger" type="button">
                 <i data-lucide="trash-2"></i>
                 Limpar tudo
+              </button>
+              <button id="grocery-share-btn" class="btn-secondary grocery-action-btn" type="button" ${groceryList.length === 0 ? 'disabled' : ''}>
+                <i data-lucide="share-2"></i>
+                Compartilhar lista
               </button>
             </div>
           `}
@@ -865,6 +871,18 @@ export function initBudgetTools() {
       saveGroceryHistory(groceryHistory);
       render();
       showGroceryToast('Lista limpa.');
+    });
+
+    container.querySelector('#grocery-share-btn')?.addEventListener('click', () => {
+      const items = groceryList.map((item) => `- ${item.name} (${item.qty || 1}x)`).join('\n');
+      const total = formatCurrency(getGroceryTotal(groceryList));
+
+      shareContent({
+        title: 'Minha lista do mercado',
+        text: `Lista do mercado - Total estimado: ${total}\n\n${items}`,
+        context: 'grocery',
+        elementId: 'grocery-share-card'
+      });
     });
 
     container.querySelectorAll('[data-close-history]').forEach((button) => {

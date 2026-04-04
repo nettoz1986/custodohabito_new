@@ -986,16 +986,44 @@ function extractData(message, normalized, themeId) {
     }
   }
 
+  if (data.disciplina_de_aporte === 'alta' && data.usuario_precisa_de_mecanismo_de_compromisso === undefined) {
+    data.usuario_precisa_de_mecanismo_de_compromisso = false;
+  }
+  if (data.disciplina_de_aporte === 'baixa' && data.usuario_precisa_de_mecanismo_de_compromisso === undefined) {
+    data.usuario_precisa_de_mecanismo_de_compromisso = true;
+  }
+  if (data.usuario_precisa_de_mecanismo_de_compromisso === false && data.disciplina_de_aporte === undefined) {
+    data.disciplina_de_aporte = 'alta';
+  }
+  if (data.usuario_precisa_de_mecanismo_de_compromisso === true && data.disciplina_de_aporte === undefined) {
+    data.disciplina_de_aporte = 'baixa';
+  }
+
   return data;
 }
 
 function mergeData(previousData, newData) {
-  return {
+  const merged = {
     ...previousData,
     ...Object.fromEntries(
       Object.entries(newData).filter(([, value]) => value !== null && value !== undefined && value !== '')
     )
   };
+
+  if (merged.disciplina_de_aporte === 'alta' && merged.usuario_precisa_de_mecanismo_de_compromisso === undefined) {
+    merged.usuario_precisa_de_mecanismo_de_compromisso = false;
+  }
+  if (merged.disciplina_de_aporte === 'baixa' && merged.usuario_precisa_de_mecanismo_de_compromisso === undefined) {
+    merged.usuario_precisa_de_mecanismo_de_compromisso = true;
+  }
+  if (merged.usuario_precisa_de_mecanismo_de_compromisso === false && merged.disciplina_de_aporte === undefined) {
+    merged.disciplina_de_aporte = 'alta';
+  }
+  if (merged.usuario_precisa_de_mecanismo_de_compromisso === true && merged.disciplina_de_aporte === undefined) {
+    merged.disciplina_de_aporte = 'baixa';
+  }
+
+  return merged;
 }
 
 function isMissing(value) {
@@ -1420,6 +1448,19 @@ function evaluateTheme(themeId, data) {
     }
 
     case 'financiamento_ou_consorcio_ou_juntar': {
+      if (data.urgencia === 'baixa' && data.bem_essencial === false) {
+        result.classification = 'recomendado';
+        result.tendency = 'juntar livremente ou investir enquanto decide';
+        result.logic = [
+          'Sem urgência e sem dependência real do bem, você tem o ativo mais valioso dessa decisão: tempo.',
+          'Com isso, financiamento e consórcio perdem a justificativa - ambos cobram um preço por rigidez que você não precisa pagar agora.'
+        ];
+        result.alert = 'O risco é ficar adiando sem destino claro. Boa intenção sem rota vira procrastinação - e a margem some no cotidiano.';
+        result.nextStep = 'Defina se quer guardar para esse objetivo específico ou investir livremente por ora. Conta separada com aporte mensal fixo já resolve.';
+        result.alternative = 'Se a urgência mudar lá na frente, volte com o cenário real de então - a decisão fica mais limpa quando os dados são concretos.';
+        return result;
+      }
+
       if (data.urgencia === 'alta' && data.bem_essencial === true) {
         result.classification = 'recomendado_com_ressalvas';
         result.tendency = 'financiamento pode ser considerado';
@@ -2319,13 +2360,6 @@ export function analyzeConversationTurn(userMessage, previousState = createConve
             .filter((item) => item.question)
         : [];
 
-  const shouldAskDecision =
-    Boolean(activeTheme) &&
-    activeTheme.mode === 'decision' &&
-    (intent === 'decision' || intent === 'planning' || previousState.stage === 'coleta_decisao') &&
-    missingFields.length > 0 &&
-    !(repeatedDecisionCollection >= 2 && Object.keys(extractedData).length === 0);
-
   const shouldAskPattern =
     Boolean(activeTheme) &&
     activeTheme.mode === 'pattern' &&
@@ -2334,10 +2368,32 @@ export function analyzeConversationTurn(userMessage, previousState = createConve
     Object.keys(collectedData).length < 2 &&
     !(repeatedPatternCollection >= 2 && Object.keys(extractedData).length === 0);
 
-  const evaluation =
-    activeTheme?.mode === 'decision' && !shouldAskDecision
+  const tentativeEvaluation =
+    activeTheme?.mode === 'decision'
       ? evaluateTheme(activeTheme.id, collectedData)
       : null;
+
+  const canEvaluateNow =
+    tentativeEvaluation !== null &&
+    tentativeEvaluation.classification !== 'sem_dados_suficientes';
+
+  const shouldAskDecision =
+    Boolean(activeTheme) &&
+    activeTheme.mode === 'decision' &&
+    !canEvaluateNow &&
+    (
+      intent === 'decision' ||
+      intent === 'planning' ||
+      previousState.stage === 'coleta_decisao' ||
+      activeTheme !== null
+    ) &&
+    missingFields.length > 0 &&
+    !(repeatedDecisionCollection >= 2 && Object.keys(extractedData).length === 0);
+
+  const evaluation =
+    shouldAskDecision || tentativeEvaluation?.classification === 'sem_dados_suficientes'
+      ? null
+      : tentativeEvaluation;
 
   const patternReading =
     activeTheme?.mode === 'pattern'

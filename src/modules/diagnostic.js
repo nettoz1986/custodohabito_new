@@ -6,6 +6,7 @@ import {
   diagnosticQuestions,
   diagnosticReportVariations
 } from '../data/diagnostic-data.js';
+import { shareContent } from '../share.js';
 import { openUtilityView } from '../utils/chat-actions.js';
 
 const STORAGE_KEY = 'custodohabito_diagnostic_state_v3';
@@ -225,7 +226,7 @@ export function initDiagnostic() {
 
     container.innerHTML = `
       <section class="diagnostic-shell" aria-labelledby="diagnostic-result-title">
-        <div class="diagnostic-result">
+        <div class="diagnostic-result" id="diagnostic-result-card">
           <img
             src="${profileImageFor(result.primary.key)}"
             alt="${escapeHtml(result.primary.name)}"
@@ -286,6 +287,11 @@ export function initDiagnostic() {
             <button class="btn-secondary" id="diagnostic-restart-btn" type="button">
               Refazer diagn\u00f3stico
             </button>
+
+            <button class="share-trigger-btn" id="diagnostic-share-result-btn" type="button">
+              <i data-lucide="share-2"></i>
+              Compartilhar meu perfil
+            </button>
           </div>
         </div>
       </section>
@@ -302,6 +308,15 @@ export function initDiagnostic() {
 
     container.querySelector('#diagnostic-restart-btn')?.addEventListener('click', () => {
       restartDiagnostic();
+    });
+
+    container.querySelector('#diagnostic-share-result-btn')?.addEventListener('click', () => {
+      shareContent({
+        title: `Meu perfil financeiro: ${result.primary.name}`,
+        text: `Fiz o diagnostico de habito no Custo do Habito e meu perfil predominante e "${result.primary.name}" - ${result.primary.reading}`,
+        context: 'diagnostic',
+        elementId: 'diagnostic-result-card'
+      });
     });
 
     createIcons();
@@ -421,7 +436,7 @@ export function initDiagnostic() {
 
     container.innerHTML = `
       <section class="diagnostic-shell" aria-labelledby="diagnostic-report-loading-title">
-        <div class="diagnostic-result diagnostic-report-screen">
+        <div class="diagnostic-result diagnostic-report-screen" id="diagnostic-report-card">
           <div class="report-header">
             <div class="report-title">Relatorio completo</div>
             <h2 id="diagnostic-report-loading-title" class="report-name">${escapeHtml(result.primary.name)}</h2>
@@ -506,6 +521,10 @@ export function initDiagnostic() {
             <button class="btn-secondary" id="diagnostic-restart-report-btn" type="button">
               Refazer diagn\u00f3stico
             </button>
+            <button class="share-trigger-btn" id="diagnostic-share-report-btn" type="button">
+              <i data-lucide="share-2"></i>
+              Compartilhar diagn\u00f3stico
+            </button>
           </div>
         </div>
       </section>
@@ -521,6 +540,15 @@ export function initDiagnostic() {
 
     container.querySelector('#diagnostic-restart-report-btn')?.addEventListener('click', () => {
       restartDiagnostic();
+    });
+
+    container.querySelector('#diagnostic-share-report-btn')?.addEventListener('click', () => {
+      shareContent({
+        title: `Diagnostico financeiro: ${result.primary.name}`,
+        text: `Fiz o diagnostico completo no Custo do Habito. Perfil: "${result.primary.name}". Forca: ${reportData.strength}`,
+        context: 'diagnostic',
+        elementId: 'diagnostic-report-card'
+      });
     });
 
     createIcons();
