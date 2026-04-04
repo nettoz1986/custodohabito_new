@@ -1,4 +1,4 @@
-import {
+﻿import {
   agentKnowledge,
   fallbackScenarios,
   fieldCatalog,
@@ -113,6 +113,80 @@ const conceptLibrary = [
   }
 ];
 
+const conceptOverrides = {
+  linha_do_zero: {
+    triggers: [
+      'saldo positivo',
+      'saldo negativo',
+      'ficar no positivo',
+      'ficar no negativo',
+      'entrar no vermelho',
+      'ficar no vermelho',
+      'quando devo',
+      'juros quando devo',
+      'juros da divida',
+      'juros sao maiores',
+      'inflacao me joga',
+      'inflacao faz gastar',
+      'importancia de nao dever',
+      'manter positivo',
+      'nao entrar no cheque',
+      'nao usar rotativo'
+    ],
+    response: {
+      reading: `Você precisa entender a mecânica mais importante das finanças pessoais: ficar com R$ 100,00 na conta durante um mês ou usar R$ 100,00 do cheque especial pelo mesmo período não resultam no mesmo valor.
+
+Isso é meio óbvio, mas muita gente não percebe que tem que se afastar da "linha do zero". Quando você está com saldo positivo, o dinheiro rende pouco. A poupança ou uma conta remunerada devolvem algo próximo de 80% do CDI, que por sua vez anda junto com a inflação. Ou seja: você está basicamente preservando o poder de compra, com ganho real pequeno.
+
+Quando você passa para o lado negativo - entra no rotativo, usa cheque especial, atrasa fatura - os juros do outro lado são brutalmente maiores. Rotativo de cartão costuma passar de 300% ao ano no Brasil. Cheque especial, acima de 130%. O sistema não é neutro: ele penaliza quem cruza essa linha, mesmo que por pouco tempo, de forma mais agressiva do que recompensa quem fica acima.
+
+A inflação entra na conta como um terceiro fator: ela corrói o valor do que você tem, mas também corrói o custo do que você compra depois - o que cria uma pressão constante de gasto que empurra as pessoas para mais perto da linha sem que elas percebam. Você não gastou mais. As coisas ficaram mais caras. O resultado é o mesmo.`,
+      pattern: 'O padrão mais comum aqui é a pessoa operar muito próxima ao zero sem perceber, achando que está bem porque o saldo não ficou negativo. O problema é que perto do zero não existe amortecedor - qualquer imprevisto empurra imediatamente para o lado negativo e o sistema passa a cobrar caro.',
+      impact: 'A distância do zero não é só número. Ela define quão caro um erro vai custar. Acima do zero com margem: erro é absorvido. Acima do zero sem margem: erro vira crédito. Abaixo do zero: erro vira bola de neve.',
+      awareness: 'A pergunta útil não é "quanto eu tenho", mas "quanto de espaço existe entre minha rotina atual e o ponto onde o sistema passa a cobrar caro por mim".',
+      nextStep: 'Se quiser tornar isso prático: estime seu custo fixo mensal real, o mínimo necessário para o mês funcionar, e veja qual é a sua distância atual desse número. Essa margem é o que protege você antes do zero.'
+    }
+  },
+  fisiologia_do_gasto: {
+    triggers: [
+      'custo das coisas',
+      'custo real',
+      'quanto custa de verdade',
+      'alem do preco',
+      'mais do que o preco',
+      'custo depois da compra',
+      'o que uma compra custa',
+      'manutencao',
+      'depreciacao',
+      'revenda',
+      'reposicao',
+      'custo oculto',
+      'custo escondido',
+      'custo invisivel',
+      'custo total',
+      'custo ao longo do tempo',
+      'custa mais do que parece',
+      'gasto continua',
+      'gasto depois'
+    ],
+    response: {
+      reading: `Toda compra tem dois preços: o que aparece na etiqueta e aquele que vem junto com a vida útil do objeto. Entender esses elementos muda a forma como você avalia qualquer gasto:
+
+Manutenção: é o que o objeto exige periodicamente para continuar funcionando. Carro pede revisão, pneu, óleo, freio. Imóvel pede pintura, encanamento, elétrica. Eletrodoméstico pede assistência técnica. Isso não é exceção - é a regra de qualquer coisa com partes móveis ou que envelhece. A manutenção transforma o preço de compra em uma mensalidade invisível que você paga ao longo do tempo.
+
+Depreciação: é a perda de valor ao longo do uso. Um carro novo perde entre 15% e 25% do valor só nos primeiros dois anos. Um celular perde mais da metade do valor em 18 meses. Isso significa que parte do que você pagou já "desapareceu" - você não perdeu dinheiro para alguém, mas perdeu a opção de resgatar esse valor se precisar. Depreciação rápida reduz sua margem de manobra futura.
+
+Reposição: toda compra tem uma vida útil. Quando ela termina, o ciclo recomeça. Se você comprou algo barato mas que dura pouco, a conta real é preço dividido pelos meses de uso - não o preço em si. Às vezes o que tem maior preço sai mais barato por ano de uso porque a reposição demora mais.
+
+Revenda: nem tudo que você compra ainda tem valor quando você não quer mais. Quando você precisa vender algo rápido - por necessidade ou mudança de plano - o mercado não paga o preço que você pagou. Isso é perda de liquidez: o objeto existe, mas não vira dinheiro rápido. Compras com revenda difícil aprisionam capital.`,
+      pattern: 'O padrão mais comum é olhar só o preço de entrada e ignorar que a compra vai continuar cobrando nos próximos meses. Isso aparece muito em eletrônicos, carros, imóveis e até assinaturas de serviço.',
+      impact: 'Quando vários gastos com custo de funcionamento alto se acumulam, a pessoa fica com muita coisa e pouca margem. O mês está comprometido não por uma decisão grande, mas pela soma desses valores ao mesmo tempo.',
+      awareness: 'A pergunta certa antes de qualquer compra relevante não é só "cabe no orçamento agora?" - é "quero e posso sustentar esse custo de funcionamento por quanto tempo?".',
+      nextStep: 'Escolha um objeto que você usa com frequência e tente estimar quanto ele custa por mês de verdade: preço de compra dividido pelos meses de uso, mais manutenção média, menos o que você conseguiria revender hoje. Esse número costuma surpreender.'
+    }
+  }
+};
+
 /* =========================
    Helpers de parsing
 ========================= */
@@ -186,14 +260,472 @@ function findFallbackScenario(normalized) {
 }
 
 function findConcept(normalized) {
-  return conceptLibrary.find((item) =>
-    item.triggers.some((trigger) => normalized.includes(trigger))
-  ) || null;
+  const concept = conceptLibrary.find((item) => {
+    const overrideTriggers = conceptOverrides[item.id]?.triggers || [];
+    return [...item.triggers, ...overrideTriggers].some((trigger) => normalized.includes(trigger));
+  });
+
+  if (!concept) return null;
+
+  const override = conceptOverrides[concept.id];
+  if (!override) return concept;
+
+  return {
+    ...concept,
+    triggers: [...concept.triggers, ...override.triggers],
+    response: override.response
+  };
+}
+
+export function containsFinancialContext(normalized) {
+  const financialPatterns = [
+    /\d+\s*(?:mil|reais|r\$)/,
+    /r\$\s*\d+/,
+    /\d{3,}/,
+    'gasto',
+    'ganho',
+    'recebo',
+    'sobra',
+    'falta',
+    'tenho na conta',
+    'minha conta',
+    'meu salario',
+    'minha renda',
+    'por mes',
+    'todo mes',
+    'ao mes',
+    'no fim do mes',
+    'final do mes',
+    'no final'
+  ];
+
+  return financialPatterns.some((pattern) =>
+    pattern instanceof RegExp ? pattern.test(normalized) : normalized.includes(pattern)
+  );
+}
+
+export function formatConceptContinuationHuman(previousState, collectedData) {
+  const conceptId = previousState.lastConceptId || 'linha_do_zero';
+
+  const gastoMensal = collectedData.gasto_fixo_mensal;
+  const margemFinal = collectedData.margem_no_mes_valor;
+
+  if (conceptId === 'linha_do_zero' && (gastoMensal || margemFinal)) {
+    if (gastoMensal && margemFinal) {
+      const rendaEstimada = gastoMensal + margemFinal;
+      const percentualMargem = ((margemFinal / rendaEstimada) * 100).toFixed(0);
+
+      let leitura = '';
+      let alerta = '';
+      let proximo = '';
+
+      if (percentualMargem < 15) {
+        leitura = `Você tem R$ ${margemFinal.toLocaleString('pt-BR')} sobrando de uma renda estimada de R$ ${rendaEstimada.toLocaleString('pt-BR')} - isso representa ${percentualMargem}% da sua renda. É positivo, mas a margem está estreita.`;
+        alerta = 'Com essa folga, um imprevisto de dois ou três meses de custo já pressiona o sistema. Não está em zona de risco imediato, mas está operando com pouco amortecedor.';
+        proximo = `O próximo passo prático é avaliar qual parte dos R$ ${gastoMensal.toLocaleString('pt-BR')} é custo rígido (mora, alimentação, contas fixas) e qual tem alguma flexibilidade. Essa distinção define o quanto você pode manobrar se o mês apertar.`;
+      } else if (percentualMargem < 30) {
+        leitura = `Você gasta R$ ${gastoMensal.toLocaleString('pt-BR')} e sobram R$ ${margemFinal.toLocaleString('pt-BR')} - ${percentualMargem}% da renda fica disponível. É uma margem razoável, mas ainda não é confortável.`;
+        alerta = 'Essa sobra precisa estar fazendo alguma coisa: reserva, objetivo, amortecimento. Se estiver parada ou sendo consumida aos poucos, a distância real do zero é menor do que parece.';
+        proximo = `Vale perguntar: onde esses R$ ${margemFinal.toLocaleString('pt-BR')} estão indo hoje? Se parte deles não tem destino claro, essa é a primeira conversa a ter.`;
+      } else {
+        leitura = `Você gasta R$ ${gastoMensal.toLocaleString('pt-BR')} e tem R$ ${margemFinal.toLocaleString('pt-BR')} de sobra - ${percentualMargem}% da renda. É uma margem saudável.`;
+        alerta = 'Com essa folga, você tem espaço para construir amortecedores reais. O risco aqui não é a linha do zero - é deixar essa margem ser consumida por expansão de padrão de vida sem perceber.';
+        proximo = 'A pergunta útil agora é: essa sobra tem destino? Reserva, objetivo de médio prazo, investimento? Margem sem destino tende a virar gasto com o tempo.';
+      }
+
+      return [
+        leitura,
+        '',
+        alerta,
+        '',
+        proximo,
+        '',
+        '_Conteúdo educacional. Não substitui consultoria financeira individual._'
+      ].join('\n');
+    }
+
+    if (gastoMensal && !margemFinal) {
+      return [
+        `Com R$ ${gastoMensal.toLocaleString('pt-BR')} de gasto mensal, consigo fazer uma leitura parcial, mas preciso de mais um dado: quanto sobra ou fica disponível no final do mês?`,
+        '',
+        'Esse número define a distância real da sua linha do zero.',
+        '',
+        '_Conteúdo educacional. Não substitui consultoria financeira individual._'
+      ].join('\n');
+    }
+
+    if (!gastoMensal && margemFinal) {
+      return [
+        `R$ ${margemFinal.toLocaleString('pt-BR')} sobrando é um bom começo de leitura. Para entender se essa margem é confortável ou estreita, preciso saber: quanto é o seu custo mensal total?`,
+        '',
+        '_Conteúdo educacional. Não substitui consultoria financeira individual._'
+      ].join('\n');
+    }
+  }
+
+  return [
+    'Esses dados ajudam a tornar a leitura mais concreta.',
+    '',
+    'Para eu aplicar o conceito à sua situação específica, me confirma: qual é o seu gasto mensal estimado e quanto fica disponível no final do mês?',
+    '',
+    '_Conteúdo educacional. Não substitui consultoria financeira individual._'
+  ].join('\n');
 }
 
 /* =========================
    Extração de dados
 ========================= */
+
+export const imovelExtractionPatterns = {
+  tempo_esperado_no_imovel: {
+    longo: [
+      'vou ficar muitos anos',
+      'longo prazo no imovel',
+      'pretendo ficar',
+      'nao pretendo me mudar',
+      'nao pretendo mudar',
+      'quero ficar',
+      'nao vou sair',
+      'minha ideia e ficar',
+      'planejo ficar',
+      'vou morar la por muito tempo',
+      'nao tenho plano de sair',
+      'por muitos anos',
+      'definitivo',
+      'para sempre'
+    ],
+    curto: [
+      'talvez eu mude',
+      'nao sei se fico',
+      'pouco tempo no imovel',
+      'posso me mudar',
+      'nao sei quanto tempo fico',
+      'talvez precise mudar',
+      'posso precisar sair',
+      'nao e definitivo',
+      'pode mudar',
+      'provisorio'
+    ]
+  },
+  estabilidade_profissional: {
+    alta: [
+      'estavel',
+      'estabilidade',
+      'renda estavel',
+      'cidade estavel',
+      'emprego fixo',
+      'renda fixa',
+      'trabalho estavel',
+      'minha situacao esta estavel',
+      'estou bem no trabalho',
+      'nao planejo mudar de emprego',
+      'concurso publico'
+    ],
+    baixa: [
+      'instavel',
+      'posso mudar de cidade',
+      'renda incerta',
+      'cidade incerta',
+      'posso ser demitido',
+      'nao sei o que acontece',
+      'minha renda varia',
+      'trabalho por conta propria',
+      'freelancer',
+      'autonomo',
+      'nao sei se fico na mesma cidade'
+    ]
+  },
+  necessidade_de_mobilidade: {
+    alta: [
+      'mobilidade alta',
+      'posso mudar',
+      'quero flexibilidade',
+      'posso precisar me mudar',
+      'situacao pode mudar',
+      'nao e certo que fico',
+      'talvez precise de mobilidade'
+    ],
+    baixa: [
+      'bem fixo',
+      'nao pretendo mudar',
+      'estou enraizado',
+      'nao pretendo me mudar',
+      'nao quero me mudar',
+      'estou fixo',
+      'fixo no lugar',
+      'nao penso em sair',
+      'pretendo continuar aqui',
+      'nao tenho plano de mudar de cidade',
+      'bem estabelecido'
+    ]
+  }
+};
+
+export function extractImovelFields(normalized) {
+  const data = {};
+  const patterns = imovelExtractionPatterns;
+
+  if (patterns.tempo_esperado_no_imovel.longo.some((term) => normalized.includes(term))) {
+    data.tempo_esperado_no_imovel = 'longo';
+  } else if (patterns.tempo_esperado_no_imovel.curto.some((term) => normalized.includes(term))) {
+    data.tempo_esperado_no_imovel = 'curto';
+  }
+
+  if (patterns.estabilidade_profissional.alta.some((term) => normalized.includes(term))) {
+    data.estabilidade_profissional = 'alta';
+  } else if (patterns.estabilidade_profissional.baixa.some((term) => normalized.includes(term))) {
+    data.estabilidade_profissional = 'baixa';
+  }
+
+  if (patterns.necessidade_de_mobilidade.baixa.some((term) => normalized.includes(term))) {
+    data.necessidade_de_mobilidade = 'baixa';
+  } else if (patterns.necessidade_de_mobilidade.alta.some((term) => normalized.includes(term))) {
+    data.necessidade_de_mobilidade = 'alta';
+  }
+
+  return data;
+}
+
+export function extractImovelValues(message, normalized) {
+  const data = {};
+
+  const aluguelPatterns = [
+    /aluguel[^\d]{0,20}r?\$?\s*([\d\.\,]+)/i,
+    /pago[^\d]{0,15}r?\$?\s*([\d\.\,]+)[^\n]{0,20}(?:aluguel|apartamento|casa|imovel|moradia)/i,
+    /(?:aluguel|apartamento|casa|imovel|moradia)[^\n]{0,30}r?\$?\s*([\d\.\,]+)/i,
+    /(?:custo|custa|costo)[^\d]{0,15}r?\$?\s*([\d\.\,]+)[^\n]{0,20}(?:aluguel|moradia)/i,
+    /mensalidade[^\d]{0,15}r?\$?\s*([\d\.\,]+)/i,
+    /pago[^\d]{0,10}(?:uns?|uns?\s)?r?\$?\s*([\d\.\,]+(?:\s*mil)?)\s*(?:num?|de|por)\s*(?:apartamento|casa|imovel)/i,
+    /r?\$?\s*([\d\.\,]+(?:\s*mil)?)\s*de\s*aluguel/i
+  ];
+
+  for (const pattern of aluguelPatterns) {
+    const match = message.match(pattern);
+    if (!match?.[1]) continue;
+
+    const raw = match[1].replace(/\s*mil\s*/i, '000').replace(/\./g, '').replace(',', '.');
+    const value = Number(raw);
+    if (Number.isFinite(value) && value > 0) {
+      data.aluguel_mensal = value;
+      break;
+    }
+  }
+
+  const valorImovelPatterns = [
+    /(?:vale|valor|custa|avaliado)[^\d]{0,20}r?\$?\s*([\d\.\,]+(?:\s*mil)?)/i,
+    /imovel[^\d]{0,20}r?\$?\s*([\d\.\,]+(?:\s*mil)?)/i,
+    /apartamento[^\n]{0,20}r?\$?\s*([\d\.\,]+(?:\s*mil)?)/i
+  ];
+
+  for (const pattern of valorImovelPatterns) {
+    const match = message.match(pattern);
+    if (!match?.[1]) continue;
+
+    const raw = match[1].replace(/\s*mil\s*/i, '000').replace(/\./g, '').replace(',', '.');
+    const value = Number(raw);
+    if (Number.isFinite(value) && value > 10000) {
+      data.valor_imovel = value;
+      break;
+    }
+  }
+
+  const parcelaPatterns = [
+    /\bparcela\b[^\d]{0,20}r?\$?\s*([\d\.\,]+)/i,
+    /\bfinanciamento\b[^\d]{0,20}r?\$?\s*([\d\.\,]+)/i,
+    /pagaria[^\d]{0,20}r?\$?\s*([\d\.\,]+)[^\n]{0,20}(?:mes|financiamento|parcela)/i
+  ];
+
+  for (const pattern of parcelaPatterns) {
+    const match = message.match(pattern);
+    if (!match?.[1]) continue;
+
+    const raw = match[1].replace(/\s*mil\s*/i, '000').replace(/\./g, '').replace(',', '.');
+    const value = Number(raw);
+    if (Number.isFinite(value) && value > 0) {
+      data.parcela_financiamento = value;
+      break;
+    }
+  }
+
+  if (
+    normalized.includes('concurso') &&
+    (normalized.includes('outra cidade') || normalized.includes('outro estado') || normalized.includes('diferente'))
+  ) {
+    data._concurso_outra_cidade = true;
+  }
+
+  return data;
+}
+
+export function extractMonthlyContext(message, normalized) {
+  const data = {};
+
+  const gastoPatterns = [
+    /gasto[^\d]{0,15}(?:uns?|cerca de|em torno de|aproximadamente)?\s*r?\$?\s*([\d\.\,]+(?:\s*mil)?)\s*(?:por mes|ao mes|mensais?|\/mes)/i,
+    /gasto[^\d]{0,10}r?\$?\s*([\d\.\,]+(?:\s*mil)?)\s*(?:por mes|ao mes)/i,
+    /(?:meus gastos?|custo mensal|despesas? mensais?|gastos? fixos?)[^\d]{0,15}(?:sao|e|ficam|chegam a)?\s*r?\$?\s*([\d\.\,]+(?:\s*mil)?)/i,
+    /(?:saem|gastam)[^\d]{0,10}r?\$?\s*([\d\.\,]+(?:\s*mil)?)\s*(?:por mes|ao mes|todo mes)/i
+  ];
+
+  for (const pattern of gastoPatterns) {
+    const match = message.match(pattern);
+    if (match?.[1]) {
+      const value = parseMil(match[1]);
+      if (value > 0) {
+        data.gasto_fixo_mensal = value;
+        break;
+      }
+    }
+  }
+
+  const margemPatterns = [
+    /(?:tenho|fica|sobra|resta)[^.]{0,60}(?:no final|no fim|ao final|ao fim)[^.]{0,30}(?:uns?|cerca de)?\s*r?\$?\s*([\d\.\,]+(?:\s*mil)?)/i,
+    /(?:no final|no fim|ao final|ao fim)[^\d]{0,30}(?:tenho|sobra|fica|resta|tem)\s*(?:uns?|cerca de)?\s*r?\$?\s*([\d\.\,]+(?:\s*mil)?)/i,
+    /(?:sobra[mr]?|restam?|fico com|ficam)\s*(?:uns?|cerca de)?\s*r?\$?\s*([\d\.\,]+(?:\s*mil)?)/i,
+    /tenho\s*(?:uns?|cerca de)?\s*r?\$?\s*([\d\.\,]+(?:\s*mil)?)\s*(?:sobrando|de sobra|disponivel|livre)/i,
+    /(?:saldo|sobra)[^\d]{0,20}(?:de|e|e de)?\s*r?\$?\s*([\d\.\,]+(?:\s*mil)?)\s*(?:ao mes|por mes|no final|mensal)?/i
+  ];
+
+  for (const pattern of margemPatterns) {
+    const match = message.match(pattern);
+    if (match?.[1]) {
+      const value = parseMil(match[1]);
+      if (value > 50 && value < 500000) {
+        data.margem_no_mes_valor = value;
+        break;
+      }
+    }
+  }
+
+  return data;
+}
+
+function parseMil(raw) {
+  const hasMil = /mil/i.test(raw);
+  const clean = raw
+    .replace(/\s*mil\s*/i, '')
+    .replace(/\./g, '')
+    .replace(',', '.');
+  const num = Number(clean.trim());
+  if (!Number.isFinite(num) || num <= 0) return 0;
+  return hasMil ? num * 1000 : num;
+}
+
+export const urgencyTriggers = {
+  alta: [
+    'urgente',
+    'preciso agora',
+    'nao posso esperar',
+    'imediato',
+    'preciso logo',
+    'nao tem tempo',
+    'e para agora',
+    'preciso esta semana',
+    'preciso este mes',
+    'quebrando',
+    'parou de funcionar',
+    'nao funciona mais',
+    'sem carro',
+    'sem celular'
+  ],
+  media: [
+    'em breve',
+    'logo',
+    'media urgencia',
+    'nos proximos meses',
+    'ate o fim do ano',
+    'ate o ano que vem',
+    'em alguns meses'
+  ],
+  baixa: [
+    'sem pressa',
+    'pode esperar',
+    'da para esperar',
+    'posso esperar',
+    'futuramente',
+    'no futuro',
+    'a longo prazo',
+    'quando der',
+    'nao tem pressa',
+    'nao e urgente',
+    'nao preciso agora',
+    'quando puder',
+    'planejo para',
+    'pensando em',
+    'quero no futuro',
+    'para substituir',
+    'para trocar',
+    'no longo prazo',
+    'a medio prazo',
+    'nao e agora',
+    'um dia'
+  ]
+};
+
+export const missingFieldTriggers = {
+  disciplina_alta: [
+    'consigo guardar',
+    'consigo poupar',
+    'guardo todo mes',
+    'guardo mensalmente',
+    'tenho disciplina',
+    'consigo manter',
+    'consigo separar',
+    'separo todo mes',
+    'costumo guardar',
+    'sempre guardo',
+    'nao tenho problema em guardar'
+  ],
+  disciplina_baixa: [
+    'nao consigo guardar',
+    'nao consigo poupar',
+    'nao tenho disciplina',
+    'sempre gasto tudo',
+    'nao sobra para guardar',
+    'acabo gastando',
+    'preciso de trava',
+    'preciso de algo que me force'
+  ],
+  bem_nao_essencial: [
+    'da para reorganizar',
+    'da para me reorganizar',
+    'consigo sem',
+    'posso reorganizar',
+    'nao e essencial',
+    'nao e necessario agora',
+    'e opcional',
+    'posso esperar',
+    'da para viver sem',
+    'nao preciso agora',
+    'seria um upgrade',
+    'seria uma melhoria',
+    'nao e urgente',
+    'daria para continuar sem'
+  ],
+  bem_essencial: [
+    'e essencial',
+    'preciso para trabalhar',
+    'nao consigo sem',
+    'e necessario',
+    'nao tem como reorganizar',
+    'dependo disso',
+    'parou de funcionar'
+  ],
+  sem_mecanismo: [
+    'consigo sozinho',
+    'nao preciso de trava',
+    'tenho disciplina',
+    'me organizo bem',
+    'guardo sem precisar'
+  ],
+  com_mecanismo: [
+    'preciso de trava',
+    'preciso de algo que me force',
+    'sem trava nao consigo',
+    'se nao tiver compromisso',
+    'nao tenho disciplina'
+  ]
+};
 
 function extractData(message, normalized, themeId) {
   const data = {};
@@ -250,11 +782,7 @@ function extractData(message, normalized, themeId) {
   const gastoFixo = extractMoney(message, [/(gasto fixo|fixos)[^\d]{0,20}r?\$?\s*([\d\.\,]+)/i]);
   if (gastoFixo !== null) data.gasto_fixo_mensal = gastoFixo;
 
-  const aluguel = extractMoney(message, [/aluguel[^\d]{0,20}r?\$?\s*([\d\.\,]+)/i]);
-  if (aluguel !== null) data.aluguel_mensal = aluguel;
-
-  const parcela = extractMoney(message, [/\bparcela\b[^\d]{0,20}r?\$?\s*([\d\.\,]+)/i, /\bfinanciamento\b[^\d]{0,20}r?\$?\s*([\d\.\,]+)/i]);
-  if (parcela !== null) data.parcela_financiamento = parcela;
+  Object.assign(data, extractImovelValues(message, normalized));
 
   const entrada = extractMoney(message, [/entrada[^\d]{0,20}r?\$?\s*([\d\.\,]+)/i]);
   if (entrada !== null) data.valor_entrada = entrada;
@@ -270,9 +798,9 @@ function extractData(message, normalized, themeId) {
   if (['rotativo', 'cheque especial', 'juros altos'].some((word) => normalized.includes(word))) data.divida_juros_altos = true;
   if (['divida barata', 'juros baixos', 'financiamento barato'].some((word) => normalized.includes(word))) data.divida_juros_altos = false;
 
-  if (['urgente', 'preciso agora', 'nao posso esperar', 'imediato'].some((word) => normalized.includes(word))) data.urgencia = 'alta';
-  if (['sem pressa', 'pode esperar', 'da para esperar', 'posso esperar'].some((word) => normalized.includes(word))) data.urgencia = 'baixa';
-  if (['em breve', 'logo', 'media urgencia'].some((word) => normalized.includes(word))) data.urgencia = 'media';
+  if (urgencyTriggers.alta.some((word) => normalized.includes(word))) data.urgencia = 'alta';
+  else if (urgencyTriggers.media.some((word) => normalized.includes(word))) data.urgencia = 'media';
+  else if (urgencyTriggers.baixa.some((word) => normalized.includes(word))) data.urgencia = 'baixa';
 
   if (['todo dia', 'diario', 'uso intenso', 'uso muito'].some((word) => normalized.includes(word))) data.frequencia_de_uso = 'intensa';
   if (['recorrente', 'toda semana', 'todo mes', 'uso bastante'].some((word) => normalized.includes(word))) data.frequencia_de_uso = 'recorrente';
@@ -306,27 +834,7 @@ function extractData(message, normalized, themeId) {
     ['nao vou deixar separado', 'nao tenho o dinheiro', 'vou contar com a renda futura']
   );
   if (moneyReserved !== null) data.dinheiro_ficara_reservado = moneyReserved;
-
-  if (['vou ficar muitos anos', 'longo prazo no imovel', 'pretendo ficar'].some((word) => normalized.includes(word))) {
-    data.tempo_esperado_no_imovel = 'longo';
-  }
-  if (['talvez eu mude', 'nao sei se fico', 'pouco tempo no imovel'].some((word) => normalized.includes(word))) {
-    data.tempo_esperado_no_imovel = 'curto';
-  }
-
-  if (['estavel', 'estabilidade', 'renda estavel', 'cidade estavel'].some((word) => normalized.includes(word))) {
-    data.estabilidade_profissional = 'alta';
-  }
-  if (['instavel', 'posso mudar de cidade', 'renda incerta', 'cidade incerta'].some((word) => normalized.includes(word))) {
-    data.estabilidade_profissional = 'baixa';
-  }
-
-  if (['mobilidade alta', 'posso mudar', 'quero flexibilidade'].some((word) => normalized.includes(word))) {
-    data.necessidade_de_mobilidade = 'alta';
-  }
-  if (['bem fixo', 'nao pretendo mudar', 'estou enraizado'].some((word) => normalized.includes(word))) {
-    data.necessidade_de_mobilidade = 'baixa';
-  }
+  Object.assign(data, extractImovelFields(normalized));
 
   if (['consigo guardar sozinho', 'tenho disciplina', 'consigo poupar'].some((word) => normalized.includes(word))) {
     data.disciplina_de_aporte = 'alta';
@@ -341,6 +849,24 @@ function extractData(message, normalized, themeId) {
     ['nao preciso de trava', 'consigo juntar sozinho']
   );
   if (commitmentMechanism !== null) data.usuario_precisa_de_mecanismo_de_compromisso = commitmentMechanism;
+
+  if (missingFieldTriggers.disciplina_alta.some((word) => normalized.includes(word))) {
+    data.disciplina_de_aporte = 'alta';
+  } else if (missingFieldTriggers.disciplina_baixa.some((word) => normalized.includes(word))) {
+    data.disciplina_de_aporte = 'baixa';
+  }
+
+  if (missingFieldTriggers.bem_nao_essencial.some((word) => normalized.includes(word))) {
+    data.bem_essencial = false;
+  } else if (missingFieldTriggers.bem_essencial.some((word) => normalized.includes(word))) {
+    data.bem_essencial = true;
+  }
+
+  if (missingFieldTriggers.sem_mecanismo.some((word) => normalized.includes(word))) {
+    data.usuario_precisa_de_mecanismo_de_compromisso = false;
+  } else if (missingFieldTriggers.com_mecanismo.some((word) => normalized.includes(word))) {
+    data.usuario_precisa_de_mecanismo_de_compromisso = true;
+  }
 
   const dailyUse = parseBooleanValue(
     normalized,
@@ -426,6 +952,40 @@ function extractData(message, normalized, themeId) {
     data.objetivo_compra = message.trim();
   }
 
+  Object.assign(data, extractMonthlyContext(message, normalized));
+
+  const gastoMensalPatterns = [
+    /gasto[^\d]{0,15}(?:uns?|cerca de)?\s*r?\$?\s*(\d[\d\.,]*(?:\s*mil)?)\s*(?:por mes|ao mes|mensais?)/i,
+    /gasto\s*(?:uns?|cerca de)?\s*r?\$?\s*(\d[\d\.,]*(?:\s*mil)?)/i
+  ];
+  for (const pattern of gastoMensalPatterns) {
+    const match = message.match(pattern);
+    if (match?.[1] && !data.gasto_fixo_mensal) {
+      const value = parseMil(match[1]);
+      if (value > 0) {
+        data.gasto_fixo_mensal = value;
+        break;
+      }
+    }
+  }
+
+  const margemPatterns = [
+    /tenho\b.{0,80}(?:no final|no fim|ao fim).{0,40}(?:uns?\s+)?r?\$?\s*(\d[\d\.,]*(?:\s*mil)?)/i,
+    /(?:sobra[mr]?|restam?|fico com)\s*(?:uns?\s+)?r?\$?\s*(\d[\d\.,]*(?:\s*mil)?)/i,
+    /tenho\s+(?:uns?\s+)?r?\$?\s*(\d[\d\.,]*(?:\s*mil)?)\s*(?:sobrando|de sobra|disponiv)/i,
+    /(?:no final|no fim)\s+(?:do mes\s+)?(?:tenho|sobra|fica)\s+(?:uns?\s+)?r?\$?\s*(\d[\d\.,]*(?:\s*mil)?)/i
+  ];
+  for (const pattern of margemPatterns) {
+    const match = message.match(pattern);
+    if (match?.[1] && !data.margem_no_mes_valor) {
+      const value = parseMil(match[1]);
+      if (value > 50 && value < 500000) {
+        data.margem_no_mes_valor = value;
+        break;
+      }
+    }
+  }
+
   return data;
 }
 
@@ -442,9 +1002,95 @@ function isMissing(value) {
   return value === null || value === undefined || value === '';
 }
 
-function getMissingFields(theme, data) {
+export function hasAnsweredImplicitly(fieldKey, history = []) {
+  const implicitCoverage = {
+    tempo_esperado_no_imovel: [
+      'nao pretendo',
+      'pretendo ficar',
+      'quero ficar',
+      'nao vou sair',
+      'nao sei se fico',
+      'talvez mude',
+      'posso mudar',
+      'muitos anos'
+    ],
+    necessidade_de_mobilidade: [
+      'pretendo',
+      'mudar',
+      'fixo',
+      'mobilidade',
+      'flexibilidade',
+      'enraizado'
+    ],
+    estabilidade_profissional: [
+      'estavel',
+      'instavel',
+      'renda',
+      'trabalho',
+      'emprego',
+      'concurso',
+      'cidade'
+    ],
+    aluguel_mensal: ['aluguel', 'pago de aluguel', 'moradia'],
+    parcela_financiamento: ['parcela', 'financiamento', 'prestacao'],
+    urgencia: ['urgente', 'pressa', 'esperar', 'pode esperar', 'preciso agora'],
+    reserva_emergencia_meses: ['reserva', 'emergencia', 'meses de reserva'],
+    margem_no_mes: ['folga', 'apertado', 'cabe', 'sobra', 'margem']
+  };
+
+  const userMessages = history
+    .filter((item) => item.role === 'user')
+    .map((item) => normalizeText(item.content))
+    .join(' ');
+
+  const triggers = implicitCoverage[fieldKey];
+  if (!triggers?.length) return false;
+
+  return triggers.some((trigger) => userMessages.includes(trigger));
+}
+
+export function countConsecutiveSameStage(stage, history = []) {
+  if (!Array.isArray(history) || !history.length) return 0;
+
+  const stageMarkers = {
+    coleta_decisao: [
+      'para eu entender sua linha do zero',
+      'me conte um pouco mais do contexto',
+      'e para nao te dar uma resposta rasa'
+    ],
+    coleta_padrao: [
+      'tem um padrao aqui que vale nomear',
+      'para eu ler isso melhor',
+      'direcao provisoria'
+    ]
+  };
+
+  const markers = stageMarkers[stage] || [];
+  if (!markers.length) return 0;
+
+  let count = 0;
+
+  for (let index = history.length - 1; index >= 0; index -= 1) {
+    const message = history[index];
+    if (message.role !== 'assistant') continue;
+
+    const normalizedContent = normalizeText(message.content);
+    if (!markers.some((marker) => normalizedContent.includes(marker))) {
+      break;
+    }
+
+    count += 1;
+  }
+
+  return count;
+}
+
+function getMissingFields(theme, data, conversationHistory = []) {
   if (!theme?.requiredFields?.length) return [];
-  return theme.requiredFields.filter((field) => isMissing(data[field]));
+  return theme.requiredFields.filter((field) => {
+    if (!isMissing(data[field])) return false;
+    return !hasAnsweredImplicitly(field, conversationHistory);
+  });
 }
 
 /* =========================
@@ -460,6 +1106,134 @@ function buildDefaultResult() {
     nextStep: 'Completar os dados críticos antes de decidir.',
     alternative: 'Se a decisão puder esperar, use esse tempo para reduzir incerteza.'
   };
+}
+
+export function evaluateImovel(data) {
+  const result = {
+    classification: 'sem_dados_suficientes',
+    tendency: 'depende de contexto',
+    logic: [],
+    alert: 'Ainda faltam algumas variáveis para uma leitura precisa.',
+    nextStep: 'Completar os dados críticos antes de decidir.',
+    alternative: 'Se a decisão puder esperar, use esse tempo para reduzir incerteza.'
+  };
+
+  const parcela = data.parcela_financiamento ?? 0;
+  const aluguel = data.aluguel_mensal ?? 0;
+  const valorImovel = data.valor_imovel ?? 0;
+
+  if (data._concurso_outra_cidade) {
+    result.classification = 'recomendado_com_ressalvas';
+    result.tendency = 'manter flexibilidade por enquanto';
+    result.logic = [
+      'Você disse que não pretende se mudar, mas há um concurso em outra cidade que muda o terreno.',
+      'Quando existe uma variável com poder de relocação, comprar antes do resultado pode imobilizar capital e liberdade ao mesmo tempo.'
+    ];
+
+    if (aluguel && valorImovel) {
+      const yieldBruto = ((aluguel * 12) / valorImovel * 100).toFixed(1);
+      result.logic.push(
+        `Com aluguel de R$ ${aluguel.toLocaleString('pt-BR')} num imóvel de R$ ${valorImovel.toLocaleString('pt-BR')}, o yield bruto de locação é de ~${yieldBruto}% ao ano.`
+      );
+    }
+
+    result.alert = 'Comprar agora e precisar vender rápido costuma ser caro nos dois lados da operação.';
+    result.nextStep = 'Aguarde o resultado do concurso antes de fechar qualquer coisa. Use esse período para construir entrada ou fortalecer reserva.';
+    result.alternative = 'Se quiser caminhar para compra mesmo assim, avalie só imóveis com liquidez alta e condições de saída claras.';
+    return result;
+  }
+
+  if (data.necessidade_de_mobilidade === 'alta' || data.estabilidade_profissional === 'baixa') {
+    result.classification = 'recomendado';
+    result.tendency = 'tender ao aluguel';
+    result.logic = [
+      'Quando localização ou renda ainda podem mudar bastante, flexibilidade tem valor econômico real.',
+      'Imobilizar capital cedo pode prender dinheiro e liberdade ao mesmo tempo.'
+    ];
+    result.alert = 'Forçar compra em fase instável pode transformar patrimônio em pressão.';
+    result.nextStep = 'Antes de decidir por compra, compare o custo de manter a flexibilidade no seu momento atual.';
+    result.alternative = 'Se quiser caminhar para compra, use esse período para fortalecer entrada e previsibilidade.';
+    return result;
+  }
+
+  if (data.tempo_esperado_no_imovel === 'longo' && data.necessidade_de_mobilidade !== 'alta') {
+    const estabilidadeConfirmada = data.estabilidade_profissional === 'alta';
+    result.classification = 'recomendado_com_ressalvas';
+    result.tendency = 'compra pode ser coerente - mas a conta toda precisa fechar';
+    result.logic = [
+      'Horizonte longo e mobilidade baixa são dois fatores que ajudam a diluir o custo de aquisição.'
+    ];
+
+    if (!estabilidadeConfirmada) {
+      result.logic.push(
+        'Sua estabilidade profissional ainda não está confirmada nessa conversa, e isso é uma variável que pesa na decisão.'
+      );
+    }
+
+    if (aluguel && valorImovel) {
+      const yieldBruto = ((aluguel * 12) / valorImovel * 100).toFixed(1);
+      result.logic.push(
+        `Você paga R$ ${aluguel.toLocaleString('pt-BR')} de aluguel num imóvel de R$ ${valorImovel.toLocaleString('pt-BR')}. Isso representa um yield bruto de ~${yieldBruto}% ao ano.`
+      );
+      if (parseFloat(yieldBruto) < 4) {
+        result.logic.push('Com esse yield baixo, comprar tende a ser mais caro do que continuar alugando se você considerar o custo de oportunidade da entrada.');
+      } else if (parseFloat(yieldBruto) >= 6) {
+        result.logic.push('Com esse yield, o aluguel já está relativamente alto em relação ao valor, o que pode favorecer a compra no médio prazo.');
+      }
+    }
+
+    if (parcela && aluguel) {
+      result.logic.push(
+        `Ainda falta comparar a parcela estimada do financiamento com o aluguel atual de R$ ${aluguel.toLocaleString('pt-BR')}.`
+      );
+    }
+
+    result.alert = 'A conta não para na parcela: IPTU, condomínio, manutenção e capital imobilizado precisam entrar. E a entrada não deve desmontar sua reserva.';
+    result.nextStep = aluguel && valorImovel
+      ? `Com os dados que você já trouxe, o próximo passo é simular a parcela do financiamento e comparar com R$ ${aluguel.toLocaleString('pt-BR')} de aluguel num horizonte de 5 a 10 anos.`
+      : 'Monte um comparativo de custo total em 5 e 10 anos antes de fechar qualquer narrativa.';
+    result.alternative = 'Se a parcela ficar apertada ou a entrada desmontar sua reserva, continuar alugando mais um tempo ainda pode ser a melhor decisão.';
+    return result;
+  }
+
+  if (parcela && aluguel && parcela > aluguel * 1.4) {
+    result.classification = 'recomendado_com_ressalvas';
+    result.tendency = 'ter cautela com a compra';
+    result.logic = [
+      'A parcela está bem acima do aluguel atual, e o custo de posse merece uma leitura fria.',
+      'Comprar porque parece mais patrimonial pode esconder perda de liquidez importante.'
+    ];
+    result.alert = 'Apertar o fluxo para comprar pode reduzir muito sua margem de manobra.';
+    result.nextStep = 'Compare parcela, custos de propriedade e o rendimento que a entrada deixaria de gerar.';
+    result.alternative = 'Se a ideia de compra faz sentido no longo prazo, use o período de aluguel para aumentar a entrada.';
+    return result;
+  }
+
+  if (aluguel || valorImovel || data.tempo_esperado_no_imovel || data.necessidade_de_mobilidade) {
+    result.classification = 'leitura_parcial';
+    result.tendency = 'ainda sem tendência clara - mas posso adiantar o que já li';
+    result.logic = [];
+
+    if (data.tempo_esperado_no_imovel === 'longo') {
+      result.logic.push('Horizonte longo: peso positivo para compra, se a conta toda fechar.');
+    }
+    if (data.necessidade_de_mobilidade === 'baixa') {
+      result.logic.push('Mobilidade baixa: outro ponto que favorece compra.');
+    }
+    if (aluguel) {
+      result.logic.push(`Aluguel de R$ ${aluguel.toLocaleString('pt-BR')} identificado; ainda preciso da parcela estimada do financiamento para comparar.`);
+    }
+    if (!data.estabilidade_profissional) {
+      result.logic.push('Estabilidade profissional ainda não foi confirmada, e isso precisa entrar na conta.');
+    }
+
+    result.alert = 'Com as informações que temos até agora, a direção parece mais coerente com compra, mas a decisão fica mais segura com a parcela estimada e a confirmação da estabilidade.';
+    result.nextStep = 'Me diga a parcela aproximada do financiamento e confirme se sua renda está estável hoje; com isso, a leitura fica muito mais precisa.';
+    result.alternative = 'Se não souber a parcela agora, simule num banco ou use uma regra inicial: financiamento de 80% do valor a 30 anos costuma gerar parcela de 0,8% a 1% do valor por mês.';
+    return result;
+  }
+
+  return result;
 }
 
 function evaluateTheme(themeId, data) {
@@ -595,6 +1369,8 @@ function evaluateTheme(themeId, data) {
     }
 
     case 'comprar_ou_alugar_imovel': {
+      return evaluateImovel(data);
+
       const parcela = data.parcela_financiamento ?? 0;
       const aluguel = data.aluguel_mensal ?? 0;
 
@@ -923,7 +1699,7 @@ function buildPatternReading(theme, data, fallbackScenario = null) {
     case 'dinheiro_some':
       return {
         patternName: theme.title,
-        reading: 'O que pode estar acontecendo é um comprometimento invisível do mês antes mesmo das escolhas pontuais. Seu dinheiro pode não estar “sumindo”; ele pode estar sendo absorvido por blocos automáticos, pequenas recorrências e custos que perderam visibilidade.',
+        reading: 'O que pode estar acontecendo é um comprometimento invisível do mês antes mesmo das escolhas pontuais. Seu dinheiro pode não estar â€œsumindoâ€; ele pode estar sendo absorvido por blocos automáticos, pequenas recorrências e custos que perderam visibilidade.',
         impact: 'Quando isso se repete, você sente esforço sem avanço, porque a margem já nasce comprimida.',
         awareness: 'O problema nem sempre é falta de controle. Muitas vezes é falta de mapa do que já está morando no mês.',
         nextStep: 'Mapear fixos, assinaturas, parcelas antigas e pequenos vazamentos recorrentes.',
@@ -937,7 +1713,7 @@ function buildPatternReading(theme, data, fallbackScenario = null) {
         impact: 'O custo maior aparece quando esse alívio vira recorrência. Aí a compra deixa de ser exceção e passa a fazer parte da engrenagem do mês.',
         awareness: 'Isso não precisa ser lido com culpa. O ponto é perceber o que a compra está resolvendo de verdade.',
         nextStep: 'Observar em quais estados emocionais o impulso aparece com mais frequência.',
-        bridgeToDecision: 'Com isso, você consegue construir uma resposta mais inteligente do que só “tentar se controlar”.'
+        bridgeToDecision: 'Com isso, você consegue construir uma resposta mais inteligente do que só â€œtentar se controlarâ€.'
       };
 
     case 'padrao_subiu':
@@ -1253,12 +2029,73 @@ function formatFollowUpDecisionResponseHuman(snapshot) {
   return [
     `Você trouxe uma dúvida sobre **${snapshot.theme?.title.toLowerCase()}**, e para não te dar uma resposta rasa, eu prefiro olhar para o contexto antes.`,
     '',
-    `**Para eu entender sua linha do zero, me conte:**`,
+    '**Para eu entender sua linha do zero, me conte:**',
     questions,
     '',
-    `**Por que isso importa?** Porque a diferença entre uma escolha estratégica e um erro caro está nos detalhes do seu caixa e na urgência do momento.`,
+    '**Por que isso importa?** Porque a diferença entre uma escolha estratégica e um erro caro está nos detalhes do seu caixa e na urgência do momento.',
     '',
-    `*Enquanto isso, evite decisões automáticas baseadas apenas em benefícios pequenos de cartão ou parcelas "que cabem".*`
+    '*Enquanto isso, evite decisões automáticas baseadas apenas em benefícios pequenos de cartão ou parcelas "que cabem".*'
+  ].join('\n');
+}
+function formatFollowUpDecisionResponseHumanV2(snapshot) {
+  const { theme, followUpQuestions, collectedData = {} } = snapshot;
+  const themeTitle = theme?.title?.toLowerCase() || 'essa decisão';
+
+  const knownContext = [];
+  if (collectedData.margem_no_mes_valor) {
+    knownContext.push(`margem mensal de R$ ${collectedData.margem_no_mes_valor.toLocaleString('pt-BR')}`);
+  }
+  if (collectedData.gasto_fixo_mensal) {
+    knownContext.push(`custo mensal de R$ ${collectedData.gasto_fixo_mensal.toLocaleString('pt-BR')}`);
+  }
+  if (collectedData.parcela_financiamento) {
+    knownContext.push(`parcela estimada de R$ ${collectedData.parcela_financiamento.toLocaleString('pt-BR')}`);
+  }
+  if (collectedData.urgencia === 'baixa') {
+    knownContext.push('sem urgência imediata');
+  } else if (collectedData.urgencia === 'alta') {
+    knownContext.push('urgência alta');
+  }
+
+  const openQuestions = followUpQuestions.filter((item) => {
+    if (item.field === 'urgencia' && collectedData.urgencia) return false;
+    if (item.field === 'bem_essencial' && collectedData.bem_essencial !== undefined) return false;
+    if (item.field === 'disciplina_de_aporte' && collectedData.disciplina_de_aporte) return false;
+    if (item.field === 'reserva_emergencia_meses' && collectedData.reserva_emergencia_meses !== undefined) return false;
+    if (item.field === 'aluguel_mensal' && collectedData.aluguel_mensal) return false;
+    if (item.field === 'parcela_financiamento' && collectedData.parcela_financiamento) return false;
+    return true;
+  });
+
+  if (openQuestions.length === 0) {
+    return `Tenho o contexto necessário para ler ${themeTitle}. Deixa eu montar a análise.`;
+  }
+
+  const intro = knownContext.length > 0
+    ? `Com ${knownContext.join(', ')} já no contexto, só preciso entender mais uma coisa para fechar a leitura de ${themeTitle}:`
+    : `Para não te dar uma resposta rasa sobre ${themeTitle}, preciso entender melhor o terreno:`;
+
+  const questionTexts = openQuestions
+    .slice(0, 2)
+    .map((item) => item.question)
+    .filter(Boolean);
+
+  if (questionTexts.length === 1) {
+    return [
+      intro,
+      '',
+      questionTexts[0],
+      '',
+      '_Conteúdo educacional. Não substitui consultoria financeira individual._'
+    ].join('\n');
+  }
+
+  return [
+    intro,
+    '',
+    questionTexts.join(' E também: '),
+    '',
+    '_Conteúdo educacional. Não substitui consultoria financeira individual._'
   ].join('\n');
 }
 
@@ -1382,6 +2219,20 @@ function formatOpenResponseHuman() {
   ].join('\n');
 }
 
+function formatOpenResponseHumanV2() {
+  return [
+    'Posso te ajudar de algumas formas aqui.',
+    '',
+    'Se você está em dúvida sobre uma compra ou decisão - comprar ou alugar, parcelar ou não, trocar de carro - me conta o cenário e eu leio o terreno com você antes de dar uma direção.',
+    '',
+    'Se você sente que o dinheiro some, que não sobra nada no fim do mês ou que algo está errado, mas você não sabe exatamente o que, me conta o padrão e a gente entende o que está operando por baixo.',
+    '',
+    'E se quiser entender melhor um conceito - como funcionam os juros, por que manter saldo positivo importa, o que uma compra realmente custa ao longo do tempo - é só perguntar.',
+    '',
+    '_Conteúdo educacional. Não substitui consultoria financeira individual._'
+  ].join('\n');
+}
+
 function summarizeEvaluation(evaluation) {
   if (!evaluation) return 'Ainda sem recomendação final; faltam dados críticos.';
   return [
@@ -1409,6 +2260,7 @@ export function createConversationState() {
     lastRecommendation: null,
     lastNextStep: null,
     lastPatternReading: null,
+    lastConceptId: null,
     diagnosticContext: null
   };
 }
@@ -1419,6 +2271,7 @@ export function createConversationState() {
 
 export function analyzeConversationTurn(userMessage, previousState = createConversationState(), options = {}) {
   const normalized = normalizeText(userMessage);
+  const conversationHistory = Array.isArray(options.conversationHistory) ? options.conversationHistory : [];
 
   const entryType = classifyConversationEntry(normalized);
   let intent = detectIntent(normalized, previousState);
@@ -1429,6 +2282,15 @@ export function analyzeConversationTurn(userMessage, previousState = createConve
   const fallbackScenario = findFallbackScenario(normalized);
   const concept = findConcept(normalized);
 
+  const isConceptContinuation =
+    previousState.stage === 'explicacao' &&
+    intent === 'open' &&
+    !concept &&
+    !activeTheme &&
+    containsFinancialContext(normalized);
+
+  if (isConceptContinuation) intent = 'concept_continuation';
+
   const extractedData = extractData(userMessage, normalized, activeTheme?.id || previousState.themeId);
   const collectedData = mergeData(previousState.collectedData, extractedData);
 
@@ -1437,15 +2299,18 @@ export function analyzeConversationTurn(userMessage, previousState = createConve
   if (intent === 'open' && activeTheme?.mode === 'decision') intent = 'decision';
   if (intent === 'open' && activeTheme?.mode === 'pattern') intent = 'pattern';
 
-  const missingFields = getMissingFields(activeTheme, collectedData);
+  const missingFields = getMissingFields(activeTheme, collectedData, conversationHistory);
+  const repeatedDecisionCollection = countConsecutiveSameStage('coleta_decisao', conversationHistory);
+  const repeatedPatternCollection = countConsecutiveSameStage('coleta_padrao', conversationHistory);
 
   const followUpQuestions =
     activeTheme?.mode === 'decision'
-      ? getNextBestQuestions(activeTheme, collectedData, 3)
+      ? getNextBestQuestions(activeTheme, collectedData, repeatedDecisionCollection > 0 ? 2 : 3)
+          .filter((item) => missingFields.includes(item.field))
       : activeTheme?.mode === 'pattern'
         ? (activeTheme.suggestedQuestions || [])
-            .filter((field) => isMissing(collectedData[field]))
-            .slice(0, 3)
+            .filter((field) => missingFields.includes(field))
+            .slice(0, repeatedPatternCollection > 0 ? 2 : 3)
             .map((field) => ({
               field,
               question: fieldCatalog[field]?.question,
@@ -1458,14 +2323,16 @@ export function analyzeConversationTurn(userMessage, previousState = createConve
     Boolean(activeTheme) &&
     activeTheme.mode === 'decision' &&
     (intent === 'decision' || intent === 'planning' || previousState.stage === 'coleta_decisao') &&
-    missingFields.length > 0;
+    missingFields.length > 0 &&
+    !(repeatedDecisionCollection >= 2 && Object.keys(extractedData).length === 0);
 
   const shouldAskPattern =
     Boolean(activeTheme) &&
     activeTheme.mode === 'pattern' &&
     (intent === 'pattern' || previousState.stage === 'coleta_padrao') &&
     followUpQuestions.length > 0 &&
-    Object.keys(collectedData).length < 2;
+    Object.keys(collectedData).length < 2 &&
+    !(repeatedPatternCollection >= 2 && Object.keys(extractedData).length === 0);
 
   const evaluation =
     activeTheme?.mode === 'decision' && !shouldAskDecision
@@ -1475,28 +2342,31 @@ export function analyzeConversationTurn(userMessage, previousState = createConve
   const patternReading =
     activeTheme?.mode === 'pattern'
       ? buildPatternReading(activeTheme, collectedData, fallbackScenario)
-      : (intent === 'pattern' || fallbackScenario)
+      : (intent === 'pattern' || (fallbackScenario && intent !== 'concept'))
         ? buildPatternReading(activeTheme, collectedData, fallbackScenario)
         : null;
 
   let stage = 'abertura';
-  let localResponse = formatOpenResponseHuman();
+  let localResponse = formatOpenResponseHumanV2();
 
   if (shouldAskDecision) {
     stage = 'coleta_decisao';
-    localResponse = formatFollowUpDecisionResponseHuman({ theme: activeTheme, followUpQuestions });
+    localResponse = formatFollowUpDecisionResponseHumanV2({ theme: activeTheme, followUpQuestions, collectedData });
   } else if (shouldAskPattern) {
     stage = 'coleta_padrao';
     localResponse = formatFollowUpPatternResponseHuman({ theme: activeTheme, followUpQuestions });
   } else if (activeTheme?.mode === 'decision' && evaluation) {
     stage = 'recomendacao_decisao';
     localResponse = formatDecisionResponseHuman({ theme: activeTheme, evaluation });
-  } else if (patternReading) {
-    stage = 'leitura_padrao';
-    localResponse = formatPatternResponseHuman({ theme: activeTheme, patternReading });
+  } else if (intent === 'concept_continuation') {
+    stage = 'explicacao_aplicada';
+    localResponse = formatConceptContinuationHuman(previousState, collectedData);
   } else if (concept) {
     stage = 'explicacao';
     localResponse = formatConceptResponseHuman(concept);
+  } else if (patternReading) {
+    stage = 'leitura_padrao';
+    localResponse = formatPatternResponseHuman({ theme: activeTheme, patternReading });
   } else if (fallbackScenario) {
     stage = 'leitura';
     localResponse = formatScenarioResponseHuman(fallbackScenario);
@@ -1517,6 +2387,7 @@ export function analyzeConversationTurn(userMessage, previousState = createConve
     lastRecommendation: evaluation?.tendency || previousState.lastRecommendation,
     lastNextStep: evaluation?.nextStep || previousState.lastNextStep,
     lastPatternReading: patternReading?.reading || previousState.lastPatternReading,
+    lastConceptId: concept?.id || previousState.lastConceptId || null,
     diagnosticContext
   };
 
@@ -1538,6 +2409,14 @@ export function analyzeConversationTurn(userMessage, previousState = createConve
       theme: activeTheme?.title || 'tema em aberto',
       stage,
       intent,
+      conceptContent: concept ? {
+        id: concept.id,
+        reading: concept.response.reading,
+        pattern: concept.response.pattern,
+        impact: concept.response.impact,
+        awareness: concept.response.awareness,
+        nextStep: concept.response.nextStep
+      } : null,
       entryType,
       missingFields,
       followUpQuestions: followUpQuestions.map((item) => item.question),
@@ -1545,7 +2424,11 @@ export function analyzeConversationTurn(userMessage, previousState = createConve
       evaluationSummary: summarizeEvaluation(evaluation),
       patternSummary: patternReading?.reading || null,
       knowledge: knowledgeSnippets.map((item) => item.summary),
-      diagnosticPrompt
+      diagnosticPrompt,
+      repeatedDecisionCollection,
+      repeatedPatternCollection
     }
   };
 }
+
+

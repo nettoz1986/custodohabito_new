@@ -117,7 +117,7 @@ export function initDiagnostic() {
         <div class="diagnostic-actions">
           <button class="btn-primary" id="diagnostic-start-btn" type="button">
             <i data-lucide="play"></i>
-            Comecar diagnostico
+            Começar diagnóstico
           </button>
           ${state.answers.length > 0 ? `
             <button class="btn-secondary" id="diagnostic-resume-btn" type="button">
@@ -126,7 +126,7 @@ export function initDiagnostic() {
           ` : ''}
         </div>
 
-        <p class="diagnostic-disclaimer">Este diagnostico possui fins educacionais e de autoconhecimento.</p>
+        <p class="diagnostic-disclaimer">Este diagnóstico possui fins educacionais e de autoconhecimento.</p>
       </section>
     `;
 
@@ -151,7 +151,7 @@ export function initDiagnostic() {
 
     container.innerHTML = `
       <section class="diagnostic-shell" aria-labelledby="diagnostic-question-title">
-        <div class="progress-container" aria-label="Progresso do diagnostico">
+        <div class="progress-container" aria-label="Progresso do diagnóstico">
           <div
             id="progress-bar"
             role="progressbar"
@@ -320,8 +320,8 @@ export function initDiagnostic() {
               <span>Perfil predominante</span>
               <strong>${escapeHtml(result.primary.name)}</strong>
             </div>
-            <h2 id="diagnostic-lead-title">Agora vamos personalizar seu diagnostico</h2>
-            <p>Preencha os dados abaixo para cruzar essa leitura com sua realidade e gerar um relatorio mais completo.</p>
+            <h2 id="diagnostic-lead-title">Agora vamos personalizar seu diagnóstico</h2>
+            <p>Preencha os dados abaixo para cruzar essa leitura com sua realidade e gerar um relatório mais completo.</p>
           </div>
 
           ${renderNotice(state.submissionNotice)}
@@ -331,7 +331,7 @@ export function initDiagnostic() {
             <input
               type="email"
               id="diagnostic-email"
-              placeholder="Onde voce quer receber contato sobre o diagnostico?"
+              placeholder="Onde você quer receber contato sobre o diagnóstico?"
               value="${escapeAttribute(leadForm.email)}"
               required
             />
@@ -386,7 +386,7 @@ export function initDiagnostic() {
           <div class="diagnostic-actions">
             <button class="btn-primary" id="diagnostic-generate-report-btn" type="button">
               <i data-lucide="sparkles"></i>
-              Gerar meu diagnostico
+              Gerar meu diagnóstico
             </button>
             <button class="btn-secondary" id="diagnostic-back-to-result-btn" type="button">
               Voltar
@@ -432,7 +432,7 @@ export function initDiagnostic() {
 
           <div class="loading-container">
             <div class="loading-dots"><span></span><span></span><span></span></div>
-            <p class="loading-text">Enviando seu cadastro com consentimento e preparando o relatorio...</p>
+            <p class="loading-text">Enviando seu cadastro com consentimento e preparando o relatório...</p>
           </div>
         </div>
       </section>
@@ -451,7 +451,7 @@ export function initDiagnostic() {
             <h2 id="diagnostic-report-title" class="report-name">${escapeHtml(result.primary.name)}</h2>
             <span class="badge report-badge-prof">${escapeHtml(state.leadForm.profissao || 'Leitura personalizada')}</span>
             <p class="diagnostic-report-disclaimer">
-              Esta leitura foi montada localmente com base nas suas respostas e nos dados que voce informou.
+              Esta leitura foi montada localmente com base nas suas respostas e nos dados que você informou.
               É um conteúdo educacional, não consultoria financeira individual.
             </p>
           </div>
@@ -465,7 +465,7 @@ export function initDiagnostic() {
             </div>
           ` : ''}
 
-          <div class="diagnostic-axis-grid" aria-label="Vetores do seu padrao">
+          <div class="diagnostic-axis-grid" aria-label="Vetores do seu padrão">
             ${reportData.axisHighlights.map((axis) => `
               <div class="diagnostic-axis-card">
                 <div class="report-section-label">${escapeHtml(axis.label)}</div>
@@ -501,7 +501,7 @@ export function initDiagnostic() {
 
           <div class="diagnostic-actions">
             <button class="btn-secondary" id="diagnostic-review-data-btn" type="button">
-              Ajustar dados do relatorio
+              Ajustar dados do relatório
             </button>
             <button class="btn-secondary" id="diagnostic-restart-report-btn" type="button">
               Refazer diagn\u00f3stico
@@ -611,7 +611,7 @@ export function initDiagnostic() {
     } catch (error) {
       state.submissionNotice = {
         type: 'error',
-        message: error.message || 'Nao foi possivel enviar seus dados agora. Confira as informacoes e tente novamente.'
+        message: error.message || 'Não foi possível enviar seus dados agora. Confira as informações e tente novamente.'
       };
       state.stage = 'lead_form';
       saveState();
@@ -736,7 +736,7 @@ export function initDiagnostic() {
 
     return blendMap[keyA]
       ?? blendMap[keyB]
-      ?? `Seu padrao atual mistura tracos de ${primary.name} com ${secondary.name}. Isso sugere uma força principal convivendo com uma segunda tendencia importante nas suas escolhas.`;
+      ?? `Seu padrão atual mistura traços de ${primary.name} com ${secondary.name}. Isso sugere uma força principal convivendo com uma segunda tendência importante nas suas escolhas.`;
   }
 
   function buildPatternSummary(primary, secondary, axes) {
@@ -746,7 +746,7 @@ export function initDiagnostic() {
       .map((axis) => axis.label.toLowerCase());
 
     if (!secondary) {
-      return `Hoje, seu padrao aparece mais concentrado em ${primary.name}. ${strongAxes.length ? `Os vetores que mais apareceram foram ${joinHuman(strongAxes)}.` : ''}`;
+      return `Hoje, seu padrão aparece mais concentrado em ${primary.name}. ${strongAxes.length ? `Os vetores que mais apareceram foram ${joinHuman(strongAxes)}.` : ''}`;
     }
 
     return `Seu padrão atual não está operando em linha única. A base predominante é ${primary.name}, mas existe influência relevante de ${secondary.name}. ${strongAxes.length ? `Os vetores mais visíveis foram ${joinHuman(strongAxes)}.` : ''}`;
@@ -768,7 +768,7 @@ export function initDiagnostic() {
       return projectGuidance[`axis:${strongestAxis.key}`];
     }
 
-    return primary.counsel ?? 'O proximo passo e transformar essa leitura em uma decisao pratica do seu cotidiano.';
+    return primary.counsel ?? 'O próximo passo é transformar essa leitura em uma decisão prática do seu cotidiano.';
   }
 
   function buildPersonalizedReport(result, leadForm) {
@@ -810,7 +810,7 @@ export function initDiagnostic() {
       return `Sua leitura predominante hoje foi ${result.primary.name}, com influência relevante de ${result.secondary.name}. ${axisLabels.length ? `Os vetores mais fortes apareceram em ${joinHuman(axisLabels)}.` : ''} O ponto não é se enquadrar em um rótulo, e entender qual lógica está puxando suas decisões com mais frequência.`;
     }
 
-    return `Sua leitura predominante hoje foi ${result.primary.name}. ${axisLabels.length ? `Os vetores mais fortes apareceram em ${joinHuman(axisLabels)}.` : ''} Isso ajuda a enxergar com mais clareza onde o seu padrao esta protegendo a estrutura e onde ele pode estar criando custo ao longo do tempo.`;
+    return `Sua leitura predominante hoje foi ${result.primary.name}. ${axisLabels.length ? `Os vetores mais fortes apareceram em ${joinHuman(axisLabels)}.` : ''} Isso ajuda a enxergar com mais clareza onde o seu padrão está protegendo a estrutura e onde ele pode estar criando custo ao longo do tempo.`;
   }
 
   function readLeadFormFromDom() {
@@ -836,7 +836,7 @@ export function initDiagnostic() {
     }
 
     if (!leadForm.renda || !leadForm.comprometido || !leadForm.previdencia) {
-      return 'Preencha todos os campos obrigatorios antes de gerar o relatorio.';
+      return 'Preencha todos os campos obrigatórios antes de gerar o relatório.';
     }
 
     if (!leadForm.privacyAccepted) {
@@ -878,7 +878,7 @@ export function initDiagnostic() {
       if (isLocalEnvironment()) {
         return {
           type: 'info',
-          message: 'Ambiente local detectado: o relatorio foi gerado sem envio para API externa.'
+          message: 'Ambiente local detectado: o relatório foi gerado sem envio para API externa.'
         };
       }
 
@@ -901,12 +901,12 @@ export function initDiagnostic() {
     }
 
     if (!response.ok || data.ok === false) {
-      throw new Error(data.message || `Falha ao enviar o diagnostico (${response.status}).`);
+      throw new Error(data.message || `Falha ao enviar o diagnóstico (${response.status}).`);
     }
 
     return {
       type: 'success',
-      message: 'Cadastro recebido com sucesso. Seu relatorio foi gerado abaixo.'
+      message: 'Cadastro recebido com sucesso. Seu relatório foi gerado abaixo.'
     };
   }
 
@@ -956,7 +956,7 @@ export function initDiagnostic() {
     try {
       sessionStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
     } catch (error) {
-      console.warn('Nao foi possivel salvar o estado do diagnostico.', error);
+      console.warn('Não foi possível salvar o estado do diagnóstico.', error);
     }
   }
 
@@ -965,7 +965,7 @@ export function initDiagnostic() {
       const raw = sessionStorage.getItem(STORAGE_KEY);
       return raw ? JSON.parse(raw) : null;
     } catch (error) {
-      console.warn('Nao foi possivel carregar o estado salvo do diagnostico.', error);
+      console.warn('Não foi possível carregar o estado salvo do diagnóstico.', error);
       return null;
     }
   }
@@ -974,7 +974,7 @@ export function initDiagnostic() {
     try {
       sessionStorage.removeItem(STORAGE_KEY);
     } catch (error) {
-      console.warn('Nao foi possivel limpar o estado salvo do diagnostico.', error);
+      console.warn('Não foi possível limpar o estado salvo do diagnóstico.', error);
     }
   }
 
