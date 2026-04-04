@@ -4867,6 +4867,71 @@ textarea:focus-visible {
   gap: 14px;
 }
 
+.grocery-import-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px 20px;
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(78, 128, 199, 0.2);
+  background: linear-gradient(180deg, rgba(78, 128, 199, 0.16), rgba(2, 26, 66, 0.68));
+  box-shadow: var(--shadow-md);
+}
+
+.grocery-import-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.grocery-import-kicker {
+  display: inline-flex;
+  margin-bottom: 8px;
+  color: #9ac2ef;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.grocery-import-header h3 {
+  margin: 0 0 6px;
+  font-family: var(--font-bible);
+  color: var(--text-primary);
+}
+
+.grocery-import-header p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.grocery-import-btn {
+  width: auto;
+  flex-shrink: 0;
+}
+
+.grocery-import-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.grocery-import-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.grocery-import-textarea {
+  min-height: 150px;
+  resize: vertical;
+  line-height: 1.55;
+}
+
 .grocery-add-actions {
   display: flex;
   align-items: center;
@@ -5030,6 +5095,11 @@ textarea:focus-visible {
   color: #7dd9b0;
 }
 
+.grocery-item-tag.source-nfce {
+  background: rgba(78, 128, 199, 0.18);
+  color: #9ac2ef;
+}
+
 .grocery-item-tag.source-manual {
   background: rgba(201, 168, 76, 0.18);
   color: var(--accent-hover);
@@ -5178,6 +5248,125 @@ textarea:focus-visible {
   cursor: pointer;
 }
 
+.grocery-scanner-card {
+  width: min(640px, 100%);
+}
+
+.grocery-scanner-wrap {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 1 / 1;
+  border-radius: var(--radius-md);
+  background: #020916;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.grocery-scanner-wrap video,
+.grocery-scanner-wrap canvas {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.grocery-scanner-overlay-ui {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.grocery-scanner-frame {
+  width: 66%;
+  aspect-ratio: 1 / 1;
+  border-radius: 16px;
+  border: 3px solid rgba(255, 255, 255, 0.92);
+  box-shadow: 0 0 0 9999px rgba(2, 9, 24, 0.45);
+}
+
+.grocery-scanner-live {
+  position: absolute;
+  bottom: 14px;
+  left: 14px;
+  right: 14px;
+  text-align: center;
+  color: #fff;
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.65);
+}
+
+.grocery-scanner-status {
+  margin: 12px 0 0;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.grocery-scanner-error {
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(239, 154, 154, 0.28);
+  background: rgba(239, 154, 154, 0.12);
+  color: #ef9a9a;
+  line-height: 1.55;
+}
+
+.grocery-paste-steps {
+  padding: 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(78, 128, 199, 0.18);
+  background: rgba(78, 128, 199, 0.12);
+}
+
+.grocery-paste-steps p {
+  margin: 0 0 8px;
+  color: #9ac2ef;
+  font-weight: 700;
+}
+
+.grocery-paste-steps ol {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--text-primary);
+  line-height: 1.7;
+}
+
+.grocery-detected-url {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--text-secondary);
+}
+
+.grocery-detected-url span {
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.grocery-detected-url a {
+  color: #9ac2ef;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.grocery-scanner-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
 .grocery-history-chart-wrap,
 .grocery-history-table-wrap {
   border-radius: var(--radius-md);
@@ -5293,6 +5482,10 @@ textarea:focus-visible {
   .grocery-market-title-row,
   .grocery-market-price-row,
   .grocery-add-actions,
+  .grocery-import-actions,
+  .grocery-import-header,
+  .grocery-scanner-actions,
+  .grocery-detected-url,
   .grocery-market-summary {
     flex-direction: column;
     align-items: stretch;

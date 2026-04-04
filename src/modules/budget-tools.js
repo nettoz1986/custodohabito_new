@@ -63,6 +63,16 @@ export function initBudgetTools() {
   let groceryChartInstance = null;
   let groceryChartLoader = null;
   let groceryToastTimer = null;
+  let groceryQrLoader = null;
+  let groceryImportText = '';
+  let groceryScannerOpen = false;
+  let groceryScannerMode = 'camera';
+  let groceryScannerStatus = 'Iniciando câmera...';
+  let groceryScannerLiveText = 'Posicione o QR Code no quadro';
+  let groceryScannerError = '';
+  let groceryScannerDetectedUrl = '';
+  let groceryScannerStream = null;
+  let groceryScannerRaf = null;
   let groceryUiState = {
     loadingAll: false,
     loadingIds: new Set(),
@@ -405,6 +415,36 @@ export function initBudgetTools() {
           </div>
         </section>
 
+        <section class="grocery-import-card">
+          <div class="grocery-import-header">
+            <div>
+              <span class="grocery-import-kicker">Importador de nota</span>
+              <h3>Colar texto da NFC-e</h3>
+              <p>Cole o texto copiado da nota fiscal. A extração preserva o regex validado e consolida itens repetidos por codigo.</p>
+            </div>
+
+            <div class="grocery-import-actions">
+              <button id="grocery-open-scanner-btn" class="btn-secondary grocery-import-btn" type="button">
+                <i data-lucide="camera"></i>
+                Escanear NFC-e
+              </button>
+              <button id="grocery-import-btn" class="btn-secondary grocery-import-btn" type="button">
+                <i data-lucide="receipt-text"></i>
+                Processar nota
+              </button>
+            </div>
+          </div>
+
+          <label class="grocery-import-field" for="grocery-import-text">
+            <span class="grocery-label-small">Texto da NFC-e</span>
+            <textarea
+              id="grocery-import-text"
+              class="grocery-input grocery-import-textarea"
+              placeholder="Cole aqui o texto completo copiado da pagina da nota fiscal..."
+            >${escapeHtml(groceryImportText)}</textarea>
+          </label>
+        </section>
+
         ${groceryList.length === 0
           ? `
             <div class="grocery-empty grocery-empty-advanced">
@@ -459,6 +499,57 @@ export function initBudgetTools() {
           </div>
         </div>
 
+        <div id="grocery-scanner-overlay" class="grocery-modal-overlay ${groceryScannerOpen ? 'open' : ''}" aria-hidden="${String(!groceryScannerOpen)}">
+          <div class="grocery-modal-card grocery-scanner-card" role="dialog" aria-modal="true" aria-labelledby="grocery-scanner-title">
+            <div class="grocery-modal-header">
+              <div>
+                <span class="grocery-modal-kicker">Importador de nota</span>
+                <h3 id="grocery-scanner-title">Escanear NFC-e</h3>
+                <p>Aponte a câmera para o QR Code da nota fiscal.</p>
+              </div>
+              <button class="grocery-modal-close" type="button" data-close-scanner aria-label="Fechar importador NFC-e">
+                <i data-lucide="x"></i>
+              </button>
+            </div>
+
+            <div class="grocery-scanner-view ${groceryScannerMode === 'camera' ? '' : 'hidden'}">
+              <div class="grocery-scanner-wrap">
+                <video id="grocery-scanner-video" autoplay playsinline muted></video>
+                <canvas id="grocery-scanner-canvas" class="hidden"></canvas>
+                <div class="grocery-scanner-overlay-ui">
+                  <div class="grocery-scanner-frame"></div>
+                  <div class="grocery-scanner-live">${escapeHtml(groceryScannerLiveText)}</div>
+                </div>
+              </div>
+              <p class="grocery-scanner-status">${escapeHtml(groceryScannerStatus)}</p>
+              ${groceryScannerError ? `<div class="grocery-scanner-error">${escapeHtml(groceryScannerError)}</div>` : ''}
+            </div>
+
+            <div class="grocery-scanner-paste ${groceryScannerMode === 'paste' ? '' : 'hidden'}">
+              <div class="grocery-paste-steps">
+                <p>Como importar a nota:</p>
+                <ol>
+                  <li>Toque em "Abrir nota no browser"</li>
+                  <li>Na pagina da nota, selecione tudo e copie</li>
+                  <li>Volte aqui e cole o texto no campo da NFC-e</li>
+                </ol>
+              </div>
+
+              <div class="grocery-detected-url">
+                <span>${escapeHtml(trimText(groceryScannerDetectedUrl, 72))}</span>
+                <a href="${escapeHtml(groceryScannerDetectedUrl || '#')}" target="_blank" rel="noopener noreferrer">Abrir nota no browser</a>
+              </div>
+            </div>
+
+            <div class="grocery-scanner-actions">
+              ${groceryScannerMode === 'paste'
+                ? '<button id="grocery-scanner-use-text" class="btn-primary" type="button">Usar texto colado abaixo</button>'
+                : ''}
+              <button class="btn-secondary" type="button" data-close-scanner>Fechar</button>
+            </div>
+          </div>
+        </div>
+
         <div id="grocery-toast" class="grocery-toast" aria-live="polite"></div>
       </div>
     `;
@@ -473,11 +564,15 @@ export function initBudgetTools() {
     const isExpanded = groceryUiState.expandedIds.has(item.id);
     const sourceClass = item.priceSource === 'ml'
       ? 'source-ml'
+      : item.priceSource === 'nfce'
+        ? 'source-nfce'
       : item.priceSource === 'manual'
         ? 'source-manual'
         : 'source-none';
     const sourceLabel = item.priceSource === 'ml'
       ? 'Mercado Livre'
+      : item.priceSource === 'nfce'
+        ? 'NFC-e'
       : item.priceSource === 'manual'
         ? 'Manual'
         : 'Sem preco';
@@ -607,7 +702,7 @@ export function initBudgetTools() {
             <tr>
               <td>${formatHistoryDate(entry.date)}</td>
               <td>${formatCurrency(entry.price)}</td>
-              <td>${entry.source === 'ml' ? 'Mercado Livre' : 'Manual'}</td>
+              <td>${entry.source === 'ml' ? 'Mercado Livre' : entry.source === 'nfce' ? 'NFC-e' : 'Manual'}</td>
             </tr>
           `).join('')}
         </tbody>
@@ -618,6 +713,11 @@ export function initBudgetTools() {
   function bindEvents() {
     container.querySelectorAll('.tools-tab').forEach((button) => {
       button.addEventListener('click', () => {
+        if (button.dataset.tab !== 'grocery') {
+          stopGroceryScanner();
+          groceryScannerOpen = false;
+          resetGroceryScannerState();
+        }
         activeTab = button.dataset.tab;
         render();
       });
@@ -674,8 +774,11 @@ export function initBudgetTools() {
     const nameInput = container.querySelector('#grocery-name');
     const qtyInput = container.querySelector('#grocery-qty');
     const priceInput = container.querySelector('#grocery-price');
+    const importTextarea = container.querySelector('#grocery-import-text');
 
     container.querySelector('#grocery-add-btn')?.addEventListener('click', addGroceryItem);
+    container.querySelector('#grocery-open-scanner-btn')?.addEventListener('click', openGroceryScanner);
+    container.querySelector('#grocery-import-btn')?.addEventListener('click', importGroceryFromNfceText);
 
     [nameInput, qtyInput, priceInput].forEach((input) => {
       input?.addEventListener('keydown', (event) => {
@@ -684,6 +787,17 @@ export function initBudgetTools() {
           addGroceryItem();
         }
       });
+    });
+
+    importTextarea?.addEventListener('input', () => {
+      groceryImportText = importTextarea.value;
+    });
+
+    importTextarea?.addEventListener('keydown', (event) => {
+      if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+        event.preventDefault();
+        importGroceryFromNfceText();
+      }
     });
 
     container.querySelectorAll('[data-check]').forEach((button) => {
@@ -757,10 +871,24 @@ export function initBudgetTools() {
       button.addEventListener('click', closeGroceryHistory);
     });
 
+    container.querySelectorAll('[data-close-scanner]').forEach((button) => {
+      button.addEventListener('click', closeGroceryScanner);
+    });
+
     container.querySelector('#grocery-history-overlay')?.addEventListener('click', (event) => {
       if (event.target === event.currentTarget) {
         closeGroceryHistory();
       }
+    });
+
+    container.querySelector('#grocery-scanner-overlay')?.addEventListener('click', (event) => {
+      if (event.target === event.currentTarget) {
+        closeGroceryScanner();
+      }
+    });
+
+    container.querySelector('#grocery-scanner-use-text')?.addEventListener('click', () => {
+      closeGroceryScanner({ focusTextarea: true });
     });
   }
 
@@ -841,6 +969,209 @@ export function initBudgetTools() {
     setGroceryPrice(itemId, price, 'manual', item.name);
     render();
     showGroceryToast('Preco manual salvo.');
+  }
+
+  function importGroceryFromNfceText() {
+    const textarea = container.querySelector('#grocery-import-text');
+    const rawText = textarea?.value?.trim() || groceryImportText.trim();
+
+    if (!rawText || rawText.length < 20) {
+      showGroceryToast('Cole o texto da nota para importar.');
+      textarea?.focus();
+      return;
+    }
+
+    const parsedItems = parseSefazText(rawText);
+    if (parsedItems.length === 0) {
+      showGroceryToast('Nenhum item encontrado na nota colada.');
+      textarea?.focus();
+      return;
+    }
+
+    rememberPreviousGroceryTotal();
+
+    parsedItems.forEach((parsedItem) => {
+      const item = {
+        id: createId(),
+        name: parsedItem.name,
+        qty: Math.max(0.1, parsedItem.qty || 1),
+        price: parsedItem.unitPrice > 0 ? parsedItem.unitPrice : null,
+        checked: false,
+        priceSource: parsedItem.unitPrice > 0 ? 'nfce' : null,
+        mlTitle: null
+      };
+
+      groceryList.push(item);
+
+      if (parsedItem.unitPrice > 0) {
+        recordGroceryHistory(item.id, parsedItem.unitPrice, 'nfce', parsedItem.name);
+      }
+    });
+
+    groceryImportText = '';
+    saveGrocery(groceryList);
+    render();
+    showGroceryToast(`${parsedItems.length} ${parsedItems.length === 1 ? 'item importado' : 'itens importados'} da NFC-e.`);
+  }
+
+  async function openGroceryScanner() {
+    resetGroceryScannerState();
+    groceryScannerOpen = true;
+    render();
+    await startGroceryScanner();
+  }
+
+  function closeGroceryScanner(options = {}) {
+    const { focusTextarea = false } = options;
+    stopGroceryScanner();
+    resetGroceryScannerState();
+    groceryScannerOpen = false;
+    render();
+
+    if (focusTextarea) {
+      container.querySelector('#grocery-import-text')?.focus();
+    }
+  }
+
+  function resetGroceryScannerState() {
+    groceryScannerMode = 'camera';
+    groceryScannerStatus = 'Iniciando câmera...';
+    groceryScannerLiveText = 'Posicione o QR Code no quadro';
+    groceryScannerError = '';
+    groceryScannerDetectedUrl = '';
+  }
+
+  async function startGroceryScanner() {
+    const video = container.querySelector('#grocery-scanner-video');
+    if (!video || !groceryScannerOpen) return;
+
+    try {
+      const jsQR = await ensureGroceryQrScanner();
+      if (!jsQR) throw new Error('Leitor de QR indisponivel.');
+
+      groceryScannerStream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode: { ideal: 'environment' },
+          width: { ideal: 1280 },
+          height: { ideal: 1280 }
+        }
+      });
+
+      video.srcObject = groceryScannerStream;
+      await video.play();
+      groceryScannerStatus = 'Câmera ativa — aponte para o QR Code';
+      groceryScannerLiveText = 'Posicione o QR Code no quadro';
+      updateGroceryScannerText();
+      groceryScannerRaf = window.requestAnimationFrame(() => scanGroceryQrFrame(jsQR));
+    } catch (error) {
+      groceryScannerError = 'Não foi possível acessar a câmera. Verifique a permissão do navegador.';
+      groceryScannerStatus = '';
+      updateGroceryScannerText();
+      console.error(error);
+    }
+  }
+
+  function stopGroceryScanner() {
+    if (groceryScannerRaf) {
+      window.cancelAnimationFrame(groceryScannerRaf);
+      groceryScannerRaf = null;
+    }
+
+    if (groceryScannerStream) {
+      groceryScannerStream.getTracks().forEach((track) => track.stop());
+      groceryScannerStream = null;
+    }
+
+    const video = container.querySelector('#grocery-scanner-video');
+    if (video) {
+      video.srcObject = null;
+    }
+  }
+
+  function updateGroceryScannerText() {
+    const status = container.querySelector('.grocery-scanner-status');
+    const live = container.querySelector('.grocery-scanner-live');
+    const error = container.querySelector('.grocery-scanner-error');
+
+    if (status) status.textContent = groceryScannerStatus;
+    if (live) live.textContent = groceryScannerLiveText;
+    if (error) error.textContent = groceryScannerError;
+  }
+
+  function scanGroceryQrFrame(jsQR) {
+    if (!groceryScannerOpen || !groceryScannerStream) return;
+
+    const video = container.querySelector('#grocery-scanner-video');
+    const canvas = container.querySelector('#grocery-scanner-canvas');
+    if (!video || !canvas) return;
+
+    if (video.readyState !== video.HAVE_ENOUGH_DATA) {
+      groceryScannerRaf = window.requestAnimationFrame(() => scanGroceryQrFrame(jsQR));
+      return;
+    }
+
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    const context = canvas.getContext('2d');
+    if (!context) return;
+
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+    const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+    const code = jsQR(imageData.data, imageData.width, imageData.height, { inversionAttempts: 'dontInvert' });
+
+    if (code?.data) {
+      handleGroceryQrDetected(code.data);
+      return;
+    }
+
+    groceryScannerRaf = window.requestAnimationFrame(() => scanGroceryQrFrame(jsQR));
+  }
+
+  function handleGroceryQrDetected(url) {
+    stopGroceryScanner();
+
+    if (!/sefaz|nfe|nfce/i.test(url)) {
+      groceryScannerError = `QR Code nao reconhecido como NFC-e. URL: ${trimText(url, 100)}`;
+      groceryScannerStatus = '';
+      groceryScannerLiveText = 'Posicione o QR Code no quadro';
+      updateGroceryScannerText();
+      return;
+    }
+
+    groceryScannerDetectedUrl = url;
+    groceryScannerMode = 'paste';
+    groceryScannerStatus = '';
+    groceryScannerLiveText = 'QR Code detectado';
+    render();
+  }
+
+  function ensureGroceryQrScanner() {
+    if (window.jsQR) {
+      return Promise.resolve(window.jsQR);
+    }
+
+    if (groceryQrLoader) {
+      return groceryQrLoader;
+    }
+
+    groceryQrLoader = new Promise((resolve, reject) => {
+      const existing = document.querySelector('script[data-jsqr-loader="grocery"]');
+      if (existing) {
+        existing.addEventListener('load', () => resolve(window.jsQR), { once: true });
+        existing.addEventListener('error', reject, { once: true });
+        return;
+      }
+
+      const script = document.createElement('script');
+      script.src = 'https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js';
+      script.async = true;
+      script.dataset.jsqrLoader = 'grocery';
+      script.onload = () => resolve(window.jsQR);
+      script.onerror = reject;
+      document.head.appendChild(script);
+    });
+
+    return groceryQrLoader;
   }
 
   function openGooglePriceSearch(itemId) {
@@ -1204,7 +1535,7 @@ function normalizeGroceryItems(data) {
         qty: Math.max(0.1, toNumber(item?.qty) || 1),
         price: price > 0 ? price : null,
         checked: Boolean(item?.checked),
-        priceSource: item?.priceSource === 'ml' || item?.priceSource === 'manual'
+        priceSource: item?.priceSource === 'ml' || item?.priceSource === 'manual' || item?.priceSource === 'nfce'
           ? item.priceSource
           : price > 0
             ? 'manual'
@@ -1297,6 +1628,51 @@ function parseCurrencyInput(value) {
 
 function normalizeCurrencyInput(value) {
   return String(value || '').replace(/[^\d,]/g, '');
+}
+
+function parseBrazilianDecimal(value) {
+  const normalized = String(value || '').trim().replace(/\./g, '').replace(',', '.');
+  const parsed = Number.parseFloat(normalized);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function parseSefazText(rawText) {
+  const text = String(rawText || '').replace(/[ \t]+/g, ' ').replace(/\r/g, '');
+  const blockRx = /^([^\n(]+?)\s*\(C[o\u00f3]digo:\s*(\d+)\)[^\n]*\nQtde\.:([^\s]+)[^\n]+Vl\. Unit\.:\s*([^\s]+)[^\n]+Vl\. Total\s*\n([\d,]+)/gm;
+  const groupedByCode = {};
+
+  let match;
+  while ((match = blockRx.exec(text)) !== null) {
+    const name = match[1].trim();
+    const code = match[2];
+    const qty = parseBrazilianDecimal(match[3]) || 1;
+    const unit = parseBrazilianDecimal(match[4]);
+    const total = parseBrazilianDecimal(match[5]);
+
+    if (!name || total <= 0) continue;
+
+    if (groupedByCode[code]) {
+      groupedByCode[code].qty += qty;
+      groupedByCode[code].total += total;
+    } else {
+      groupedByCode[code] = { name, code, qty, unit, total };
+    }
+  }
+
+  return Object.values(groupedByCode).map((item) => {
+    const qty = item.qty > 0 ? item.qty : 1;
+    const total = Math.round(item.total * 100) / 100;
+    const inferredUnit = qty > 0 ? total / qty : item.unit;
+    const unitPrice = Math.round((inferredUnit || 0) * 100) / 100;
+
+    return {
+      name: item.name,
+      code: item.code,
+      qty,
+      total,
+      unitPrice: unitPrice > 0 ? unitPrice : 0
+    };
+  });
 }
 
 function formatHistoryDate(rawDate) {
